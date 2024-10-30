@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TMap Example</title>
+    <script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=P4s73F9IVz7sHlNhyg3RC9PwWamafSQb1Zy0g4cy"></script>
+    <style>
+      html,
+      body,
+      #map_div {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map_div"></div>
+    <script>
+      var map;
+      function initTmap(latitude, longitude) {
+        map = new Tmapv2.Map("map_div", {
+          center: new Tmapv2.LatLng(latitude, longitude),
+          width: "100%",
+          height: "100%",
+          zoom: 15,
+        });
+
+        new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(latitude, longitude),
+          map: map,
+        });
+      }
+      window.onload = function () {
+        initTmap(37.5665, 126.978); // 기본 위치, WebView에서 동적으로 변경될 수 있음
+      };
+    </script>
+  </body>
+</html>
