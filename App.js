@@ -38,9 +38,9 @@ export default function App() {
     );
   } else {
     return (
-      <View style={styles.container}>
+      <View style={styles.loading}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text>현재 위치를 불러오는 중...</Text>
+        <Text style={styles.lodingText}>현재 위치를 불러오는 중...</Text>
       </View>
     );
   }
@@ -51,5 +51,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 30,
     marginBottom: 100,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  lodingText: {
+    marginTop: 20,
   },
 });
