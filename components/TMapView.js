@@ -4,13 +4,13 @@ import { WebView } from "react-native-webview";
 const TMapView = ({ latitude, longitude }) => {
   const webViewRef = useRef(null); //웹뷰 참조
 
-  useEffect(() => {
+  const handleWebViewLoad = () => {
     if (webViewRef.current) {
       // HTML 파일 로드 후에 위치 값 전달
       const message = `initTmap(${latitude}, ${longitude});`;
       webViewRef.current.injectJavaScript(message);
     }
-  }, [latitude, longitude]);
+  };
 
   return (
     <WebView
@@ -18,6 +18,7 @@ const TMapView = ({ latitude, longitude }) => {
       originWhitelist={["*"]}
       source={require("./html/TMapView.html")}
       style={{ flex: 1 }}
+      onLoad={handleWebViewLoad}
     />
   );
 };
