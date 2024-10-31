@@ -6,6 +6,7 @@ import TMapView from "./components/TMapView.js";
 export default function App() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [title, setTitle] = useState("Starting Point");
 
   useEffect(() => {
     (async () => {
