@@ -70,19 +70,22 @@ function RouteHeader({ routeStage, onConfirm }) {
 
 const styles = StyleSheet.create({
   header: {
-    height: 130,
+    height: 95,
+    paddingTop: 40,
     backgroundColor: "#f8f8f8",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     flex: 1,
     textAlign: "center",
+    padding: 5,
   },
   buttonContainer: {
     flexDirection: "row",
+    padding: 5,
   },
   button: {
     backgroundColor: "#007AFF",

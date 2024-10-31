@@ -52,13 +52,15 @@
           if (startPoint) startPoint.setMap(null);
           startPoint = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(lat, lng),
-            iconSize: new Tmapv2.Size(100, 300),
+            iconSize: new Tmapv2.Size(100, 100),
+            icon: "/assets/startPoint.png",
             map: map,
           });
         } else if (routeStage === "setStopoverPoint") {
           const stopoverPoint = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(lat, lng),
-            iconSize: new Tmapv2.Size(300, 300),
+            iconSize: new Tmapv2.Size(100, 100),
+            icon: "/assets/stopoverPoint.png",
             map: map,
           });
           stopoverPoints.push(stopoverPoint);
@@ -66,7 +68,8 @@
           if (endPoint) endPoint.setMap(null);
           endPoint = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(lat, lng),
-            iconSize: new Tmapv2.Size(300, 300),
+            iconSize: new Tmapv2.Size(100, 100),
+            icon: "/assets/destinationPoint.png",
             map: map,
           });
         }

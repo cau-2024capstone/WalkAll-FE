@@ -41,7 +41,7 @@ export default function App() {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.lodingText}>현재 위치를 불러오는 중...</Text>
+        <Text style={styles.lodingText}>지도 불러오는 중...</Text>
       </View>
     );
   }
