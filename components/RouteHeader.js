@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
 
 // 헤더 컴포넌트
 function RouteHeader({ routeStage, onConfirm }) {
@@ -25,32 +25,42 @@ function RouteHeader({ routeStage, onConfirm }) {
       <View style={styles.buttonContainer}>
         {routeStage === "setStartingPoint" && (
           <>
-            <Button
-              title="현 위치로 설정"
+            <TouchableOpacity
+              style={styles.button}
               onPress={() => {
                 /* 위치 설정 기능 추가 */
               }}
-            />
-            <Button title="확인" onPress={onConfirm} />
+            >
+              <Text style={styles.buttonText}>현 위치로 설정</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={onConfirm}>
+              <Text style={styles.buttonText}>확인</Text>
+            </TouchableOpacity>
           </>
         )}
         {routeStage === "setStopoverPoint" && (
-          <Button title="확인" onPress={onConfirm} />
+          <TouchableOpacity style={styles.button} onPress={onConfirm}>
+            <Text style={styles.buttonText}>확인</Text>
+          </TouchableOpacity>
         )}
         {routeStage === "setDestinationPoint" && (
           <>
-            <Button
-              title="현 위치로 설정"
+            <TouchableOpacity
+              style={styles.button}
               onPress={() => {
                 /* 위치 설정 기능 추가 */
               }}
-            />
-            <Button
-              title="추천 경로 생성"
+            >
+              <Text style={styles.buttonText}>현 위치로 설정</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
               onPress={() => {
                 /* 경로 생성 기능 추가 */
               }}
-            />
+            >
+              <Text style={styles.buttonText}>추천 경로 생성</Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
@@ -60,7 +70,7 @@ function RouteHeader({ routeStage, onConfirm }) {
 
 const styles = StyleSheet.create({
   header: {
-    height: 50,
+    height: 130,
     backgroundColor: "#f8f8f8",
     justifyContent: "center",
     alignItems: "center",
@@ -73,6 +83,17 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
+  },
+  button: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 14,
   },
 });
 
