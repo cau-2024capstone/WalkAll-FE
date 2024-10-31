@@ -18,7 +18,11 @@
   <body>
     <div id="map_div"></div>
     <script>
-      var map;
+      let currentLocationPoint;
+      let startPoint;
+      let stopoverPoints = [];
+      let endPoint;
+      let map;
       function initTmap(latitude, longitude) {
         map = new Tmapv2.Map("map_div", {
           center: new Tmapv2.LatLng(latitude, longitude),
@@ -27,7 +31,7 @@
           zoom: 19,
         });
 
-        new Tmapv2.Marker({
+        currentLocationPoint = new Tmapv2.Marker({
           position: new Tmapv2.LatLng(latitude, longitude),
           icon: "/assets/userPing.png",
           iconSize: new Tmapv2.Size(100, 100),
@@ -43,11 +47,29 @@
         });
       }
 
-      function addMarker(lat, lng) {
-        new Tmapv2.Marker({
-          position: new Tmapv2.LatLng(lat, lng),
-          map: map,
-        });
+      function addMarker(lat, lng, routeStage) {
+        if (routeStage === "setStartingPoint") {
+          if (startPoint) startPoint.setMap(null);
+          startPoint = new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(lat, lng),
+            iconSize: new Tmapv2.Size(100, 300),
+            map: map,
+          });
+        } else if (routeStage === "setStopoverPoint") {
+          const stopoverPoint = new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(lat, lng),
+            iconSize: new Tmapv2.Size(300, 300),
+            map: map,
+          });
+          stopoverPoints.push(stopoverPoint);
+        } else if (routeStage === "setDestinationPoint") {
+          if (endPoint) endPoint.setMap(null);
+          endPoint = new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(lat, lng),
+            iconSize: new Tmapv2.Size(300, 300),
+            map: map,
+          });
+        }
       }
     </script>
   </body>

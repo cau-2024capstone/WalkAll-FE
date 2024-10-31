@@ -33,14 +33,18 @@ const TMapView = ({ latitude, longitude }) => {
   const handleMessage = (event) => {
     if (!isScrolling) {
       const { lat, lng } = JSON.parse(event.nativeEvent.data);
-      const addMarkerMessage = `addMarker(${lat}, ${lng});`;
+      const addMarkerMessage = `addMarker(${lat}, ${lng}, "${routeStage}");`;
       webViewRef.current.injectJavaScript(addMarkerMessage);
     }
   };
 
   return (
     <>
-      <RouteHeader routeStage={routeStage} onConfirm={handleNextStage} />
+      <RouteHeader
+        routeStage={routeStage}
+        onConfirm={handleNextStage}
+        style={{}}
+      />
       <View {...panResponder.panHandlers} style={{ flex: 1 }}>
         <WebView
           ref={webViewRef}
