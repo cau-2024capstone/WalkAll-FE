@@ -2,9 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
 
 // 헤더 컴포넌트
-function RouteHeader({ routeStage, onConfirm }) {
+function RouteHeader({ routeStage, onConfirm, onMakeRoute }) {
   let title = "";
-
   switch (routeStage) {
     case "setStartingPoint":
       title = "출발지를 입력하세요";
@@ -56,7 +55,7 @@ function RouteHeader({ routeStage, onConfirm }) {
             <TouchableOpacity
               style={styles.button}
               onPress={() => {
-                /* 경로 생성 기능 추가 */
+                onMakeRoute;
               }}
             >
               <Text style={styles.buttonText}>추천 경로 생성</Text>

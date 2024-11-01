@@ -43,12 +43,15 @@
           const lat = evt.latLng.lat();
           const lng = evt.latLng.lng();
           const coordinates = { lat, lng };
-          window.ReactNativeWebView.postMessage(JSON.stringify(coordinates));
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({ type: "location", coordinates })
+          );
         });
       }
 
       function addMarker(lat, lng, routeStage) {
         if (routeStage === "setStartingPoint") {
+          logMessage("setStartingPoint");
           if (startPoint) startPoint.setMap(null);
           startPoint = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(lat, lng),
@@ -73,6 +76,12 @@
             map: map,
           });
         }
+      }
+
+      function logMessage(message) {
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({ type: "log", message: message })
+        );
       }
     </script>
   </body>

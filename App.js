@@ -6,13 +6,12 @@ import TMapView from "./components/TMapView.js";
 export default function App() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [title, setTitle] = useState("Starting Point");
 
   useEffect(() => {
     (async () => {
       // 위치 권한 요청
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
+      if (status !== "gxranted") {
         setErrorMsg("위치 권한이 거부되었습니다.");
         return;
       }

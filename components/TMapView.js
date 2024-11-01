@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { WebView } from "react-native-webview";
 import { View, PanResponder } from "react-native";
 import RouteHeader from "./RouteHeader";
@@ -7,6 +7,7 @@ const TMapView = ({ latitude, longitude }) => {
   const webViewRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [routeStage, setRouteStage] = useState("setStartingPoint");
+  const [makeRoute, setMakeRoute] = useState(false);
 
   const handleNextStage = () => {
     if (routeStage === "setStartingPoint") {
@@ -31,18 +32,37 @@ const TMapView = ({ latitude, longitude }) => {
   };
 
   const handleMessage = (event) => {
-    if (!isScrolling) {
-      const { lat, lng } = JSON.parse(event.nativeEvent.data);
-      const addMarkerMessage = `addMarker(${lat}, ${lng}, "${routeStage}");`;
-      webViewRef.current.injectJavaScript(addMarkerMessage);
+    const data = JSON.parse(event.nativeEvent.data);
+    console.log("WebView Log:", data);
+    switch (data.type) {
+      case "log":
+        console.log("WebView Log:", data.message);
+        break;
+      case "location":
+        if (!isScrolling) {
+          lat = data.coordinates.lat;
+          lng = data.coordinates.lng;
+          const addMarkerMessage = `addMarker(${lat}, ${lng}, "${routeStage}");`;
+          webViewRef.current.injectJavaScript(addMarkerMessage);
+        }
     }
   };
+
+  useEffect(() => {
+    if (makeRoute && webViewRef.current) {
+      const routeMessage = `startRouteCreation();`;
+      webViewRef.current.injectJavaScript(routeMessage);
+    }
+  }, [makeRoute]);
 
   return (
     <>
       <RouteHeader
         routeStage={routeStage}
         onConfirm={handleNextStage}
+        onMakeRoute={
+          setMakeRoute ? () => setMakeRoute(false) : () => setMakeRoute(true)
+        }
         style={{}}
       />
       <View {...panResponder.panHandlers} style={{ flex: 1 }}>
