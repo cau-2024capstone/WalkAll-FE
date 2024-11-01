@@ -11,7 +11,7 @@ export default function App() {
     (async () => {
       // 위치 권한 요청
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "gxranted") {
+      if (status !== "granted") {
         setErrorMsg("위치 권한이 거부되었습니다.");
         return;
       }

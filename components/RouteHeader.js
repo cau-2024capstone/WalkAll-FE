@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 // 헤더 컴포넌트
 function RouteHeader({ routeStage, onConfirm, onMakeRoute }) {
@@ -52,12 +52,7 @@ function RouteHeader({ routeStage, onConfirm, onMakeRoute }) {
             >
               <Text style={styles.buttonText}>현 위치로 설정</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                onMakeRoute;
-              }}
-            >
+            <TouchableOpacity style={styles.button} onPress={onMakeRoute}>
               <Text style={styles.buttonText}>추천 경로 생성</Text>
             </TouchableOpacity>
           </>

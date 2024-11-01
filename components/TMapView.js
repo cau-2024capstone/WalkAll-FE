@@ -33,7 +33,6 @@ const TMapView = ({ latitude, longitude }) => {
 
   const handleMessage = (event) => {
     const data = JSON.parse(event.nativeEvent.data);
-    console.log("WebView Log:", data);
     switch (data.type) {
       case "log":
         console.log("WebView Log:", data.message);
@@ -60,10 +59,7 @@ const TMapView = ({ latitude, longitude }) => {
       <RouteHeader
         routeStage={routeStage}
         onConfirm={handleNextStage}
-        onMakeRoute={
-          setMakeRoute ? () => setMakeRoute(false) : () => setMakeRoute(true)
-        }
-        style={{}}
+        onMakeRoute={() => setMakeRoute(!makeRoute)}
       />
       <View {...panResponder.panHandlers} style={{ flex: 1 }}>
         <WebView

@@ -17,17 +17,21 @@
   </head>
   <body>
     <div id="map_div"></div>
+    <div id="info">경로 정보가 여기에 표시됩니다.<br /></div>
     <script>
       let currentLocationPoint;
       let startPoint;
       let stopoverPoints = [];
+      var startX, startY, endX, endY;
       let endPoint;
       let map;
+      let passList = "";
+
       function initTmap(latitude, longitude) {
         map = new Tmapv2.Map("map_div", {
           center: new Tmapv2.LatLng(latitude, longitude),
           width: "100%",
-          height: "100%",
+          height: "700px",
           zoom: 19,
         });
 
@@ -51,7 +55,6 @@
 
       function addMarker(lat, lng, routeStage) {
         if (routeStage === "setStartingPoint") {
-          logMessage("setStartingPoint");
           if (startPoint) startPoint.setMap(null);
           startPoint = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(lat, lng),
@@ -59,6 +62,8 @@
             icon: "/assets/startPoint.png",
             map: map,
           });
+          startX = lng;
+          startY = lat;
         } else if (routeStage === "setStopoverPoint") {
           const stopoverPoint = new Tmapv2.Marker({
             position: new Tmapv2.LatLng(lat, lng),
@@ -67,6 +72,8 @@
             map: map,
           });
           stopoverPoints.push(stopoverPoint);
+          passList += (passList ? "_" : "") + lng + "," + lat;
+          logMessage("경유지 리스트: " + passList);
         } else if (routeStage === "setDestinationPoint") {
           if (endPoint) endPoint.setMap(null);
           endPoint = new Tmapv2.Marker({
@@ -75,6 +82,8 @@
             icon: "/assets/destinationPoint.png",
             map: map,
           });
+          endX = lng;
+          endY = lat;
         }
       }
 
@@ -82,6 +91,80 @@
         window.ReactNativeWebView.postMessage(
           JSON.stringify({ type: "log", message: message })
         );
+      }
+
+      // 다중 경로 요청 함수
+      function startRouteCreation() {
+        logMessage("경로 생성을 시작합니다.");
+        const searchOptions = [0, 10, 4]; // 추천, 최단, 대로 우선
+        const headers = {
+          accept: "application/json",
+          appKey: "P4s73F9IVz7sHlNhyg3RC9PwWamafSQb1Zy0g4cy",
+          "Content-Type": "application/json",
+        };
+        logMessage(headers);
+        searchOptions.forEach((option, index) => {
+          const data = JSON.stringify({
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY,
+            // passList: passList, // 경유지 리스트 추가
+            reqCoordType: "WGS84GEO",
+            resCoordType: "WGS84GEO",
+            searchOption: option, // 어떤 타입의 경로
+            startName: "출발지",
+            endName: "도착지",
+          });
+          logMessage(data);
+
+          $.ajax({
+            method: "POST",
+            url: "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+            headers: headers,
+            data: data,
+            success: function (response) {
+              logMessage("응답 내용:", response);
+              displayRoute(response.features, index);
+            },
+            error: function (xhr, status, error) {
+              logMessage("Error:", error);
+              logMessage("응답 내용:", xhr.responseText);
+            },
+          });
+        });
+      }
+
+      // 경로 표시 함수
+      function displayRoute(features, routeIndex) {
+        if (!map) {
+          console.error("Map 객체가 정의되지 않았습니다.");
+          return;
+        }
+
+        const properties = features[0].properties;
+        const totalDistance = (properties.totalDistance / 1000).toFixed(2);
+        const totalTime = Math.ceil(properties.totalTime / 60);
+
+        const colors = ["#FF0000", "#0000FF", "#00FF00"];
+        const roadType = ["1", "2", "3"];
+
+        const infoDiv = document.getElementById("info");
+        infoDiv.innerHTML += `경로 ${roadType[routeIndex]} - 총 거리: ${totalDistance} km, 총 시간: ${totalTime} 분<br>`;
+
+        features.forEach(function (feature) {
+          if (feature.geometry.type === "LineString") {
+            const path = feature.geometry.coordinates.map(
+              (coord) => new Tmapv2.LatLng(coord[1], coord[0])
+            );
+            var polyline = new Tmapv2.Polyline({
+              path: path,
+              strokeColor: colors[routeIndex],
+              strokeWeight: 6,
+              map: map,
+            });
+          }
+        });
       }
     </script>
   </body>
