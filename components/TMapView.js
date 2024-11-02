@@ -44,6 +44,32 @@ const TMapView = ({ latitude, longitude }) => {
           const addMarkerMessage = `addMarker(${lat}, ${lng}, "${routeStage}");`;
           webViewRef.current.injectJavaScript(addMarkerMessage);
         }
+        break;
+      case "routeMakeData":
+        routeMakeData = data.routeMakeData;
+        console.log("routeMakeData:", routeMakeData);
+        fetch(
+          "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+          {
+            method: "POST",
+            headers: {
+              accept: "application/json",
+              appKey: "P4s73F9IVz7sHlNhyg3RC9PwWamafSQb1Zy0g4cy", // appKey 확인
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(routeMakeData),
+          }
+        )
+          .then((response) => response.json())
+          .then((response) => {
+            console.log("응답 내용:", response);
+            const displayRouteMessage = `displayRoute(response.features, index);`;
+            webViewRef.current.injectJavaScript(displayRouteMessage);
+          })
+          .catch((error) => {
+            console.log("Error:", error);
+          });
+        break;
     }
   };
 
@@ -69,6 +95,8 @@ const TMapView = ({ latitude, longitude }) => {
           style={{ flex: 1 }}
           onLoad={handleWebViewLoad}
           onMessage={handleMessage}
+          allowUniversalAccessFromFileURLs={true} // Android용
+          allowFileAccessFromFileURLs={true} // iOS용
         />
       </View>
     </>

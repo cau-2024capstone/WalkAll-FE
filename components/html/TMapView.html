@@ -102,7 +102,6 @@
           appKey: "P4s73F9IVz7sHlNhyg3RC9PwWamafSQb1Zy0g4cy",
           "Content-Type": "application/json",
         };
-        logMessage(headers);
         searchOptions.forEach((option, index) => {
           const data = JSON.stringify({
             startX: startX,
@@ -117,8 +116,10 @@
             endName: "도착지",
           });
           logMessage(data);
-
-          $.ajax({
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({ type: "routeMakeData", routeMakeData: data })
+          );
+          /*$.ajax({
             method: "POST",
             url: "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
             headers: headers,
@@ -131,7 +132,7 @@
               logMessage("Error:", error);
               logMessage("응답 내용:", xhr.responseText);
             },
-          });
+          });*/
         });
       }
 
