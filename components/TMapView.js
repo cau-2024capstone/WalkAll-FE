@@ -4,11 +4,19 @@ import { View, PanResponder } from "react-native";
 import RouteHeader from "./RouteHeader";
 
 const TMapView = ({ latitude, longitude }) => {
-  const webViewRef = useRef(null);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [routeStage, setRouteStage] = useState("setStartingPoint");
-  const [makeRoute, setMakeRoute] = useState(false);
+  const webViewRef = useRef(null); // WebView 컴포넌트의 참조를 저장할 변수
+  const [isScrolling, setIsScrolling] = useState(false); // WebView가 스크롤 중인지 여부를 저장할 변수
+  const [routeStage, setRouteStage] = useState("setStartingPoint"); //경로 설정 단계를 저장할 변수
+  const [makeRoute, setMakeRoute] = useState(false); //경로 생성 여부를 저장할 변수
+  //현 위치로 설정 버튼을 눌렀을 때 현 위치의 위도와 경도를 저장할 변수
+  useEffect(() => {
+    if (makeRoute && webViewRef.current) {
+      const routeMessage = `startRouteCreation();`;
+      webViewRef.current.injectJavaScript(routeMessage);
+    }
+  }, [makeRoute]);
 
+  //버튼을 눌렀을 경우 다음 단계로 넘어가는 함수
   const handleNextStage = () => {
     if (routeStage === "setStartingPoint") {
       setRouteStage("setStopoverPoint");
@@ -17,6 +25,7 @@ const TMapView = ({ latitude, longitude }) => {
     }
   };
 
+  //스크롤 중인지 여부를 판단하는 함수
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onPanResponderGrant: () => setIsScrolling(false),
@@ -24,6 +33,16 @@ const TMapView = ({ latitude, longitude }) => {
     onPanResponderRelease: () => setTimeout(() => setIsScrolling(false), 100),
   });
 
+  //현 위치로 설정 버튼을 눌렀을 때 현 위치의 위도와 경도를 가져오는 함수
+  const handleCurrentLocation = () => {
+    if (webViewRef.current) {
+      console.log("현 위치로 설정");
+      const message = `setPingToCurrentLocation("${routeStage}");`;
+      webViewRef.current.injectJavaScript(message);
+    }
+  };
+
+  //웹뷰가 로드되었을 때 호출되는 함수
   const handleWebViewLoad = () => {
     if (webViewRef.current) {
       const message = `initTmap(${latitude}, ${longitude});`;
@@ -31,6 +50,7 @@ const TMapView = ({ latitude, longitude }) => {
     }
   };
 
+  //웹뷰에서 전달받은 메시지를 처리하는 함수
   const handleMessage = (event) => {
     const data = JSON.parse(event.nativeEvent.data);
     switch (data.type) {
@@ -95,19 +115,13 @@ const TMapView = ({ latitude, longitude }) => {
     }
   };
 
-  useEffect(() => {
-    if (makeRoute && webViewRef.current) {
-      const routeMessage = `startRouteCreation();`;
-      webViewRef.current.injectJavaScript(routeMessage);
-    }
-  }, [makeRoute]);
-
   return (
     <>
       <RouteHeader
         routeStage={routeStage}
         onConfirm={handleNextStage}
         onMakeRoute={() => setMakeRoute(!makeRoute)}
+        onCurrentLocation={handleCurrentLocation}
       />
       <View {...panResponder.panHandlers} style={{ flex: 1 }}>
         <WebView

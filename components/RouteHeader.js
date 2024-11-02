@@ -2,7 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 // 헤더 컴포넌트
-function RouteHeader({ routeStage, onConfirm, onMakeRoute }) {
+function RouteHeader({
+  routeStage,
+  onConfirm,
+  onMakeRoute,
+  onCurrentLocation,
+}) {
   let title = "";
   switch (routeStage) {
     case "setStartingPoint":
@@ -24,12 +29,7 @@ function RouteHeader({ routeStage, onConfirm, onMakeRoute }) {
       <View style={styles.buttonContainer}>
         {routeStage === "setStartingPoint" && (
           <>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                /* 위치 설정 기능 추가 */
-              }}
-            >
+            <TouchableOpacity style={styles.button} onPress={onCurrentLocation}>
               <Text style={styles.buttonText}>현 위치로 설정</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onConfirm}>
@@ -44,12 +44,7 @@ function RouteHeader({ routeStage, onConfirm, onMakeRoute }) {
         )}
         {routeStage === "setDestinationPoint" && (
           <>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                /* 위치 설정 기능 추가 */
-              }}
-            >
+            <TouchableOpacity style={styles.button} onPress={onCurrentLocation}>
               <Text style={styles.buttonText}>현 위치로 설정</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onMakeRoute}>
