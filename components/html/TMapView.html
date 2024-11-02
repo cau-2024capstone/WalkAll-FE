@@ -73,7 +73,6 @@
           });
           stopoverPoints.push(stopoverPoint);
           passList += (passList ? "_" : "") + lng + "," + lat;
-          logMessage("경유지 리스트: " + passList);
         } else if (routeStage === "setDestinationPoint") {
           if (endPoint) endPoint.setMap(null);
           endPoint = new Tmapv2.Marker({
@@ -108,14 +107,13 @@
             startY: startY,
             endX: endX,
             endY: endY,
-            // passList: passList, // 경유지 리스트 추가
+            passList: passList, // 경유지 리스트 추가
             reqCoordType: "WGS84GEO",
             resCoordType: "WGS84GEO",
             searchOption: option, // 어떤 타입의 경로
             startName: "출발지",
             endName: "도착지",
           });
-          logMessage(data);
           window.ReactNativeWebView.postMessage(
             JSON.stringify({ type: "routeMakeData", routeMakeData: data })
           );
