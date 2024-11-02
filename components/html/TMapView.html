@@ -115,22 +115,12 @@
             endName: "도착지",
           });
           window.ReactNativeWebView.postMessage(
-            JSON.stringify({ type: "routeMakeData", routeMakeData: data })
+            JSON.stringify({
+              type: "routeMakeData",
+              routeMakeData: data,
+              index: index,
+            })
           );
-          /*$.ajax({
-            method: "POST",
-            url: "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
-            headers: headers,
-            data: data,
-            success: function (response) {
-              logMessage("응답 내용:", response);
-              displayRoute(response.features, index);
-            },
-            error: function (xhr, status, error) {
-              logMessage("Error:", error);
-              logMessage("응답 내용:", xhr.responseText);
-            },
-          });*/
         });
       }
 

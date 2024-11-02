@@ -79,7 +79,7 @@ const TMapView = ({ latitude, longitude }) => {
           .then((response) => response.json())
           .then((response) => {
             if (response && response.features) {
-              const index = 0; // 필요한 경우 적절한 값으로 변경
+              const index = data.index; // 필요한 경우 적절한 값으로 변경
               const displayRouteMessage = `displayRoute(${JSON.stringify(
                 response.features
               )}, ${index});`;
