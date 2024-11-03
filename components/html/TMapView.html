@@ -122,11 +122,6 @@
       function startRouteCreation() {
         logMessage("경로 생성을 시작합니다.");
         const searchOptions = [0, 10, 4]; // 추천, 최단, 대로 우선
-        const headers = {
-          accept: "application/json",
-          appKey: "P4s73F9IVz7sHlNhyg3RC9PwWamafSQb1Zy0g4cy",
-          "Content-Type": "application/json",
-        };
         searchOptions.forEach((option, index) => {
           const data = JSON.stringify({
             startX: startX,

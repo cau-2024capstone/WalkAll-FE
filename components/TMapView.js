@@ -8,7 +8,7 @@ const TMapView = ({ latitude, longitude }) => {
   const [isScrolling, setIsScrolling] = useState(false); // WebView가 스크롤 중인지 여부를 저장할 변수
   const [routeStage, setRouteStage] = useState("setStartingPoint"); //경로 설정 단계를 저장할 변수
   const [makeRoute, setMakeRoute] = useState(false); //경로 생성 여부를 저장할 변수
-  //현 위치로 설정 버튼을 눌렀을 때 현 위치의 위도와 경도를 저장할 변수
+
   useEffect(() => {
     if (makeRoute && webViewRef.current) {
       const routeMessage = `startRouteCreation();`;
