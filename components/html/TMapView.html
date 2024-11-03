@@ -66,8 +66,8 @@
             icon: "/assets/startPoint.png",
             map: map,
           });
-          startX = currentLocationPoint.getPosition().lng();
-          startY = currentLocationPoint.getPosition().lat();
+          startX = currentlng;
+          startY = latitude;
         } else if (routeStage === "setDestinationPoint") {
           if (endPoint) endPoint.setMap(null);
           endPoint = new Tmapv2.Marker({
@@ -76,6 +76,8 @@
             icon: "/assets/destinationPoint.png",
             map: map,
           });
+          endX = currentlng;
+          endY = currentlat;
         }
       }
 
