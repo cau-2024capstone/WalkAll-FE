@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { WebView } from "react-native-webview";
-import { View, PanResponder } from "react-native";
+import { View } from "react-native";
 import RouteHeader from "./RouteHeader";
 
 const TMapView = ({ latitude, longitude }) => {
@@ -23,14 +23,6 @@ const TMapView = ({ latitude, longitude }) => {
       setRouteStage("setDestinationPoint");
     }
   };
-
-  //스크롤 중인지 여부를 판단하는 함수
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => setIsScrolling(false),
-    onPanResponderMove: () => setIsScrolling(true),
-    onPanResponderRelease: () => setTimeout(() => setIsScrolling(false), 100),
-  });
 
   //현 위치로 설정 버튼을 눌렀을 때 현 위치의 위도와 경도를 가져오는 함수
   const handleCurrentLocation = () => {
@@ -120,7 +112,7 @@ const TMapView = ({ latitude, longitude }) => {
         onMakeRoute={() => setMakeRoute(!makeRoute)}
         onCurrentLocation={handleCurrentLocation}
       />
-      <View {...panResponder.panHandlers} style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <WebView
           ref={webViewRef}
           originWhitelist={["*"]}
