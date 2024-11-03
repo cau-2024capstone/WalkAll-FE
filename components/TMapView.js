@@ -5,7 +5,6 @@ import RouteHeader from "./RouteHeader";
 
 const TMapView = ({ latitude, longitude }) => {
   const webViewRef = useRef(null); // WebView 컴포넌트의 참조를 저장할 변수
-  const [isScrolling, setIsScrolling] = useState(false); // WebView가 스크롤 중인지 여부를 저장할 변수
   const [routeStage, setRouteStage] = useState("setStartingPoint"); //경로 설정 단계를 저장할 변수
   const [makeRoute, setMakeRoute] = useState(false); //경로 생성 여부를 저장할 변수
 
@@ -58,12 +57,10 @@ const TMapView = ({ latitude, longitude }) => {
         console.log("WebView Log:", data.message);
         break;
       case "location":
-        if (!isScrolling) {
-          lat = data.coordinates.lat;
-          lng = data.coordinates.lng;
-          const addMarkerMessage = `addMarker(${lat}, ${lng}, "${routeStage}");`;
-          webViewRef.current.injectJavaScript(addMarkerMessage);
-        }
+        lat = data.coordinates.lat;
+        lng = data.coordinates.lng;
+        const addMarkerMessage = `addMarker(${lat}, ${lng}, "${routeStage}");`;
+        webViewRef.current.injectJavaScript(addMarkerMessage);
         break;
       case "routeMakeData":
         const routeMakeDataTest = {
@@ -133,6 +130,7 @@ const TMapView = ({ latitude, longitude }) => {
           onMessage={handleMessage}
           allowUniversalAccessFromFileURLs={true} // Android용
           allowFileAccessFromFileURLs={true} // iOS용
+          nestedScrollEnabled={true}
         />
       </View>
     </>
