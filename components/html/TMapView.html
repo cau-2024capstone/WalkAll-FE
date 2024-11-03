@@ -67,7 +67,7 @@
             map: map,
           });
           startX = currentlng;
-          startY = latitude;
+          startY = currentlat;
         } else if (routeStage === "setDestinationPoint") {
           if (endPoint) endPoint.setMap(null);
           endPoint = new Tmapv2.Marker({
