@@ -2,15 +2,13 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import HistoryPage from '../pages/HistoryPage';
+import styles from "../styles/StyleGuide";
 
 const Tab = createBottomTabNavigator(); // 하단 탭 선언
 
 // Page 별 함수 생성
 function RoutePage() {
-    return null;
-}
-
-function HistoryPage() {
     return null;
 }
 

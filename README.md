@@ -14,4 +14,6 @@ $ expo start
 $ expo install expo-location
 $ expo install react-native-webview
 $ yarn add @react-navigation/bottom-tabs
+$ npx expo install expo-font
+$ npx expo install react-native-screens react-native-safe-area-context
 ```
