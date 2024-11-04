@@ -1,12 +1,13 @@
+import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import TMapView from "./components/TMapView.js";
+import BottomTabApp from "./components/TabBar.js";
 
-export default function App() {
+const App = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [title, setTitle] = useState("Starting Point");
 
   useEffect(() => {
     (async () => {
@@ -23,34 +24,44 @@ export default function App() {
     })();
   }, []);
 
-  if (location) {
-    const { latitude, longitude } = location.coords;
+  const renderContent = () => {
+    if (location) {
+      const { latitude, longitude } = location.coords;
+      return (
+        <View style={styles.container}>
+          <TMapView latitude={latitude} longitude={longitude} />
+        </View>
+      );
+    } else if (errorMsg) {
+      return (
+        <View style={styles.container}>
+          <Text>{errorMsg}</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={styles.loadingText}>지도 불러오는 중...</Text>
+        </View>
+      );
+    }
+  };
 
-    return (
-      <View style={styles.container}>
-        <TMapView latitude={latitude} longitude={longitude} />
-      </View>
-    );
-  } else if (errorMsg) {
-    return (
-      <View style={styles.container}>
-        <Text>{errorMsg}</Text>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.lodingText}>현재 위치를 불러오는 중...</Text>
-      </View>
-    );
-  }
-}
+  return (
+    <NavigationContainer>
+      {renderContent()}
+      <BottomTabApp />
+    </NavigationContainer>
+  );
+};
+
+export default App;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    flexDirection: "column",
     marginBottom: 100,
   },
   loading: {
@@ -58,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  lodingText: {
+  loadingText: {
     marginTop: 20,
   },
 });
