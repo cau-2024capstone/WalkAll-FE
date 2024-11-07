@@ -11,9 +11,9 @@ $ expo start
 ## 추가 설치한 모듈
 
 ```bash
-$ expo install expo-location
-$ expo install react-native-webview
-$ yarn add @react-navigation/bottom-tabs
+$ npx expo install expo-location
+$ npx expo install react-native-webview
+$ npx expo add @react-navigation/bottom-tabs
 $ npx expo install expo-font
 $ npx expo install react-native-screens react-native-safe-area-context
 ```

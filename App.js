@@ -3,19 +3,29 @@ import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { useFonts } from 'expo-font';
-import TMapView from "./components/TMapView.js";
-import BottomTabApp from "./components/TabBar.js";
+import * as SplashScreen from 'expo-splash-screen';
+import TMapView from "./src/main/components/TMapView.js";
+import BottomTabApp from "./src/main/components/TabBar.js";
+
+
+SplashScreen.preventAutoHideAsync();
 
 const App = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  // 폰트 로드 설정
-  const [fontsLoaded] = useFonts({
-    'NotoSansKR-Regular': require('./assets/fonts/NotoSansKR-Regular.ttf'),
-    'NotoSansKR-Medium': require('./assets/fonts/NotoSansKR-Medium.ttf'),
-    'NotoSansKR-Bold': require('./assets/fonts/NotoSansKR-Bold.ttf'),
+
+  const [fontsLoaded, error] = useFonts({
+    'NotoSansKR-Regular': require("./src/main/assets/fonts/NotoSansKR-Regular.ttf"),
+    'NotoSansKR-Medium': require("./src/main/assets/fonts/NotoSansKR-Medium.ttf"),
+    'NotoSansKR-Bold': require("./src/main/assets/fonts/NotoSansKR-Bold.ttf"),
+
   });
+  useEffect(() => {
+    if (fontsLoaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, error]);
 
   useEffect(() => {
     (async () => {
@@ -31,6 +41,10 @@ const App = () => {
       setLocation(currentLocation);
     })();
   }, []);
+
+  if (!fontsLoaded && !error) {
+    return null;
+  }
 
   const renderContent = () => {
     if (location) {

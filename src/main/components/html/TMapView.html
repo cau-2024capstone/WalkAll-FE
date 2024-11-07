@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>TMap Example</title>
+  <script
+    src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=P4s73F9IVz7sHlNhyg3RC9PwWamafSQb1Zy0g4cy"></script>
+  <style>
+    html,
+    body,
+    #map_div {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map_div"></div>
+  <div id="info">경로 정보가 여기에 표시됩니다.<br /></div>
+  <script>
+    //X값은 경도, Y값은 위도 (longitude, latitude)
+    let currentLocationPoint;
+    let startPoint;
+    let stopoverPoints = [];
+    let startX, startY, endX, endY, currentlat, currentlng;
+    let endPoint;
+    let map;
+    let passList = "";
+
+    function initTmap(latitude, longitude) {
+      map = new Tmapv2.Map("map_div", {
+        center: new Tmapv2.LatLng(latitude, longitude),
+        width: "100%",
+        height: "100%",
+        zoom: 19,
+      });
+      currentlng = longitude;
+      currentlat = latitude;
+      currentLocationPoint = new Tmapv2.Marker({
+        position: new Tmapv2.LatLng(latitude, longitude),
+        icon: "./src/main/assets/images/userPing.png",
+        iconSize: new Tmapv2.Size(100, 100),
+        map: map,
+      });
+
+      let touchStartTime;
+      const touchThreshold = 200; // 터치와 스크롤을 구분하기 위한 시간 임계값 (ms)
+
+      // 터치 시작 이벤트 리스너
+      map.addListener("touchstart", function (evt) {
+        touchStartTime = new Date().getTime(); // 터치 시작 시간 기록
+        logMessage("Touch start at " + touchStartTime);
+      });
+
+      // 터치 종료 이벤트 리스너
+      map.addListener("touchend", function (evt) {
+        const touchEndTime = new Date().getTime(); // 터치 종료 시간
+        const touchDuration = touchEndTime - touchStartTime; // 터치 지속 시간 계산
+
+        if (touchDuration < touchThreshold) {
+          // 터치가 짧은 시간 안에 완료되었을 때만 핑 생성
+
+          const lat = evt.latLng.lat();
+          const lng = evt.latLng.lng();
+          const coordinates = { lat, lng };
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({ type: "location", coordinates })
+          );
+        }
+      });
+    }
+
+    function setPingToCurrentLocation(routeStage) {
+      logMessage("현재 위치로 이동합.");
+      if (routeStage === "setStartingPoint") {
+        logMessage("출발지로 이동합니다.");
+        if (startPoint) startPoint.setMap(null);
+        startPoint = new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(currentlat, currentlng),
+          iconSize: new Tmapv2.Size(100, 100),
+          icon: "./src/main/assets/images/startPoint.png",
+          map: map,
+        });
+        startX = currentlng;
+        startY = currentlat;
+      } else if (routeStage === "setDestinationPoint") {
+        if (endPoint) endPoint.setMap(null);
+        endPoint = new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(currentlat, currentlng),
+          iconSize: new Tmapv2.Size(100, 100),
+          icon: "./src/main/assets/images/destinationPoint.png",
+          map: map,
+        });
+        endX = currentlng;
+        endY = currentlat;
+      }
+    }
+
+    function addMarker(lat, lng, routeStage) {
+      if (routeStage === "setStartingPoint") {
+        if (startPoint) startPoint.setMap(null);
+        startPoint = new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(lat, lng),
+          iconSize: new Tmapv2.Size(100, 100),
+          icon: "./src/main/assets/images/startPoint.png",
+          map: map,
+        });
+        startX = lng;
+        startY = lat;
+      } else if (routeStage === "setStopoverPoint") {
+        const stopoverPoint = new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(lat, lng),
+          iconSize: new Tmapv2.Size(100, 100),
+          icon: "./src/main/assets/images/stopoverPoint.png",
+          map: map,
+        });
+        stopoverPoints.push(stopoverPoint);
+        passList += (passList ? "_" : "") + lng + "," + lat;
+      } else if (routeStage === "setDestinationPoint") {
+        if (endPoint) endPoint.setMap(null);
+        endPoint = new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(lat, lng),
+          iconSize: new Tmapv2.Size(100, 100),
+          icon: "./src/main/assets/images/destinationPoint.png",
+          map: map,
+        });
+        endX = lng;
+        endY = lat;
+      }
+    }
+
+    function logMessage(message) {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "log", message: message })
+      );
+    }
+
+    // 다중 경로 요청 함수
+    function startRouteCreation() {
+      logMessage("경로 생성을 시작합니다.");
+      const searchOptions = [0, 10, 4]; // 추천, 최단, 대로 우선
+      searchOptions.forEach((option, index) => {
+        const data = JSON.stringify({
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY,
+          passList: passList, // 경유지 리스트 추가
+          reqCoordType: "WGS84GEO",
+          resCoordType: "WGS84GEO",
+          searchOption: option, // 어떤 타입의 경로
+          startName: "출발지",
+          endName: "도착지",
+        });
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({
+            type: "routeMakeData",
+            routeMakeData: data,
+            index: index,
+          })
+        );
+      });
+    }
+
+    // 경로 표시 함수
+    function displayRoute(features, routeIndex) {
+      if (!map) {
+        console.error("Map 객체가 정의되지 않았습니다.");
+        return;
+      }
+
+      const properties = features[0].properties;
+      const totalDistance = (properties.totalDistance / 1000).toFixed(2);
+      const totalTime = Math.ceil(properties.totalTime / 60);
+
+      const colors = ["#FF0000", "#0000FF", "#00FF00"];
+      const roadType = ["1", "2", "3"];
+
+      const infoDiv = document.getElementById("info");
+      infoDiv.innerHTML += `경로 ${roadType[routeIndex]} - 총 거리: ${totalDistance} km, 총 시간: ${totalTime} 분<br>`;
+
+      features.forEach(function (feature) {
+        if (feature.geometry.type === "LineString") {
+          const path = feature.geometry.coordinates.map(
+            (coord) => new Tmapv2.LatLng(coord[1], coord[0])
+          );
+          var polyline = new Tmapv2.Polyline({
+            path: path,
+            strokeColor: colors[routeIndex],
+            strokeWeight: 6,
+            map: map,
+          });
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
