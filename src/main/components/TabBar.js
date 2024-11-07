@@ -1,16 +1,15 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
 import { Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import HistoryPage from '../pages/HistoryPage';
+import HistoryScreen from '../screens/HistoryScreen';
+import RouteScreen from './TMapView'
 import styles from "../styles/StyleGuide";
 
 const Tab = createBottomTabNavigator(); // 하단 탭 선언
 
 // Page 별 함수 생성
-function RoutePage() {
-    return null;
-}
 
 function MyPage() {
     return null;
@@ -25,18 +24,19 @@ function BottomTabApp() {
 
             <Tab.Screen
                 name="History"
-                component={HistoryPage}
+                component={HistoryScreen}
                 options={{
                     title: '히스토리',
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="history" color={color} size={size} />
                     ),
+                    headerShown: false, // 상단 제목 숨기기
                 }}
             />
 
             <Tab.Screen
                 name="Route"
-                component={RoutePage}
+                component={RouteScreen}
                 options={{
                     title: '경로생성',
                     tabBarIcon: ({ color, size }) => (
