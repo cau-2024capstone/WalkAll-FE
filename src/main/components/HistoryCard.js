@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import styles from "../styles/StyleGuide"; // StyleGuide 임포트
+import rootStyles from "../styles/StyleGuide"; // StyleGuide 임포트
 
 function HistoryCard({ title, date, distance }) {
     return (
@@ -27,7 +27,7 @@ const localStyles = StyleSheet.create({
         flexShrink: 0,
         height: 251,
         width: 360,
-        backgroundColor: styles.colors.white, // StyleGuide 색상 사용
+        backgroundColor: rootStyles.colors.white, // StyleGuide 색상 사용
         flexDirection: "column",
         alignItems: "flex-start",
     },
@@ -43,12 +43,12 @@ const localStyles = StyleSheet.create({
         justifyContent: "center",
         padding: 10,
         borderWidth: 1,
-        borderColor: styles.colors.green5, // StyleGuide 색상 사용
+        borderColor: rootStyles.colors.green5, // StyleGuide 색상 사용
         borderRadius: 4,
     },
     routeText: {
-        ...styles.fontStyles.subTitle,
-        color: styles.colors.green6,
+        ...rootStyles.fontStyles.subTitle,
+        color: rootStyles.colors.green6,
         textAlign: "center",
     },
     routeImage: {
@@ -58,13 +58,13 @@ const localStyles = StyleSheet.create({
         height: 114,
         left: 19,
         width: 320,
-        backgroundColor: styles.colors.gray2, // StyleGuide 색상 사용
+        backgroundColor: rootStyles.colors.gray2, // StyleGuide 색상 사용
         flexDirection: "column",
         alignItems: "flex-start",
     },
     date: {
-        ...styles.fontStyles.text,
-        color: styles.colors.gray5,
+        ...rootStyles.fontStyles.text,
+        color: rootStyles.colors.gray5,
     },
     frame45: {
         position: "absolute",
@@ -76,11 +76,11 @@ const localStyles = StyleSheet.create({
         flexDirection: "row",
     },
     labelContainer: {
-        backgroundColor: styles.colors.green1,
+        backgroundColor: rootStyles.colors.green1,
     },
     labelText: {
-        ...styles.fontStyles.instruction,
-        color: styles.colors.green5,
+        ...rootStyles.fontStyles.instruction,
+        color: rootStyles.colors.green5,
     },
 });
 

@@ -40,27 +40,27 @@ const fontStyles = {
         fontSize: 24,
         //fontWeight: '700',
         letterSpacing: 0,
-        lineHeight: 'normal',
+        //lineHeight: 'normal',
     },
     subTitle: {
         fontFamily: 'NotoSansKR-Medium',
         fontSize: 16,
         //fontWeight: '500',
         letterSpacing: 0,
-        lineHeight: 'normal',
+        //lineHeight: 'normal',
     },
     text: {
         fontFamily: 'NotoSansKR-Regular',
         fontSize: 12,
         //fontWeight: '400',
         letterSpacing: 0,
-        lineHeight: 'normal',
+        //lineHeight: 'normal',
     },
 };
 
-const styles = StyleSheet.create({
+const rootStyles = StyleSheet.create({
     colors,
     fontStyles,
 });
 
-export default styles;
+export default rootStyles;

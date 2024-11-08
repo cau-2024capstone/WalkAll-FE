@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import HistoryScreen from '../screens/HistoryScreen';
-import RouteScreen from './TMapView'
-import styles from "../styles/StyleGuide";
+import RouteScreen from '../screens/RouteScreen';
+import rootStyles from "../styles/StyleGuide";
 
 const Tab = createBottomTabNavigator(); // 하단 탭 선언
 
