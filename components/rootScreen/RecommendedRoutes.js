@@ -96,16 +96,17 @@ const RecommendedRoutes = ({ navigation, route }) => {
           }}
           pointerEvents="none"
         >
-          <Polyline
-            coordinates={item.roads
-              .map((road) => [
+          {item.roads.map((road, index) => (
+            <Polyline
+              key={index}
+              coordinates={[
                 { latitude: road.startLat, longitude: road.startLng },
                 { latitude: road.endLat, longitude: road.endLng },
-              ])
-              .flat()}
-            strokeColor="#FF0000"
-            strokeWidth={2}
-          />
+              ]}
+              strokeColor="#FF0000"
+              strokeWidth={2}
+            />
+          ))}
           {startMarker && <Marker coordinate={startMarker} pinColor="green" />}
           {waypoints &&
             waypoints.map((wp, index) => (
