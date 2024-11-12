@@ -13,61 +13,59 @@ const RecommendedRoutes = ({ navigation, route }) => {
   const { startMarker, waypoints, destinationMarker } = route.params;
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [routes, setRoutes] = useState([]);
-  useEffect(() => {
-    setRoutes(result);
-  }, []);
-
   // useEffect(() => {
-  //   // 추천 경로 API 호출
-  //   const fetchRoutes = async () => {
-  //     try {
-  //       console.log("try문 실행했습니다.");
-
-  //       // 테스트 중인 경로 설정
-  //       /*const routeRequest = {
-  //         startLat: startMarker.latitude,
-  //         startLng: startMarker.longitude,
-  //         endLat: destinationMarker.latitude,
-  //         endLng: destinationMarker.longitude,
-  //       };*/
-
-  //       const routeRequest = {
-  //         startLat: 37.504459338426,
-  //         startLng: 126.9570086044993,
-  //         endLat: 37.5048806440909,
-  //         endLng: 126.95534563491,
-  //       };
-
-  //       const response = await fetch(
-  //         "http://192.168.45.144:8082/api/route/generate",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify(routeRequest),
-  //         }
-  //       );
-  //       console.log("211231241124.");
-
-  //       if (!response.ok) {
-  //         throw new Error("네트워크 응답이 실패했습니다.");
-  //       }
-
-  //       const data = await response.json();
-
-  //       setRoutes(data);
-  //     } catch (error) {
-  //       console.error("추천 경로 생성 오류:", error);
-  //       Alert.alert("추천 경로를 생성하는 데 실패했습니다.");
-  //     }
-  //   };
-
-  //   fetchRoutes();
-
-  //   // 기존의 backendTest.js 사용 부분 주석 처리
-  //   //
+  //   setRoutes(result);
   // }, []);
+
+  useEffect(() => {
+    // 추천 경로 API 호출
+    const fetchRoutes = async () => {
+      try {
+        console.log("try문 실행했습니다.");
+
+        // 테스트 중인 경로 설정
+        /*const routeRequest = {
+          startLat: startMarker.latitude,
+          startLng: startMarker.longitude,
+          endLat: destinationMarker.latitude,
+          endLng: destinationMarker.longitude,
+        };*/
+
+        const routeRequest = {
+          startLat: 37.504459338426,
+          startLng: 126.9570086044993,
+          endLat: 37.5048806440909,
+          endLng: 126.95534563491,
+        };
+
+        const response = await fetch(
+          "http://192.168.0.77:8082/api/route/generate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(routeRequest),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("네트워크 응답이 실패했습니다.");
+        }
+
+        const data = await response.json();
+        //console.log("data:", JSON.stringify(data, null, 2));
+
+        setRoutes(data);
+      } catch (error) {
+        console.error("추천 경로 생성 오류:", error);
+        Alert.alert("추천 경로를 생성하는 데 실패했습니다.");
+      }
+    };
+
+    fetchRoutes();
+    //
+  }, []);
 
   // 나머지 코드 동일
   const calculateCenter = (points) => {
