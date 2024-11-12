@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "capstone-FE",
-    "slug": "capstone-FE",
+    "name": "capstone-Local",
+    "slug": "capstone-Local",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/main/assets/images/icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/main/assets/images/splash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,24 +16,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/main/assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./src/main/assets/images/favicon.png"
-    },
-    "plugins": [
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "./src/main/assets/fonts/NotoSansKR-Regular.ttf",
-            "./src/main/assets/fonts/NotoSansKR-Medium.ttf",
-            "./src/main/assets/fonts/NotoSansKR-Bold.ttf"
-          ]
-        }
-      ]
-    ]
+      "favicon": "./assets/favicon.png"
+    }
   }
 }
