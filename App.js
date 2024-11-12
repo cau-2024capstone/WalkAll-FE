@@ -1,13 +1,31 @@
-// App.js
+import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import * as Location from "expo-location";
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import BottomTabApp from "./src/main/components/TabBar.js";
 
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import BottomTabNavigator from "./components/rootScreen/BottomTabNavigator";
+SplashScreen.preventAutoHideAsync();
 
-export default function App() {
+const App = () => {
+  const [fontsLoaded, error] = useFonts({
+    'NotoSansKR-Regular': require("./src/main/assets/fonts/NotoSansKR-Regular.ttf"),
+    'NotoSansKR-Medium': require("./src/main/assets/fonts/NotoSansKR-Medium.ttf"),
+    'NotoSansKR-Bold': require("./src/main/assets/fonts/NotoSansKR-Bold.ttf"),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, error]);
+
   return (
     <NavigationContainer>
       <BottomTabNavigator />
     </NavigationContainer>
   );
-}
+};
+
+export default App;
