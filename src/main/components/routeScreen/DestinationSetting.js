@@ -1,4 +1,3 @@
-// DestinationSetting.js
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";

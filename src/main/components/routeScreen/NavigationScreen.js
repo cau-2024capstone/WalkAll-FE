@@ -1,4 +1,3 @@
-// components/rootScreen/NavigationScreen.js
 import React from "react";
 import { Text, StyleSheet, ScrollView } from "react-native";
 

@@ -7,7 +7,7 @@ import {
   FlatList,
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { result } from "../rootScreen/backendTest";
+import { result } from "./backendTest";
 
 const RecommendedRoutes = ({ navigation, route }) => {
   const { startMarker, waypoints, destinationMarker } = route.params;

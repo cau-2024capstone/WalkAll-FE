@@ -4,13 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import HistoryScreen from '../screens/HistoryScreen';
-import { createStackNavigator } from "@react-navigation/stack";
-import StartPointSelection from "../components/routeScreen/StartPointSelection";
-import WaypointSetting from "../components/routeScreen/WaypointSetting";
-
-import DestinationSetting from "../components/routeScreen/DestinationSetting";
-import RecommendedRoutes from "../components/routeScreen/RecommendedRoutes";
-import NavigationScreen from "../components/routeScreen/NavigationScreen";
+import RouteScreen from '../screens/RouteScreen';
 import rootStyles from "../styles/StyleGuide";
 
 const Tab = createBottomTabNavigator(); // 하단 탭 선언
@@ -21,29 +15,6 @@ function MyPage() {
     return null;
 }
 
-const RouteStack = createStackNavigator();
-
-// 경로 생성 스택 네비게이터
-function RouteStackScreen() {
-    return (
-        <RouteStack.Navigator screenOptions={{ headerShown: false }}>
-            <RouteStack.Screen
-                name="StartPointSelection"
-                component={StartPointSelection}
-            />
-            <RouteStack.Screen name="WaypointSetting" component={WaypointSetting} />
-            <RouteStack.Screen
-                name="DestinationSetting"
-                component={DestinationSetting}
-            />
-            <RouteStack.Screen
-                name="RecommendedRoutes"
-                component={RecommendedRoutes}
-            />
-            <RouteStack.Screen name="NavigationScreen" component={NavigationScreen} />
-        </RouteStack.Navigator>
-    );
-}
 
 // 하단 탭 네비게이터 컴포넌트 (순서 : 히스토리 -> 경로생성 -> 마이페이지)
 function BottomTabApp() {
@@ -66,7 +37,7 @@ function BottomTabApp() {
 
             <Tab.Screen
                 name="Route"
-                component={RouteStackScreen} // 변경된 부분
+                component={RouteScreen}
                 options={{
                     title: "경로생성",
                     tabBarIcon: ({ color, size }) => (
