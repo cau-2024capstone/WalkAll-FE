@@ -23,7 +23,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <BottomTabNavigator />
+      <BottomTabApp />
     </NavigationContainer>
   );
 };
