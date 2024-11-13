@@ -1,5 +1,5 @@
 {
-  "name": "capstone-local",
+  "name": "capstone-fe",
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "react-native-webview": "13.8.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@react-native-community/cli": "latest"
   },
   "private": true
 }
