@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import useFetchSearch from './UseFetchSearchHook'; // 모의 데이터를 반환하는 커스텀 훅
+import useFetchSearch from './UseFetchSearchHook'; //나중에 삭제 필요
 import rootStyles from "../../styles/StyleGuide";
 import { Svg, Path } from 'react-native-svg';
 

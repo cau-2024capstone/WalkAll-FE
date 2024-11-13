@@ -12,9 +12,8 @@ const useFetchSearch = (keyword) => {
             setIsLoading(true);
             setIsError(false);
 
-            // 실제 요청 대신 모의 데이터를 사용
+            // 실제 요청 대신 모의 데이터사용
             try {
-                // 모의 데이터 (예시)
                 const mockData = {
                     results: [
                         { id: 1, name: "Sample Place 1", description: "This is a sample description for Place 1" },
@@ -23,7 +22,7 @@ const useFetchSearch = (keyword) => {
                     ]
                 };
 
-                // 네트워크 지연을 시뮬레이션 (옵션)
+                // 네트워크 지연을 시뮬레이션
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
                 // 모의 데이터를 실제 API 응답처럼 설정
