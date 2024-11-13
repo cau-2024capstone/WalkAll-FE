@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import rootStyles from "../styles/StyleGuide"; // StyleGuide 임포트
+import rootStyles from "../../styles/StyleGuide"; // StyleGuide 임포트
 
 function HistoryCard({ title, date, distance }) {
     return (
