@@ -1,87 +1,89 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import rootStyles from "../../styles/StyleGuide"; // StyleGuide 임포트
+import rootStyles from '../../styles/StyleGuide';
 
-function HistoryCard({ title, date, distance }) {
+function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
     return (
-        <View style={localStyles.frame31Container}>
-            <View style={localStyles.frame32}>
-                <Text style={localStyles.routeText}>{title}</Text>
-            </View>
-            <View style={localStyles.routeImage} />
+        <View style={localStyles.frame39Container}>
             <Text style={localStyles.date}>{date}</Text>
-            <View style={localStyles.frame45}>
-                {["출발지", "도착지", "총거리", `거리: ${distance} km`, "실소요시간"].map((label, index) => (
-                    <View key={index} style={localStyles.labelContainer}>
-                        <Text style={localStyles.labelText}>{label}</Text>
-                    </View>
-                ))}
+            <View style={localStyles.frame49}>
+                <Text style={localStyles.출발지}>{start}</Text>
+                <Text style={localStyles.도착지}>{end}</Text>
+                <Text style={localStyles.실소요시간}>{duration}</Text>
+                <Text style={localStyles.현위치로부터거리}>{`${distance} km`}</Text>
+                <Text style={localStyles.총거리}>{totalDistance}</Text>
             </View>
         </View>
     );
 }
 
+export default HistoryCard;
+
 const localStyles = StyleSheet.create({
-    frame31Container: {
+    frame39Container: {
         position: "relative",
         flexShrink: 0,
-        height: 251,
-        width: 360,
-        backgroundColor: rootStyles.colors.white, // StyleGuide 색상 사용
+        height: 266,
+        width: 382,
+        backgroundColor: "rgba(254, 254, 254, 1)",
+        display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-    },
-    frame32: {
-        position: "absolute",
-        flexShrink: 0,
-        top: 185,
-        height: 46,
-        left: 19,
-        width: 322,
-        borderStyle: "solid",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 10,
-        borderWidth: 1,
-        borderColor: rootStyles.colors.green5, // StyleGuide 색상 사용
-        borderRadius: 4,
-    },
-    routeText: {
-        ...rootStyles.fontStyles.subTitle,
-        color: rootStyles.colors.green6,
-        textAlign: "center",
-    },
-    routeImage: {
-        position: "absolute",
-        flexShrink: 0,
-        top: 34,
-        height: 114,
-        left: 19,
-        width: 320,
-        backgroundColor: rootStyles.colors.gray2, // StyleGuide 색상 사용
-        flexDirection: "column",
-        alignItems: "flex-start",
+        rowGap: 0
     },
     date: {
         ...rootStyles.fontStyles.text,
-        color: rootStyles.colors.gray5,
-    },
-    frame45: {
         position: "absolute",
         flexShrink: 0,
-        top: 155,
-        left: 19,
-        width: 243,
+        top: 13,
+        left: 13,
+        textAlign: "left",
+        color: "rgba(112, 112, 112, 1)",
+    },
+    frame49: {
+        marginTop: 36,
+        display: "flex",
         alignItems: "center",
-        flexDirection: "row",
+        rowGap: 5
     },
-    labelContainer: {
-        backgroundColor: rootStyles.colors.green1,
-    },
-    labelText: {
+    출발지: {
         ...rootStyles.fontStyles.instruction,
-        color: rootStyles.colors.green5,
+        backgroundColor: "rgba(223, 247, 202, 1)",
+        textAlign: "center",
+        color: "rgba(74, 143, 62, 1)",
+        padding: 5,
+        borderRadius: 15
     },
+    도착지: {
+        ...rootStyles.fontStyles.instruction,
+        backgroundColor: "rgba(223, 247, 202, 1)",
+        textAlign: "center",
+        color: "rgba(74, 143, 62, 1)",
+        padding: 5,
+        borderRadius: 15
+    },
+    실소요시간: {
+        ...rootStyles.fontStyles.instruction,
+        backgroundColor: "rgba(223, 247, 202, 1)",
+        textAlign: "center",
+        color: "rgba(74, 143, 62, 1)",
+        padding: 5,
+        borderRadius: 15
+    },
+    현위치로부터거리: {
+        ...rootStyles.fontStyles.instruction,
+        backgroundColor: "rgba(223, 247, 202, 1)",
+        textAlign: "center",
+        color: "rgba(74, 143, 62, 1)",
+        padding: 5,
+        borderRadius: 15
+    },
+    총거리: {
+        ...rootStyles.fontStyles.instruction,
+        backgroundColor: "rgba(223, 247, 202, 1)",
+        textAlign: "center",
+        color: "rgba(74, 143, 62, 1)",
+        padding: 5,
+        borderRadius: 15
+    }
 });
-
-export default HistoryCard;

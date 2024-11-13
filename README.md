@@ -25,4 +25,5 @@ npm install expo@~51.0.39
 npm install expo-splash-screen@~0.27.7
 npm install react-native-maps@1.14.0
 npm install react-native-screens@3.31.1
+npm install react-native-svg@15.2.0
 ```

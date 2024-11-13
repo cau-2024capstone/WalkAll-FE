@@ -2,12 +2,15 @@ import { React, useState, useFetchSearch } from 'react';
 import { View, Text, StyleSheet, Image, TextInput } from 'react-native';
 import rootStyles from "../styles/StyleGuide";
 import HistorySearch from '../components/historyScreen/HistorySearch';
+import HistoryCardArea from '../components/historyScreen/HistoryCardArea';
+
 
 function HistoryScreen() {
 
     return (
         <View style={localStyles.container}>
             <HistorySearch />
+            <HistoryCardArea />
         </View >
     );
 }
