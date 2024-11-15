@@ -33,7 +33,7 @@ const fontStyles = {
         fontSize: 10,
         //fontWeight: '400',
         letterSpacing: 0,
-        lineHeight: 'normal',
+        //lineHeight: 'normal',
     },
     mainTitle: {
         fontFamily: 'NotoSansKR-Bold',
