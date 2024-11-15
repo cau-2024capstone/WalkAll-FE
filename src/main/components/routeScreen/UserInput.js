@@ -11,6 +11,7 @@ import { useState } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const UserInput = ({ navigation, route }) => {
+  const { startMarker, waypoints, destinationMarker } = route.params;
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -21,26 +22,6 @@ const UserInput = ({ navigation, route }) => {
 
   // 입력값 상태 관리
   const [inputValue, setInputValue] = useState("");
-
-  // 테스트용 좌표 데이터
-  const startMarker = {
-    latitude: parseFloat("37.5047900669357"),
-    longitude: parseFloat("126.9588590557165"),
-  };
-  const waypoints = [
-    {
-      latitude: parseFloat("37.5044496176849"),
-      longitude: parseFloat("126.9573409254141"),
-    },
-    {
-      latitude: parseFloat("37.5037048795363"),
-      longitude: parseFloat("126.9597119981833"),
-    },
-  ];
-  const destinationMarker = {
-    latitude: parseFloat("37.5041815128072"),
-    longitude: parseFloat("126.9585318262167"),
-  };
 
   const generateRoutes = () => {
     navigation.navigate("RecommendedRoutes", {
