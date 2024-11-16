@@ -19,7 +19,6 @@ const RecommendedRoutes = ({ navigation, route }) => {
     setRoutes(result);
   }, []);
 
-
   /*
   //백엔드 테스트 코드
     useEffect(() => {
@@ -97,6 +96,10 @@ const RecommendedRoutes = ({ navigation, route }) => {
             latitudeDelta: 0.002,
             longitudeDelta: 0.002,
           }}
+          c
+          scrollEnabled={false}
+          zoomEnabled={false}
+          rotateEnabled={false}
           pointerEvents="none"
         >
           {item.roads.map((road, index) => (

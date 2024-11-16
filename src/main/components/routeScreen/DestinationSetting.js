@@ -24,9 +24,9 @@ const DestinationSetting = ({ navigation, route }) => {
     });
   };
 
-  const generateRoutes = () => {
+  const proceedToUserInput = () => {
     if (destinationMarker) {
-      navigation.navigate("RecommendedRoutes", {
+      navigation.navigate("UserInput", {
         startMarker,
         waypoints,
         destinationMarker,
@@ -38,7 +38,7 @@ const DestinationSetting = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>목적지를 선택해주세요</Text>
+      <Text style={styles.title}>목적지를 선택해주세요!</Text>
       <MapView
         style={styles.map}
         region={region}
@@ -57,8 +57,8 @@ const DestinationSetting = ({ navigation, route }) => {
         <TouchableOpacity style={styles.button} onPress={setCurrentLocation}>
           <Text style={styles.buttonText}>현재위치로 설정</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={generateRoutes}>
-          <Text style={styles.buttonText}>추천 경로 생성</Text>
+        <TouchableOpacity style={styles.button} onPress={proceedToUserInput}>
+          <Text style={styles.buttonText}>도착지 설정 완료</Text>
         </TouchableOpacity>
       </View>
     </View>
