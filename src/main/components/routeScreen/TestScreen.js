@@ -13,13 +13,29 @@ const TestScreen = ({ selectedRoute }) => {
   const [lastOffRoutePoint, setLastOffRoutePoint] = useState(null);
   const [passedRoutePoints, setPassedRoutePoints] = useState([]);
   const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false);
+  const [temporaryPin, setTemporaryPin] = useState(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
     const points = generateRoutePoints(selectedRoute.points);
     setRoutePoints(points);
     setLastOnRoutePoint(points[0]);
+    addAndRemoveTemporaryPin();
   }, []);
+
+  const addAndRemoveTemporaryPin = () => {
+    // 지도에 보이지 않는 영역에 임시 핀 추가
+    const tempCoordinate = {
+      latitude: 30, // 지도 밖 임의 위치
+      longitude: 120,
+    };
+    setTemporaryPin(tempCoordinate);
+
+    // 100ms 후 임시 핀 삭제
+    setTimeout(() => {
+      setTemporaryPin(null);
+    }, 50);
+  };
 
   const generateRoutePoints = (points) => {
     let routePoints = [];
@@ -60,6 +76,7 @@ const TestScreen = ({ selectedRoute }) => {
       const newLocation = { latitude, longitude };
       setUserLocation(newLocation);
       checkUserLocation(newLocation);
+      addAndRemoveTemporaryPin();
     }
   };
 
@@ -232,7 +249,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    top: 10,
+    top: 50,
     left: 10,
   },
   button: {

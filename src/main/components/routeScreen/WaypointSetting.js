@@ -5,6 +5,7 @@ import MapView, { Marker } from "react-native-maps";
 const WaypointSetting = ({ navigation, route }) => {
   const { startMarker } = route.params;
   const [waypoints, setWaypoints] = useState([]);
+  const [temporaryPin, setTemporaryPin] = useState(null); // 임시 핀 상태
   const proximityThreshold = 0.0001; // 거리 임계값, 지도 확대 수준에 따라 조정 가능
 
   const handleMapPress = (e) => {
@@ -27,6 +28,9 @@ const WaypointSetting = ({ navigation, route }) => {
         return;
       }
       setWaypoints([...waypoints, coordinate]);
+
+      // 임시 핀 추가/삭제 함수 호출
+      addAndRemoveTemporaryPin();
     }
   };
 
@@ -36,6 +40,20 @@ const WaypointSetting = ({ navigation, route }) => {
 
   const proceedToDestination = () => {
     navigation.navigate("DestinationSetting", { startMarker, waypoints });
+  };
+
+  const addAndRemoveTemporaryPin = () => {
+    // 지도에 보이지 않는 영역에 임시 핀 추가
+    const tempCoordinate = {
+      latitude: startMarker.latitude + 0.01, // 지도 밖 임의 위치
+      longitude: startMarker.longitude + 0.01,
+    };
+    setTemporaryPin(tempCoordinate);
+
+    // 100ms 후 임시 핀 삭제
+    setTimeout(() => {
+      setTemporaryPin(null);
+    }, 50);
   };
 
   return (
@@ -61,6 +79,12 @@ const WaypointSetting = ({ navigation, route }) => {
             onPress={() => handleWaypointPress(wp)}
           />
         ))}
+        {temporaryPin && (
+          <Marker
+            coordinate={temporaryPin}
+            pinColor="transparent" // 지도에 표시되지 않도록 설정
+          />
+        )}
       </MapView>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={proceedToDestination}>

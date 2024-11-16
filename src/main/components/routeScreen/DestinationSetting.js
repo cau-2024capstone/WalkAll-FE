@@ -5,6 +5,7 @@ import MapView, { Marker } from "react-native-maps";
 const DestinationSetting = ({ navigation, route }) => {
   const { startMarker, waypoints } = route.params;
   const [destinationMarker, setDestinationMarker] = useState(null);
+  const [temporaryPin, setTemporaryPin] = useState(null);
   const region = {
     latitude: startMarker.latitude,
     longitude: startMarker.longitude,
@@ -12,8 +13,23 @@ const DestinationSetting = ({ navigation, route }) => {
     longitudeDelta: 0.002,
   };
 
+  const addAndRemoveTemporaryPin = () => {
+    // 지도에 보이지 않는 영역에 임시 핀 추가
+    const tempCoordinate = {
+      latitude: 30, // 지도 밖 임의 위치
+      longitude: 120,
+    };
+    setTemporaryPin(tempCoordinate);
+
+    // 100ms 후 임시 핀 삭제
+    setTimeout(() => {
+      setTemporaryPin(null);
+    }, 50);
+  };
+
   const handleMapPress = (e) => {
     setDestinationMarker(e.nativeEvent.coordinate);
+    addAndRemoveTemporaryPin();
   };
 
   const setCurrentLocation = () => {

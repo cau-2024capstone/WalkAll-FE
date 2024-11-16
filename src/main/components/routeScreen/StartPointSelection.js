@@ -15,6 +15,7 @@ const StartPointSelection = ({ navigation }) => {
   const [startMarker, setStartMarker] = useState(null);
   const [region, setRegion] = useState(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
+  const [temporaryPin, setTemporaryPin] = useState(null); // 임시 핀 상태
 
   useEffect(() => {
     (async () => {
@@ -48,6 +49,7 @@ const StartPointSelection = ({ navigation }) => {
 
   const handleMapPress = (e) => {
     setStartMarker(e.nativeEvent.coordinate);
+    addAndRemoveTemporaryPin();
   };
 
   const setCurrentLocation = () => {
@@ -57,6 +59,20 @@ const StartPointSelection = ({ navigation }) => {
         longitude: region.longitude,
       });
     }
+  };
+
+  const addAndRemoveTemporaryPin = () => {
+    // 지도에 보이지 않는 영역에 임시 핀 추가
+    const tempCoordinate = {
+      latitude: 30, // 지도 밖 임의 위치
+      longitude: 120,
+    };
+    setTemporaryPin(tempCoordinate);
+
+    // 100ms 후 임시 핀 삭제
+    setTimeout(() => {
+      setTemporaryPin(null);
+    }, 50);
   };
 
   const proceedToWaypoints = () => {

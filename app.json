@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "capstone-FE",
     "slug": "capstone-FE",
     "version": "1.0.0",
