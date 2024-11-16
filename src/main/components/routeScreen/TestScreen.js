@@ -5,25 +5,26 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import MapView, { Polyline, Marker } from "react-native-maps";
 
 const TestScreen = ({ selectedRoute }) => {
-  const [isSetUserLocationActive, setIsSetUserLocationActive] = useState(false);
-  const [isMoveMapActive, setIsMoveMapActive] = useState(false);
-  const [userLocation, setUserLocation] = useState(null);
-  const [routePoints, setRoutePoints] = useState([]);
-  const [deviatedEdges, setDeviatedEdges] = useState([]);
-  const [isOffRoute, setIsOffRoute] = useState(false);
-  const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null);
-  const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false);
-  const mapRef = useRef(null);
+  const [isSetUserLocationActive, setIsSetUserLocationActive] = useState(false); // 사용자 위치 설정 버튼 활성화 여부
+  const [isMoveMapActive, setIsMoveMapActive] = useState(false); // 지도 움직이기 버튼 활성화 여부
+  const [userLocation, setUserLocation] = useState(null); // 사용자 위치
+  const [routePoints, setRoutePoints] = useState([]); //추천 경로 점 리스트
+  const [deviatedEdges, setDeviatedEdges] = useState([]); // 사용자가 경로에서 벗어난 엣지 리스트
+  const [isOffRoute, setIsOffRoute] = useState(false); //사용자가 경로에서 벗어났는지 여부
+  const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null); // 마지막으로 경로 상에 있던 점
+  const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false); // 도착 버튼 활성화 여부
+  const mapRef = useRef(null); // 지도 참조
 
   useEffect(() => {
-    // Generate route points between points
+    //어플 처음 시작하면 루트 포인트화해서 경로를 그릴거임
     const points = generateRoutePoints(selectedRoute.points);
     setRoutePoints(points);
-    setLastOnRoutePoint(points[0]); // Start point as initial lastOnRoutePoint
+    setLastOnRoutePoint(points[0]);
   }, []);
 
+  //어떻게 그림 그릴거냐?
   const generateRoutePoints = (points) => {
-    let routePoints = [];
+    let routePoints = []; //결과값
     for (let i = 0; i < points.length - 1; i++) {
       const start = { latitude: points[i].lat, longitude: points[i].lng };
       const end = { latitude: points[i + 1].lat, longitude: points[i + 1].lng };
@@ -65,13 +66,13 @@ const TestScreen = ({ selectedRoute }) => {
   };
 
   const checkUserLocation = (location) => {
-    const threshold = 0.0002; // Approximately 20 meters
+    const threshold = 0.0002; // 20m (사용자가 경로에서 벗어났는지 확인하기 위한 임계값)
     const nearestPointIndex = findNearestRoutePointIndex(location, routePoints);
     const nearestPoint = routePoints[nearestPointIndex];
     const distance = calculateDistance(location, nearestPoint);
 
     if (distance <= threshold) {
-      // User is on the route
+      //유저가 경로에 있을 때
       if (isOffRoute) {
         // User has returned to the route
         // Draw blue edge from last off-route position to current location
