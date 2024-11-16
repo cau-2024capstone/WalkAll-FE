@@ -1,30 +1,28 @@
-// src/main/components/TestScreen.js
-
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import MapView, { Polyline, Marker } from "react-native-maps";
 
 const TestScreen = ({ selectedRoute }) => {
-  const [isSetUserLocationActive, setIsSetUserLocationActive] = useState(false); // 사용자 위치 설정 버튼 활성화 여부
-  const [isMoveMapActive, setIsMoveMapActive] = useState(false); // 지도 움직이기 버튼 활성화 여부
-  const [userLocation, setUserLocation] = useState(null); // 사용자 위치
-  const [routePoints, setRoutePoints] = useState([]); //추천 경로 점 리스트
-  const [deviatedEdges, setDeviatedEdges] = useState([]); // 사용자가 경로에서 벗어난 엣지 리스트
-  const [isOffRoute, setIsOffRoute] = useState(false); //사용자가 경로에서 벗어났는지 여부
-  const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null); // 마지막으로 경로 상에 있던 점
-  const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false); // 도착 버튼 활성화 여부
-  const mapRef = useRef(null); // 지도 참조
+  const [isSetUserLocationActive, setIsSetUserLocationActive] = useState(false);
+  const [isMoveMapActive, setIsMoveMapActive] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [routePoints, setRoutePoints] = useState([]);
+  const [deviatedEdges, setDeviatedEdges] = useState([]);
+  const [isOffRoute, setIsOffRoute] = useState(false);
+  const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null);
+  const [lastOffRoutePoint, setLastOffRoutePoint] = useState(null);
+  const [passedRoutePoints, setPassedRoutePoints] = useState([]);
+  const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false);
+  const mapRef = useRef(null);
 
   useEffect(() => {
-    //어플 처음 시작하면 루트 포인트화해서 경로를 그릴거임
     const points = generateRoutePoints(selectedRoute.points);
     setRoutePoints(points);
     setLastOnRoutePoint(points[0]);
   }, []);
 
-  //어떻게 그림 그릴거냐?
   const generateRoutePoints = (points) => {
-    let routePoints = []; //결과값
+    let routePoints = [];
     for (let i = 0; i < points.length - 1; i++) {
       const start = { latitude: points[i].lat, longitude: points[i].lng };
       const end = { latitude: points[i + 1].lat, longitude: points[i + 1].lng };
@@ -66,47 +64,45 @@ const TestScreen = ({ selectedRoute }) => {
   };
 
   const checkUserLocation = (location) => {
-    const threshold = 0.0002; // 20m (사용자가 경로에서 벗어났는지 확인하기 위한 임계값)
+    const threshold = 0.0002;
     const nearestPointIndex = findNearestRoutePointIndex(location, routePoints);
     const nearestPoint = routePoints[nearestPointIndex];
     const distance = calculateDistance(location, nearestPoint);
 
     if (distance <= threshold) {
-      //유저가 경로에 있을 때
+      // 유저가 경로에 있을 때
       if (isOffRoute) {
-        // User has returned to the route
-        // Draw blue edge from last off-route position to current location
-        const newEdge = [lastOnRoutePoint, location];
+        // 경로로 복귀
+        const newEdge = [lastOffRoutePoint, nearestPoint];
         setDeviatedEdges((prevEdges) => [...prevEdges, newEdge]);
         setIsOffRoute(false);
       }
 
-      // Remove passed route points
+      // 지난 경로 포인트를 회색으로 표시하기 위해 저장
       const remainingRoutePoints = routePoints.slice(nearestPointIndex + 1);
-      setRoutePoints(remainingRoutePoints);
-      setLastOnRoutePoint(location);
+      const passedPoints = routePoints.slice(0, nearestPointIndex + 1);
+      setPassedRoutePoints((prevPoints) => [...prevPoints, ...passedPoints]);
 
-      // Check if arrival button should be enabled
+      setRoutePoints(remainingRoutePoints);
+      setLastOnRoutePoint(nearestPoint);
+
+      // 도착 버튼 활성화 여부 체크
       if (remainingRoutePoints.length === 0 || isNearDestination(location)) {
         setArrivalButtonEnabled(true);
       }
     } else {
-      // User is off the route
+      // 유저가 경로에서 벗어났을 때
       if (!isOffRoute) {
-        // User has just deviated
         setIsOffRoute(true);
-        // Draw blue edge from last on-route point to current location
         const newEdge = [lastOnRoutePoint, location];
         setDeviatedEdges((prevEdges) => [...prevEdges, newEdge]);
       } else {
-        // Continue deviated path by extending the last edge
         const updatedEdges = [...deviatedEdges];
-        const lastEdge = updatedEdges[updatedEdges.length - 1];
-        lastEdge.push(location);
+        const lastEdge = [...updatedEdges[updatedEdges.length - 1], location];
         updatedEdges[updatedEdges.length - 1] = lastEdge;
         setDeviatedEdges(updatedEdges);
       }
-      setLastOnRoutePoint(location);
+      setLastOffRoutePoint(location);
     }
   };
 
@@ -135,41 +131,17 @@ const TestScreen = ({ selectedRoute }) => {
       latitude: destination.lat,
       longitude: destination.lng,
     });
-    const arrivalThreshold = 0.0005; // Increased threshold (approximately 50 meters)
+    const arrivalThreshold = 0.0005;
     return distance <= arrivalThreshold;
   };
 
   const handleArriveButtonPress = () => {
-    // Prepare data to send to backend
     const newRouteData = {
       deviatedPath: deviatedEdges,
       routeWalked: routePoints,
     };
 
-    // Backend interaction placeholder (Commented out for testing)
-    /*
-    // test용
-    fetch('https://your-backend-endpoint.com/checkRoute', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newRouteData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.isNewRoute) {
-          Alert.alert('축하합니다', '축하합니다. 새로운 길을 개척하셨습니다! 문의를 넣을까요?');
-        } else {
-          Alert.alert('축하합니다', '축하합니다! 경로를 완주하셨습니다!');
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    */
-
-    // Simulated backend response for testing purposes
+    // 백엔드와의 통신 로직 (테스트용)
     if (deviatedEdges.length > 0) {
       Alert.alert(
         "축하합니다",
@@ -194,6 +166,13 @@ const TestScreen = ({ selectedRoute }) => {
         onPress={onMapPress}
         scrollEnabled={!isSetUserLocationActive}
       >
+        {passedRoutePoints.length > 0 && (
+          <Polyline
+            coordinates={passedRoutePoints}
+            strokeColor="#808080"
+            strokeWidth={3}
+          />
+        )}
         {routePoints.length > 0 && (
           <Polyline
             coordinates={routePoints}
