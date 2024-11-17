@@ -98,6 +98,7 @@ const StartPointSelection = ({ navigation }) => {
       <Text style={styles.title}>산책 시작 위치를 선택해주세요</Text>
       <MapView
         style={styles.map}
+        initialRegion={region}
         region={region}
         onPress={handleMapPress}
         showsUserLocation={false}

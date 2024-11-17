@@ -67,6 +67,12 @@ const WaypointSetting = ({ navigation, route }) => {
           latitudeDelta: 0.002,
           longitudeDelta: 0.002,
         }}
+        region={{
+          latitude: startMarker.latitude,
+          longitude: startMarker.longitude,
+          latitudeDelta: 0.002,
+          longitudeDelta: 0.002,
+        }}
         onPress={handleMapPress}
         showsUserLocation={false}
       >

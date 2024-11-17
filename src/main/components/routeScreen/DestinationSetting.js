@@ -57,6 +57,7 @@ const DestinationSetting = ({ navigation, route }) => {
       <Text style={styles.title}>목적지를 선택해주세요!</Text>
       <MapView
         style={styles.map}
+        initialRegion={region}
         region={region}
         onPress={handleMapPress}
         showsUserLocation={false}
