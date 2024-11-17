@@ -93,29 +93,6 @@ const UserInput = ({ navigation, route }) => {
         </MapView>
       )}
 
-      {/* 경로 선택 버튼 */}
-      <View style={styles.buttonGroup}>
-        {pathOptions.map((path) => (
-          <TouchableOpacity
-            key={path.value}
-            style={[
-              styles.pathButton,
-              selectedPath === path.value && styles.selectedPathButton,
-            ]}
-            onPress={() => setSelectedPath(path.value)}
-          >
-            <Text
-              style={[
-                styles.pathButtonText,
-                selectedPath === path.value && styles.selectedPathButtonText,
-              ]}
-            >
-              {path.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
       {/* 목표 선택 Modal */}
       <TouchableOpacity
         style={styles.dropdownButton}
@@ -156,7 +133,6 @@ const UserInput = ({ navigation, route }) => {
         <View style={styles.inputSection}>
           <TextInput
             style={styles.input}
-            keyboardType="numeric"
             value={inputValue}
             onChangeText={setInputValue}
             placeholder={`${
@@ -170,6 +146,29 @@ const UserInput = ({ navigation, route }) => {
           </Text>
         </View>
       )}
+
+      {/* 경로 선택 버튼 */}
+      <View style={styles.buttonGroup}>
+        {pathOptions.map((path) => (
+          <TouchableOpacity
+            key={path.value}
+            style={[
+              styles.pathButton,
+              selectedPath === path.value && styles.selectedPathButton,
+            ]}
+            onPress={() => setSelectedPath(path.value)}
+          >
+            <Text
+              style={[
+                styles.pathButtonText,
+                selectedPath === path.value && styles.selectedPathButtonText,
+              ]}
+            >
+              {path.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={generateRoutes}>
