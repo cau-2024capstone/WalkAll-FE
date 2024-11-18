@@ -184,14 +184,15 @@ export default UserInput;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#FEFEFE", // 기본 배경색
   },
   titleContainer: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: "rgba(223, 247, 202, 1)", // 연한 초록색
     borderRadius: 10,
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
-    shadowColor: "#000",
+    shadowColor: "#000", // 검정 그림자
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
   titleText: {
     textAlign: "center",
     fontSize: 24,
-    color: "white",
+    color: "rgba(74, 143, 62, 1)", // 진한 초록색
   },
   routeMap: {
     width: "100%",
@@ -215,35 +216,39 @@ const styles = StyleSheet.create({
   pathButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#F2F2F2", // 연한 회색
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(74, 143, 62, 1)", // 진한 초록색 테두리
   },
   selectedPathButton: {
-    backgroundColor: "#0d6efd",
+    backgroundColor: "rgba(74, 143, 62, 1)", // 진한 초록색
   },
   pathButtonText: {
     fontSize: 16,
-    color: "#000",
+    color: "#000", // 검정색 글자
   },
   selectedPathButtonText: {
-    color: "#fff",
+    color: "#FEFEFE", // 흰색 글자
   },
   dropdownButton: {
     marginHorizontal: 20,
     marginVertical: 10,
     paddingVertical: 12,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#F2F2F2", // 연한 회색
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(74, 143, 62, 1)", // 진한 초록색 테두리
     alignItems: "center",
   },
   dropdownButtonText: {
     fontSize: 16,
-    color: "#000",
+    color: "#000", // 검정색
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.5)", // 반투명 검정
   },
   modalContent: {
     marginHorizontal: 20,
@@ -255,6 +260,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     marginBottom: 10,
+    color: "rgba(74, 143, 62, 1)", // 진한 초록색
   },
   modalItem: {
     paddingVertical: 10,
@@ -263,6 +269,7 @@ const styles = StyleSheet.create({
   },
   modalItemText: {
     fontSize: 16,
+    color: "#000", // 검정색
   },
   inputSection: {
     flexDirection: "row",
@@ -273,13 +280,14 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "rgba(74, 143, 62, 1)", // 진한 초록색 테두리
     borderRadius: 4,
     padding: 12,
   },
   unitText: {
     marginLeft: 8,
     fontSize: 16,
+    color: "#000", // 검정색
   },
   buttonContainer: {
     flex: 1,
@@ -288,13 +296,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   button: {
-    backgroundColor: "#0d6efd",
+    backgroundColor: "rgba(74, 143, 62, 1)", // 진한 초록색
     padding: 15,
     borderRadius: 8,
     width: "90%",
   },
   buttonText: {
-    color: "#fff",
+    color: "#FEFEFE", // 흰색
     textAlign: "center",
   },
 });
