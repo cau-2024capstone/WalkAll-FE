@@ -10,20 +10,27 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import { result } from "./backendTest"; // Make sure this points to your new data format
 
 const RecommendedRoutes = ({ navigation, route }) => {
-  const { startMarker, destinationMarker, userRouteType } = route.params;
+  const {
+    startMarker,
+    waypoints,
+    destinationMarker,
+    selectedPath,
+    selectedGoal,
+    inputValue,
+  } = route.params;
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [routes, setRoutes] = useState([]);
 
-  // Adjusted useEffect to prioritize routes based on userRouteType
+  // Adjusted useEffect to prioritize routes based on selectedPath
   useEffect(() => {
     let sortedRoutes = result;
-    if (userRouteType) {
+    if (selectedPath) {
       sortedRoutes = result.sort((a, b) => {
-        if (a.routeType === userRouteType && b.routeType !== userRouteType) {
+        if (a.routeType === selectedPath && b.routeType !== selectedPath) {
           return -1;
         } else if (
-          a.routeType !== userRouteType &&
-          b.routeType === userRouteType
+          a.routeType !== selectedPath &&
+          b.routeType === selectedPath
         ) {
           return 1;
         } else {
@@ -32,7 +39,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
       });
     }
     setRoutes(sortedRoutes);
-  }, [userRouteType]);
+  }, [selectedPath]);
 
   // Function to calculate center from roads
   const calculateCenterFromRoads = (roads) => {

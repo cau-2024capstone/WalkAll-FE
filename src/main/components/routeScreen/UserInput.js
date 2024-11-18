@@ -73,6 +73,9 @@ const UserInput = ({ navigation, route }) => {
       startMarker,
       waypoints,
       destinationMarker,
+      selectedPath,
+      selectedGoal,
+      inputValue,
     });
   };
 
