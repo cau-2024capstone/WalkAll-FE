@@ -22,7 +22,7 @@ const UserInput = ({ navigation, route }) => {
   const [region, setRegion] = useState(null);
 
   const pathOptions = [
-    { label: "편한 길", value: "easy" },
+    { label: "편한 길", value: "Street" },
     { label: "골목길", value: "alley" },
     { label: "다이어트 길", value: "diet" },
   ];
@@ -65,11 +65,20 @@ const UserInput = ({ navigation, route }) => {
   }, [startMarker, waypoints, destinationMarker]);
 
   const generateRoutes = () => {
+    if (selectedGoal === "kcal") {
+      Alert.alert(
+        "죄송합니다",
+        "칼로리 목표 설정은 현재 지원되지 않습니다. 다른 목표를 선택해주세요."
+      );
+      return;
+    }
+
     if (selectedGoal !== "none" && isNaN(Number(inputValue))) {
       Alert.alert("오류", "입력 값이 숫자가 아닙니다. 숫자를 입력해주세요.");
       return;
     }
-    navigation.navigate("RecommendedRoutes", {
+
+    navigation.navigate("LoadingModal", {
       startMarker,
       waypoints,
       destinationMarker,

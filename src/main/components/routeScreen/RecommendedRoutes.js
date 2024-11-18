@@ -7,7 +7,6 @@ import {
   FlatList,
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { result } from "./backendTest"; // Make sure this points to your new data format
 
 const RecommendedRoutes = ({ navigation, route }) => {
   const {
@@ -17,15 +16,16 @@ const RecommendedRoutes = ({ navigation, route }) => {
     selectedPath,
     selectedGoal,
     inputValue,
+    routesData,
   } = route.params;
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [routes, setRoutes] = useState([]);
 
-  // Adjusted useEffect to prioritize routes based on selectedPath
   useEffect(() => {
-    let sortedRoutes = result;
+    let sortedRoutes = routesData;
     if (selectedPath) {
-      sortedRoutes = result.sort((a, b) => {
+      sortedRoutes = routesData.sort((a, b) => {
+        // 경로 타입에 따라 정렬
         if (a.routeType === selectedPath && b.routeType !== selectedPath) {
           return -1;
         } else if (
