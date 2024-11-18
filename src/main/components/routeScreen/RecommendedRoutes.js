@@ -10,6 +10,7 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 
 const RecommendedRoutes = ({ navigation, route }) => {
   const {
+    //혹시나 나중에 사용할까봐 일단 파라미터로 받아놓음
     startMarker,
     waypoints,
     destinationMarker,

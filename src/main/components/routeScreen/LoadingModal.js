@@ -17,6 +17,30 @@ const LoadingModal = ({ navigation, route }) => {
   const useMockData = false; // true로 설정 시 Mock 데이터 사용
 
   useEffect(() => {
+    if (useMockData) {
+      console.log("Mock data 사용 중...");
+      const routesData = result;
+      const start = {
+        latitude: 37.5052899390435,
+        longitude: 126.9548345273645,
+      };
+      const ways = [];
+      const end = {
+        latitude: 37.506312931566,
+        longitude: 126.9568734886127,
+      };
+
+      navigation.navigate("RecommendedRoutes", {
+        routesData,
+        start,
+        ways,
+        end,
+        selectedPath,
+        selectedGoal,
+        inputValue,
+      });
+      return;
+    }
     const fetchData = async () => {
       try {
         // 칼로리 목표는 아직 구현되지 않음
@@ -52,7 +76,7 @@ const LoadingModal = ({ navigation, route }) => {
             throw new Error(`${pointType} not found within radius`);
           }
           console.log(`Closest point ID for ${pointType}:`, data);
-          return data.replace(/"/g, ""); // 문자열에서 불필요한 따옴표 제거
+          return data.replace(/"/g, ""); // 문자열에서 불필요한 따옴표 제거 (리스트에서 가져와서 따옴표가 포함되어 있음)
         };
 
         // 출발지의 가장 가까운 점 ID 가져오기
