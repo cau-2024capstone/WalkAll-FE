@@ -169,43 +169,73 @@ export default RecommendedRoutes;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "rgba(254, 254, 254, 1)", // 흰색 (white)
   },
   title: {
     paddingTop: 40,
     paddingBottom: 10,
     textAlign: "center",
     fontSize: 18,
+    color: "rgba(23, 29, 27, 1)", // 어두운 녹색 (aospOnSurface)
+    fontWeight: "bold",
   },
   routeItem: {
     marginBottom: 20,
     alignItems: "center",
+    backgroundColor: "rgba(244, 251, 248, 1)", // 연한 아이보리 (aospSurface)
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "rgba(0, 0, 0, 1)", // 검정 그림자
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   routeMap: {
     width: "90%",
     height: 200,
+    borderRadius: 10,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(74, 143, 62, 1)", // 진한 초록색 (green5)
   },
   selectButton: {
-    backgroundColor: "#0d6efd",
+    backgroundColor: "rgba(74, 143, 62, 1)", // 진한 초록색 (green5)
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
     width: "90%",
+    borderWidth: 1,
+    borderColor: "rgba(52, 121, 40, 1)", // 어두운 초록색 (green6)
   },
   followButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "rgba(192, 235, 166, 1)", // 연한 초록색 (green2)
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
     width: "90%",
+    borderWidth: 1,
+    borderColor: "rgba(134, 203, 122, 1)", // 중간 초록색 (green3)
   },
   resetButton: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "rgba(255, 255, 109, 1)", // 선명한 노란색 (yellow2)
     padding: 15,
     borderRadius: 8,
     margin: 10,
+    borderWidth: 1,
+    borderColor: "rgba(1, 1, 1, 1)", // 검정 테두리
   },
   buttonText: {
-    color: "#fff",
     textAlign: "center",
+    fontWeight: "bold",
+  },
+  selectButtonText: {
+    color: "rgba(254, 254, 254, 1)", // 흰색 텍스트
+  },
+  followButtonText: {
+    color: "rgba(1, 1, 1, 1)", // 검정색 텍스트
+  },
+  resetButtonText: {
+    color: "rgba(1, 1, 1, 1)", // 검정색 텍스트
   },
 });

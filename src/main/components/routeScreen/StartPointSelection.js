@@ -5,21 +5,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator, // 로딩 중 표시를 위한 컴포넌트
+  ActivityIndicator,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
-//navigation : 화면 전환을 위한 navigation prop (화면스택을 관리)
 const StartPointSelection = ({ navigation }) => {
+  const [mode, setMode] = useState("start"); // 'start', 'destination', 'waypoint'
   const [startMarker, setStartMarker] = useState(null);
+  const [destinationMarker, setDestinationMarker] = useState(null);
+  const [waypoints, setWaypoints] = useState([]);
   const [region, setRegion] = useState(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
+  const [temporaryPin, setTemporaryPin] = useState(null); // 임시 핀 상태
 
   useEffect(() => {
     (async () => {
       // 위치 권한 요청 및 현재 위치 가져오기
-
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("위치 권한이 필요합니다.");
@@ -30,7 +32,7 @@ const StartPointSelection = ({ navigation }) => {
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.002, // 줌 레벨 조정
+        latitudeDelta: 0.002,
         longitudeDelta: 0.002,
       });
       setIsLocationLoading(false);
@@ -47,31 +49,81 @@ const StartPointSelection = ({ navigation }) => {
   }, []);
 
   const handleMapPress = (e) => {
-    setStartMarker(e.nativeEvent.coordinate);
+    const coordinate = e.nativeEvent.coordinate;
+
+    if (mode === "start") {
+      setStartMarker(coordinate);
+      addAndRemoveTemporaryPin();
+    } else if (mode === "destination") {
+      setDestinationMarker(coordinate);
+      addAndRemoveTemporaryPin();
+    } else if (mode === "waypoint") {
+      const proximityThreshold = 0.0001;
+
+      // 근처에 있는 경유지 제거 또는 추가
+      const nearbyWaypoint = waypoints.find(
+        (wp) =>
+          Math.abs(wp.latitude - coordinate.latitude) < proximityThreshold &&
+          Math.abs(wp.longitude - coordinate.longitude) < proximityThreshold
+      );
+
+      if (nearbyWaypoint) {
+        setWaypoints(waypoints.filter((wp) => wp !== nearbyWaypoint));
+      } else {
+        if (waypoints.length >= 10) {
+          Alert.alert("경유지는 최대 10개까지 선택 가능합니다.");
+          return;
+        }
+        setWaypoints([...waypoints, coordinate]);
+        addAndRemoveTemporaryPin();
+      }
+    }
   };
 
-  const setCurrentLocation = () => {
+  const setCurrentLocationAs = () => {
     if (region) {
-      setStartMarker({
+      const coordinate = {
         latitude: region.latitude,
         longitude: region.longitude,
+      };
+      if (mode === "start") {
+        setStartMarker(coordinate);
+      } else if (mode === "destination") {
+        setDestinationMarker(coordinate);
+      }
+    }
+  };
+
+  const addAndRemoveTemporaryPin = () => {
+    // 지도에 보이지 않는 영역에 임시 핀 추가
+    const tempCoordinate = {
+      latitude: 30,
+      longitude: 120,
+    };
+    setTemporaryPin(tempCoordinate);
+
+    // 50ms 후 임시 핀 삭제
+    setTimeout(() => {
+      setTemporaryPin(null);
+    }, 50);
+  };
+
+  const proceedToUserInput = () => {
+    if (startMarker && destinationMarker) {
+      navigation.navigate("UserInput", {
+        startMarker,
+        waypoints,
+        destinationMarker,
       });
-    }
-  };
-
-  const proceedToWaypoints = () => {
-    if (startMarker) {
-      navigation.navigate("WaypointSetting", { startMarker });
     } else {
-      Alert.alert("시작 위치를 선택해주세요.");
+      Alert.alert("출발지와 도착지를 모두 설정해주세요.");
     }
   };
 
-  //사실 현재위치 불러오는 중임 지도는 이미 불러옴
   if (isLocationLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingTitile}>지도 불러오는 중...</Text>
+        <Text style={styles.loadingTitle}>지도 불러오는 중...</Text>
         <ActivityIndicator size="large" color="#0d6efd" />
       </View>
     );
@@ -79,32 +131,76 @@ const StartPointSelection = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>산책 시작 위치를 선택해주세요</Text>
+      {/* 모드 선택 버튼 */}
+      <View style={styles.modeButtonContainer}>
+        <TouchableOpacity
+          style={[
+            styles.modeButton,
+            mode === "start" ? styles.activeModeButton : null,
+          ]}
+          onPress={() => setMode("start")}
+        >
+          <Text style={styles.buttonText}>출발지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.modeButton,
+            mode === "waypoint" ? styles.activeModeButton : null,
+          ]}
+          onPress={() => setMode("waypoint")}
+        >
+          <Text style={styles.buttonText}>경유지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.modeButton,
+            mode === "destination" ? styles.activeModeButton : null,
+          ]}
+          onPress={() => setMode("destination")}
+        >
+          <Text style={styles.buttonText}>도착지</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.modeButton, styles.completeButton]}
+          onPress={proceedToUserInput}
+        >
+          <Text style={[styles.buttonText, styles.completeButtonText]}>
+            설정 완료
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/* 지도 */}
       <MapView
         style={styles.map}
+        initialRegion={region}
         region={region}
         onPress={handleMapPress}
         showsUserLocation={false}
       >
-        {startMarker && <Marker coordinate={startMarker} />}
-        {/* 현재 위치 마커 표시 */}
-        {region && (
+        {startMarker && <Marker coordinate={startMarker} pinColor="green" />}
+        {destinationMarker && (
+          <Marker coordinate={destinationMarker} pinColor="red" />
+        )}
+        {waypoints.map((wp, index) => (
           <Marker
-            coordinate={{
-              latitude: region.latitude,
-              longitude: region.longitude,
+            key={index}
+            coordinate={wp}
+            pinColor="orange"
+            onPress={() => {
+              if (mode === "waypoint") {
+                setWaypoints(waypoints.filter((w) => w !== wp));
+              }
             }}
-            pinColor="blue"
-            title="현재 위치"
           />
+        ))}
+        {temporaryPin && (
+          <Marker coordinate={temporaryPin} pinColor="transparent" />
         )}
       </MapView>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={setCurrentLocation}>
-          <Text style={styles.buttonText}>현재위치로 설정</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={proceedToWaypoints}>
-          <Text style={styles.buttonText}>시작지점 설정완료</Text>
+      {/* 현재 위치로 설정 버튼 */}
+      <View style={styles.currentLocationButtonContainer}>
+        <TouchableOpacity style={styles.button} onPress={setCurrentLocationAs}>
+          <Text style={styles.currentLocationButtonText}>현재위치로 설정</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -122,43 +218,59 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    textAlign: "center",
-    fontSize: 24,
-    color: "white",
-    backgroundColor: "#3B82F6",
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    shadowColor: "#000", // 그림자 효과 추가
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5, // 안드로이드에서도 그림자 효과 적용
-  },
-  loadingTitile: {
+  loadingTitle: {
     paddingTop: 40,
     paddingBottom: 10,
     textAlign: "center",
     fontSize: 18,
   },
+  modeButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingTop: 60,
+    paddingBottom: 10,
+    backgroundColor: "#FEFEFE",
+  },
+  modeButton: {
+    padding: 10,
+    backgroundColor: "#F2F2F2",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(74, 143, 62, 1)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  activeModeButton: {
+    backgroundColor: "rgba(223, 247, 202, 1)",
+  },
+  completeButton: {
+    backgroundColor: "rgba(74, 143, 62, 1)",
+  },
+  buttonText: {
+    color: "rgba(74, 143, 62, 1)",
+    textAlign: "center",
+  },
+  completeButtonText: {
+    color: "#FEFEFE",
+  },
   map: {
     flex: 1,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  currentLocationButtonContainer: {
     padding: 10,
+    alignItems: "center",
   },
   button: {
-    backgroundColor: "#0d6efd",
+    backgroundColor: "rgba(74, 143, 62, 1)",
     padding: 15,
     borderRadius: 8,
-    width: "45%",
+    width: "90%",
   },
-  buttonText: {
-    color: "#fff",
+  currentLocationButtonText: {
+    color: "#fEFEFE",
     textAlign: "center",
   },
 });
