@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
-import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import * as Location from "expo-location";
 import { useFonts } from "expo-font";
-import LoginScreen from "./src/main/screens/LoginScreen";
-import BottomTabApp from "./src/main/components/TabBar";
+import * as SplashScreen from "expo-splash-screen";
+import BottomTabApp from "./src/main/components/TabBar.js";
 
 const Stack = createStackNavigator();
 

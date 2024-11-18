@@ -1,29 +1,42 @@
-import React from "react";
-import { Text, StyleSheet, ScrollView } from "react-native";
+// src/main/components/NavigationScreen.js
+
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import CurrentLocationScreen from "./CurrentLocationScreen";
+import TestScreen from "./TestScreen";
 
 const NavigationScreen = ({ route }) => {
+  const [mode, setMode] = useState(null);
   const { route: selectedRoute } = route.params;
 
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>선택한 경로 정보</Text>
-      <Text>Route ID: {selectedRoute.id}</Text>
-      <Text>총 거리: {selectedRoute.totalRouteDistance.toFixed(2)} meters</Text>
-      <Text style={styles.subtitle}>Points:</Text>
-      {selectedRoute.points.map((point) => (
-        <Text key={point.id}>
-          Point {point.id}: ({point.lat}, {point.lng})
-        </Text>
-      ))}
-      <Text style={styles.subtitle}>Roads:</Text>
-      {selectedRoute.roads.map((road) => (
-        <Text key={road.id}>
-          Road {road.id}: Start ({road.startLat}, {road.startLng}) - End (
-          {road.endLat}, {road.endLng})
-        </Text>
-      ))}
-    </ScrollView>
-  );
+  const handleCurrentLocationMode = () => {
+    setMode("currentLocation");
+  };
+
+  const handleTestMode = () => {
+    setMode("testMode");
+  };
+
+  if (mode === null) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>모드를 선택해주세요</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleCurrentLocationMode}
+        >
+          <Text style={styles.buttonText}>현재 위치 모드</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleTestMode}>
+          <Text style={styles.buttonText}>테스트 모드</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  } else if (mode === "currentLocation") {
+    return <CurrentLocationScreen />;
+  } else if (mode === "testMode") {
+    return <TestScreen selectedRoute={selectedRoute} />;
+  }
 };
 
 export default NavigationScreen;
@@ -31,15 +44,24 @@ export default NavigationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-    paddingTop: 40,
+    justifyContent: "center", // Center vertically
+    alignItems: "center", // Center horizontally
+    backgroundColor: "#fff",
   },
   title: {
-    fontSize: 18,
-    marginBottom: 15,
+    fontSize: 20,
+    marginBottom: 30,
   },
-  subtitle: {
-    marginTop: 10,
-    fontWeight: "bold",
+  button: {
+    backgroundColor: "#1E90FF",
+    padding: 15,
+    marginBottom: 20,
+    width: "80%",
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
   },
 });
