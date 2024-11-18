@@ -23,7 +23,7 @@ const UserInput = ({ navigation, route }) => {
 
   const pathOptions = [
     { label: "편한 길", value: "Street" },
-    { label: "골목길", value: "alley" },
+    { label: "골목길", value: "Alley" },
     { label: "다이어트 길", value: "diet" },
   ];
 
@@ -49,8 +49,8 @@ const UserInput = ({ navigation, route }) => {
       const maxLng = Math.max(...longitudes);
       const minLng = Math.min(...longitudes);
 
-      const latitudeDelta = Math.max((maxLat - minLat) * 1.2, 0.005);
-      const longitudeDelta = Math.max((maxLng - minLng) * 1.2, 0.005);
+      const latitudeDelta = Math.max((maxLat - minLat) * 1.2, 0.003);
+      const longitudeDelta = Math.max((maxLng - minLng) * 1.2, 0.003); //최소값 0.003
 
       return {
         latitude: centerLat,

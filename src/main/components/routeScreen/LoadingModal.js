@@ -1,6 +1,7 @@
 // LoadingModal.js
 import React, { useEffect } from "react";
-import { View, Text, Alert, StyleSheet, Modal, Image } from "react-native";
+import { View, Text, Alert, StyleSheet, Modal } from "react-native";
+import { Image } from "expo-image";
 import { result } from "./backendTest"; // Mock 데이터 사용 시 필요
 
 const LoadingModal = ({ navigation, route }) => {
@@ -18,6 +19,7 @@ const LoadingModal = ({ navigation, route }) => {
 
   useEffect(() => {
     if (useMockData) {
+      // Mock 데이터 사용
       console.log("Mock data 사용 중...");
       const routesData = result;
       const start = {
@@ -29,7 +31,6 @@ const LoadingModal = ({ navigation, route }) => {
         latitude: 37.506312931566,
         longitude: 126.9568734886127,
       };
-
       navigation.navigate("RecommendedRoutes", {
         routesData,
         start,
@@ -41,6 +42,8 @@ const LoadingModal = ({ navigation, route }) => {
       });
       return;
     }
+
+    // 실제 데이터 사용
     const fetchData = async () => {
       try {
         // 칼로리 목표는 아직 구현되지 않음
@@ -67,13 +70,14 @@ const LoadingModal = ({ navigation, route }) => {
             throw new Error(`Failed to fetch closest point for ${pointType}`);
           }
           const data = await response.text(); // 문자열로 응답을 받음
-          if (!data) {
+          if (!data || data === "null") {
             Alert.alert(
               "죄송합니다",
               `${pointType}는 저희가 그린 지도 내에 존재하지 않습니다.`
             );
+
             navigation.navigate("StartPointSelection");
-            throw new Error(`${pointType} not found within radius`);
+            return;
           }
           console.log(`Closest point ID for ${pointType}:`, data);
           return data.replace(/"/g, ""); // 문자열에서 불필요한 따옴표 제거 (리스트에서 가져와서 따옴표가 포함되어 있음)
@@ -211,11 +215,10 @@ const LoadingModal = ({ navigation, route }) => {
     <Modal transparent={true} animationType="fade">
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
-          {/* 걷는 애니메이션으로 변경 */}
-          {/* <Image
-            source={require("./assets/walking_animation.gif")} // 애니메이션 파일로 교체 필요
+          <Image
+            source={require("../../assets/images/walkingAnimation.gif")}
             style={{ width: 100, height: 100 }}
-          /> */}
+          />
           <Text style={{ marginTop: 10 }}>추천 경로를 생성 중입니다...</Text>
         </View>
       </View>
