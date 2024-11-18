@@ -7,84 +7,86 @@ import {
   FlatList,
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { result } from "./backendTest";
+import { result } from "./backendTest"; // Make sure this points to your new data format
 
 const RecommendedRoutes = ({ navigation, route }) => {
-  const { startMarker, waypoints, destinationMarker } = route.params;
+  const { startMarker, destinationMarker, userRouteType } = route.params;
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [routes, setRoutes] = useState([]);
 
-  //프론트 테스트 코드
+  // Adjusted useEffect to prioritize routes based on userRouteType
   useEffect(() => {
-    setRoutes(result);
-  }, []);
-
-  /*
-  //백엔드 테스트 코드
-    useEffect(() => {
-      // 추천 경로 API 호출
-      const fetchRoutes = async () => {
-        try {
-          console.log("try문 실행했습니다.");
-  
-          // 테스트 중인 경로 설정
-          const routeRequest = {
-            startLat: startMarker.latitude,
-            startLng: startMarker.longitude,
-            endLat: destinationMarker.latitude,
-            endLng: destinationMarker.longitude,
-          };
-  
-          const routeRequest = {
-            startLat: 37.504459338426,
-            startLng: 126.9570086044993,
-            endLat: 37.5048806440909,
-            endLng: 126.95534563491,
-          };
-  
-          const response = await fetch(
-            "http://192.168.0.77:8082/api/route/generate",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(routeRequest),
-            }
-          );
-  
-          if (!response.ok) {
-            throw new Error("네트워크 응답이 실패했습니다.");
-          }
-  
-          const data = await response.json();
-          //console.log("data:", JSON.stringify(data, null, 2));
-  
-          setRoutes(data);
-        } catch (error) {
-          console.error("추천 경로 생성 오류:", error);
-          Alert.alert("추천 경로를 생성하는 데 실패했습니다.");
+    let sortedRoutes = result;
+    if (userRouteType) {
+      sortedRoutes = result.sort((a, b) => {
+        if (a.routeType === userRouteType && b.routeType !== userRouteType) {
+          return -1;
+        } else if (
+          a.routeType !== userRouteType &&
+          b.routeType === userRouteType
+        ) {
+          return 1;
+        } else {
+          return 0;
         }
-      };
-  
-      fetchRoutes();
-      //
-    }, []);
-  */
-  // 나머지 코드 동일
-  const calculateCenter = (points) => {
+      });
+    }
+    setRoutes(sortedRoutes);
+  }, [userRouteType]);
+
+  // Function to calculate center from roads
+  const calculateCenterFromRoads = (roads) => {
+    const pointsMap = new Map();
+
+    roads.forEach((road) => {
+      const [startId, endId] = road.idf.split("_");
+
+      if (!pointsMap.has(startId)) {
+        pointsMap.set(startId, {
+          id: startId,
+          lat: road.startLat,
+          lng: road.startLng,
+        });
+      }
+      if (!pointsMap.has(endId)) {
+        pointsMap.set(endId, {
+          id: endId,
+          lat: road.endLat,
+          lng: road.endLng,
+        });
+      }
+    });
+
+    const points = Array.from(pointsMap.values());
     const totalLat = points.reduce((sum, point) => sum + point.lat, 0);
     const totalLng = points.reduce((sum, point) => sum + point.lng, 0);
 
     const centerLat = totalLat / points.length;
     const centerLng = totalLng / points.length;
 
-    return { latitude: centerLat, longitude: centerLng };
+    return { center: { latitude: centerLat, longitude: centerLng }, pointsMap };
+  };
+
+  // Function to get color based on roadType
+  const getColorFromRoadType = (roadTypeArray) => {
+    if (roadTypeArray.includes("Steep")) {
+      return "orange";
+    } else if (roadTypeArray.includes("Street")) {
+      return "rgb(226, 226, 40)";
+    } else if (roadTypeArray.includes("Alley")) {
+      return "brown";
+    } else {
+      return "gray"; // Default color
+    }
   };
 
   const renderRouteItem = ({ item }) => {
-    const isSelected = selectedRouteId === item.id;
-    const center = calculateCenter(item.points);
+    const isSelected = selectedRouteId === item.routeIdf;
+    const { center, pointsMap } = calculateCenterFromRoads(item.roads);
+
+    // Get start and end points from pointsMap
+    const startPoint = pointsMap.get(item.start);
+    const endPoint = pointsMap.get(item.end);
 
     return (
       <View style={styles.routeItem}>
@@ -96,7 +98,6 @@ const RecommendedRoutes = ({ navigation, route }) => {
             latitudeDelta: 0.002,
             longitudeDelta: 0.002,
           }}
-          c
           scrollEnabled={false}
           zoomEnabled={false}
           rotateEnabled={false}
@@ -109,23 +110,30 @@ const RecommendedRoutes = ({ navigation, route }) => {
                 { latitude: road.startLat, longitude: road.startLng },
                 { latitude: road.endLat, longitude: road.endLng },
               ]}
-              strokeColor="#FF0000"
-              strokeWidth={2}
+              strokeColor={getColorFromRoadType(road.roadType)}
+              strokeWidth={3}
             />
           ))}
-          {startMarker && <Marker coordinate={startMarker} pinColor="green" />}
-          {waypoints &&
-            waypoints.map((wp, index) => (
-              <Marker key={index} coordinate={wp} pinColor="orange" />
-            ))}
-          {destinationMarker && (
-            <Marker coordinate={destinationMarker} pinColor="red" />
+          {startPoint && (
+            <Marker
+              coordinate={{
+                latitude: startPoint.lat,
+                longitude: startPoint.lng,
+              }}
+              pinColor="green"
+            />
+          )}
+          {endPoint && (
+            <Marker
+              coordinate={{ latitude: endPoint.lat, longitude: endPoint.lng }}
+              pinColor="red"
+            />
           )}
         </MapView>
 
         <TouchableOpacity
           style={styles.selectButton}
-          onPress={() => setSelectedRouteId(item.id)}
+          onPress={() => setSelectedRouteId(item.routeIdf)}
         >
           <Text style={styles.buttonText}>
             {isSelected ? "선택됨" : "경로 선택"}
@@ -149,10 +157,34 @@ const RecommendedRoutes = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>추천 경로</Text>
+
+      {/* Legend at the top */}
+      <View style={styles.legendContainer}>
+        <View style={styles.legendItem}>
+          <View
+            style={[styles.legendColorBox, { backgroundColor: "orange" }]}
+          />
+          <Text style={styles.legendText}>경삿길</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View
+            style={[
+              styles.legendColorBox,
+              { backgroundColor: "rgb(226, 226, 40)" },
+            ]}
+          />
+          <Text style={styles.legendText}>대로</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendColorBox, { backgroundColor: "brown" }]} />
+          <Text style={styles.legendText}>골목길</Text>
+        </View>
+      </View>
+
       <FlatList
         data={routes}
         renderItem={renderRouteItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.routeIdf}
       />
       <TouchableOpacity
         style={styles.resetButton}
@@ -169,23 +201,41 @@ export default RecommendedRoutes;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(254, 254, 254, 1)", // 흰색 (white)
+    backgroundColor: "rgba(254, 254, 254, 1)", // White
   },
   title: {
     paddingTop: 40,
     paddingBottom: 10,
     textAlign: "center",
     fontSize: 18,
-    color: "rgba(23, 29, 27, 1)", // 어두운 녹색 (aospOnSurface)
+    color: "rgba(23, 29, 27, 1)", // Dark green
     fontWeight: "bold",
+  },
+  legendContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  legendColorBox: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 14,
   },
   routeItem: {
     marginBottom: 20,
     alignItems: "center",
-    backgroundColor: "rgba(244, 251, 248, 1)", // 연한 아이보리 (aospSurface)
+    backgroundColor: "rgba(244, 251, 248, 1)", // Light ivory
     borderRadius: 10,
     padding: 10,
-    shadowColor: "rgba(0, 0, 0, 1)", // 검정 그림자
+    shadowColor: "rgba(0, 0, 0, 1)", // Black shadow
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -197,45 +247,36 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(74, 143, 62, 1)", // 진한 초록색 (green5)
+    borderColor: "rgba(74, 143, 62, 1)", // Dark green
   },
   selectButton: {
-    backgroundColor: "rgba(74, 143, 62, 1)", // 진한 초록색 (green5)
+    backgroundColor: "rgba(74, 143, 62, 1)", // Dark green
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
     width: "90%",
     borderWidth: 1,
-    borderColor: "rgba(52, 121, 40, 1)", // 어두운 초록색 (green6)
+    borderColor: "rgba(52, 121, 40, 1)", // Darker green
   },
   followButton: {
-    backgroundColor: "rgba(192, 235, 166, 1)", // 연한 초록색 (green2)
+    backgroundColor: "rgba(192, 235, 166, 1)", // Light green
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
     width: "90%",
     borderWidth: 1,
-    borderColor: "rgba(134, 203, 122, 1)", // 중간 초록색 (green3)
+    borderColor: "rgba(134, 203, 122, 1)", // Medium green
   },
   resetButton: {
-    backgroundColor: "rgba(255, 255, 109, 1)", // 선명한 노란색 (yellow2)
+    backgroundColor: "rgba(255, 255, 109, 1)", // Bright yellow
     padding: 15,
     borderRadius: 8,
     margin: 10,
     borderWidth: 1,
-    borderColor: "rgba(1, 1, 1, 1)", // 검정 테두리
+    borderColor: "rgba(1, 1, 1, 1)", // Black border
   },
   buttonText: {
     textAlign: "center",
     fontWeight: "bold",
-  },
-  selectButtonText: {
-    color: "rgba(254, 254, 254, 1)", // 흰색 텍스트
-  },
-  followButtonText: {
-    color: "rgba(1, 1, 1, 1)", // 검정색 텍스트
-  },
-  resetButtonText: {
-    color: "rgba(1, 1, 1, 1)", // 검정색 텍스트
   },
 });
