@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Modal,
   FlatList,
+  ScrollView,
+  Alert,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
@@ -15,7 +17,7 @@ const UserInput = ({ navigation, route }) => {
 
   const [selectedPath, setSelectedPath] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [selectedGoal, setSelectedGoal] = useState("none");
   const [inputValue, setInputValue] = useState("");
   const [region, setRegion] = useState(null);
 
@@ -26,7 +28,8 @@ const UserInput = ({ navigation, route }) => {
   ];
 
   const goals = [
-    { label: "거리 (km)", value: "km" },
+    { label: "목표 설정 안하기", value: "none" },
+    { label: "거리 (m)", value: "m" },
     { label: "칼로리 (kcal)", value: "kcal" },
     { label: "시간 (분)", value: "time" },
   ];
@@ -62,6 +65,10 @@ const UserInput = ({ navigation, route }) => {
   }, [startMarker, waypoints, destinationMarker]);
 
   const generateRoutes = () => {
+    if (selectedGoal !== "none" && isNaN(Number(inputValue))) {
+      Alert.alert("오류", "입력 값이 숫자가 아닙니다. 숫자를 입력해주세요.");
+      return;
+    }
     navigation.navigate("RecommendedRoutes", {
       startMarker,
       waypoints,
@@ -70,15 +77,15 @@ const UserInput = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>산책 목표를 설정해주세요</Text>
       </View>
       {region && (
         <MapView
           style={styles.routeMap}
-          region={region} // region 사용
-          onRegionChangeComplete={(newRegion) => setRegion(newRegion)} // 필요 시 업데이트
+          region={region}
+          onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
         >
           {startMarker && (
             <Marker coordinate={startMarker} pinColor="#008000" />
@@ -117,6 +124,7 @@ const UserInput = ({ navigation, route }) => {
                   style={styles.modalItem}
                   onPress={() => {
                     setSelectedGoal(item.value);
+                    setInputValue(""); // 입력 값 초기화
                     setShowModal(false);
                   }}
                 >
@@ -129,18 +137,23 @@ const UserInput = ({ navigation, route }) => {
       </Modal>
 
       {/* 선택된 옵션에 따른 입력 필드와 단위 표시 */}
-      {selectedGoal && (
+      {selectedGoal !== "none" && (
         <View style={styles.inputSection}>
           <TextInput
             style={styles.input}
             value={inputValue}
-            onChangeText={setInputValue}
+            onChangeText={(text) => {
+              // 숫자가 아닌 문자 제거
+              const filteredText = text.replace(/[^0-9]/g, "");
+              setInputValue(filteredText);
+            }}
             placeholder={`${
               goals.find((g) => g.value === selectedGoal).label
             } 입력`}
+            keyboardType="default" // 아이폰 오류있어서 숫자인풋 못했음
           />
           <Text style={styles.unitText}>
-            {selectedGoal === "km" && "km"}
+            {selectedGoal === "m" && "m"}
             {selectedGoal === "kcal" && "kcal"}
             {selectedGoal === "time" && "분"}
           </Text>
@@ -175,7 +188,7 @@ const UserInput = ({ navigation, route }) => {
           <Text style={styles.buttonText}>추천 경로 생성</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
