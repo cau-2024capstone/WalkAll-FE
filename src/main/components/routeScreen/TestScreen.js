@@ -1,5 +1,3 @@
-//capstoneFE/src/main/components/routeScreen/TestScreen.js
-
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import MapView, { Polyline, Marker } from "react-native-maps";
@@ -16,34 +14,38 @@ const TestScreen = ({ selectedRoute }) => {
   const [passedRoutePoints, setPassedRoutePoints] = useState([]);
   const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false);
   const [temporaryPin, setTemporaryPin] = useState(null);
+  const [lastDestinationPoint, setLastDestinationPoint] = useState(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
-    const points = generateRoutePoints(selectedRoute.points);
+    const points = generateRoutePoints(selectedRoute.roads);
     setRoutePoints(points);
     setLastOnRoutePoint(points[0]);
+    setLastDestinationPoint(points[points.length - 1]);
     addAndRemoveTemporaryPin();
   }, []);
 
   const addAndRemoveTemporaryPin = () => {
-    // 지도에 보이지 않는 영역에 임시 핀 추가
+    // Add a temporary pin outside the map view to force a re-render
     const tempCoordinate = {
-      latitude: 30, // 지도 밖 임의 위치
+      latitude: 30, // Arbitrary location off the map
       longitude: 120,
     };
     setTemporaryPin(tempCoordinate);
 
-    // 100ms 후 임시 핀 삭제
+    // Remove the temporary pin after 50ms
     setTimeout(() => {
       setTemporaryPin(null);
     }, 50);
   };
 
-  const generateRoutePoints = (points) => {
+  // Updated function to generate route points from roads
+  const generateRoutePoints = (roads) => {
     let routePoints = [];
-    for (let i = 0; i < points.length - 1; i++) {
-      const start = { latitude: points[i].lat, longitude: points[i].lng };
-      const end = { latitude: points[i + 1].lat, longitude: points[i + 1].lng };
+    for (let i = 0; i < roads.length; i++) {
+      const road = roads[i];
+      const start = { latitude: road.startLat, longitude: road.startLng };
+      const end = { latitude: road.endLat, longitude: road.endLng };
       const segmentPoints = interpolatePoints(start, end);
       routePoints = routePoints.concat(segmentPoints);
     }
@@ -89,15 +91,15 @@ const TestScreen = ({ selectedRoute }) => {
     const distance = calculateDistance(location, nearestPoint);
 
     if (distance <= threshold) {
-      // 유저가 경로에 있을 때
+      // User is on the route
       if (isOffRoute) {
-        // 경로로 복귀
+        // User has returned to the route
         const newEdge = [lastOffRoutePoint, nearestPoint];
         setDeviatedEdges((prevEdges) => [...prevEdges, newEdge]);
         setIsOffRoute(false);
       }
 
-      // 지난 경로 포인트를 회색으로 표시하기 위해 저장
+      // Update passed and remaining route points
       const remainingRoutePoints = routePoints.slice(nearestPointIndex + 1);
       const passedPoints = routePoints.slice(0, nearestPointIndex + 1);
       setPassedRoutePoints((prevPoints) => [...prevPoints, ...passedPoints]);
@@ -105,19 +107,20 @@ const TestScreen = ({ selectedRoute }) => {
       setRoutePoints(remainingRoutePoints);
       setLastOnRoutePoint(nearestPoint);
 
-      // 도착 버튼 활성화 여부 체크
+      // Check if arrival button should be enabled
       if (remainingRoutePoints.length === 0 || isNearDestination(location)) {
         setArrivalButtonEnabled(true);
       }
     } else {
-      // 유저가 경로에서 벗어났을 때
+      // User is off the route
       if (!isOffRoute) {
         setIsOffRoute(true);
         const newEdge = [lastOnRoutePoint, location];
         setDeviatedEdges((prevEdges) => [...prevEdges, newEdge]);
       } else {
         const updatedEdges = [...deviatedEdges];
-        const lastEdge = [...updatedEdges[updatedEdges.length - 1], location];
+        const lastEdge = updatedEdges[updatedEdges.length - 1];
+        lastEdge.push(location);
         updatedEdges[updatedEdges.length - 1] = lastEdge;
         setDeviatedEdges(updatedEdges);
       }
@@ -145,11 +148,9 @@ const TestScreen = ({ selectedRoute }) => {
   };
 
   const isNearDestination = (location) => {
-    const destination = selectedRoute.points[selectedRoute.points.length - 1];
-    const distance = calculateDistance(location, {
-      latitude: destination.lat,
-      longitude: destination.lng,
-    });
+    const destination = lastDestinationPoint;
+    if (!destination) return false;
+    const distance = calculateDistance(location, destination);
     const arrivalThreshold = 0.0005;
     return distance <= arrivalThreshold;
   };
@@ -160,7 +161,7 @@ const TestScreen = ({ selectedRoute }) => {
       routeWalked: routePoints,
     };
 
-    // 백엔드와의 통신 로직 (테스트용)
+    // Simulated backend communication (for testing)
     if (deviatedEdges.length > 0) {
       Alert.alert(
         "축하합니다",
@@ -177,8 +178,8 @@ const TestScreen = ({ selectedRoute }) => {
         ref={mapRef}
         style={styles.map}
         initialRegion={{
-          latitude: 37.504558,
-          longitude: 126.956951,
+          latitude: routePoints[0]?.latitude || 37.504558,
+          longitude: routePoints[0]?.longitude || 126.956951,
           latitudeDelta: 0.002,
           longitudeDelta: 0.002,
         }}
@@ -209,6 +210,9 @@ const TestScreen = ({ selectedRoute }) => {
         ))}
         {userLocation && (
           <Marker coordinate={userLocation} onPress={() => {}} />
+        )}
+        {temporaryPin && (
+          <Marker coordinate={temporaryPin} pinColor="transparent" />
         )}
       </MapView>
       <View style={styles.buttonContainer}>
