@@ -1,3 +1,5 @@
+//capstone-FE/src/main/components/myPageScreen/UserInfo.js
+
 import React from "react";
 import {
     View,
@@ -80,25 +82,25 @@ export default UserInfo;
 
 const localStyles = StyleSheet.create({
     container: {
-        width: 360,
-        paddingHorizontal: 20,
+        width: "100%", // 화면 전체 너비 사용
+        paddingHorizontal: "5%", // 내부 패딩 비율로 조정
         backgroundColor: "white",
-        flex: 1,
+        flex: 1, // 전체 화면 높이 사용
     },
     label: {
         ...rootStyles.fontStyles.subTitle,
         color: "#000",
-        marginTop: 10,
+        marginTop: "5%", // 상대적 여백
     },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        height: 44,
+        height: 50, // 입력창 높이를 고정 값에서 조정
         borderWidth: 1,
         borderColor: "rgba(84, 76, 76, 0.14)",
         borderRadius: 6,
-        paddingHorizontal: 15,
-        marginTop: 5,
+        paddingHorizontal: "4%",
+        marginTop: "2%",
     },
     inputText: {
         ...rootStyles.fontStyles.text,
@@ -109,12 +111,13 @@ const localStyles = StyleSheet.create({
         marginLeft: 10,
     },
     saveButton: {
-        marginTop: 30,
-        height: 45,
+        marginTop: "10%",
+        height: 50,
         backgroundColor: rootStyles.colors.green5,
         borderRadius: 6,
         justifyContent: "center",
         alignItems: "center",
+        width: "100%",
     },
     saveButtonText: {
         ...rootStyles.fontStyles.subTitle,

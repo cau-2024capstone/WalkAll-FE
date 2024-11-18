@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import HistoryCard from './HistoryCard';
-import rootStyles from '../../styles/StyleGuide';
+//capstone-FE/src/main/components/historyScreen/HistoryCardArea.js
+import React from "react";
+import { View, StyleSheet, ScrollView } from "react-native";
+import HistoryCard from "./HistoryCard";
+import rootStyles from "../../styles/StyleGuide";
 
 function HistoryCardArea({ data }) {
     return (
@@ -10,7 +11,7 @@ function HistoryCardArea({ data }) {
                 contentContainerStyle={localStyles.scrollViewContainer}
                 showsVerticalScrollIndicator={false}
             >
-                {data.map(card => (
+                {data.map((card) => (
                     <HistoryCard key={card.id} {...card} />
                 ))}
             </ScrollView>
@@ -22,19 +23,14 @@ export default HistoryCardArea;
 
 const localStyles = StyleSheet.create({
     cardAreaContainer: {
-        position: "relative",
-        flexShrink: 0,
-        height: 700,
-        width: 382,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        flex: 1,
+        width: "100%",
         backgroundColor: rootStyles.colors.grey1,
     },
     scrollViewContainer: {
         flexGrow: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: 20,
+        flexDirection: "column",
+        alignItems: "center",
+        paddingBottom: "5%",
     },
 });

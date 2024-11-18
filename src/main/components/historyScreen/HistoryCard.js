@@ -1,3 +1,5 @@
+//capstone-FE/src/main/components/historyScreen/HistoryCard.js
+
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import rootStyles from "../../styles/StyleGuide";
@@ -40,59 +42,52 @@ export default HistoryCard;
 
 const localStyles = StyleSheet.create({
     cardContainer: {
-        width: 382,
-        paddingTop: 6,
-        paddingBottom: 12,
-        paddingRight: 30,
-        paddingLeft: 30,
-        marginBottom: 10,
+        width: "100%",
+        paddingVertical: "4%",
+        paddingHorizontal: "5%",
+        marginBottom: "5%",
         backgroundColor: "#FEFEFE",
-        borderRadius: 10,
+        borderRadius: 15,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
         alignItems: "center",
     },
-    date: {
-        ...rootStyles.fontStyles.text,
-        color: "rgba(112, 112, 112, 1)",
-        marginBottom: 10,
-        alignSelf: "flex-start",
-    },
     mapContainer: {
         width: "100%",
-        height: 150,
+        aspectRatio: 2.5, // 지도 이미지 비율 유지
         borderRadius: 10,
         overflow: "hidden",
-        marginBottom: 15,
-    },
-    mapImage: {
-        width: "100%",
-        height: "100%",
+        marginBottom: "5%",
+        backgroundColor: "#F2F2F2",
     },
     infoContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
-        marginBottom: 15,
+        marginBottom: "5%",
+        flexWrap: "wrap",
     },
     infoButton: {
         backgroundColor: "rgba(223, 247, 202, 1)",
         color: "rgba(74, 143, 62, 1)",
         textAlign: "center",
-        paddingVertical: 5,
-        paddingHorizontal: 10,
+        paddingVertical: "2%",
+        paddingHorizontal: "4%",
         borderRadius: 15,
         fontSize: 12,
+        marginRight: "2%",
+        marginBottom: "2%",
     },
     walkButton: {
-        width: "100%",
-        paddingVertical: 10,
+        width: "90%",
+        paddingVertical: "3%",
         borderWidth: 1,
         borderColor: "rgba(74, 143, 62, 1)",
         borderRadius: 10,
         alignItems: "center",
+        marginTop: "5%",
     },
     walkButtonText: {
         color: "rgba(74, 143, 62, 1)",

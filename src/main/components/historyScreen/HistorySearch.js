@@ -1,3 +1,4 @@
+//capstone-FE/src/main/components/historyScreen/HistorySearch.js
 import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import rootStyles from "../../styles/StyleGuide";
@@ -80,36 +81,28 @@ export default HistorySearch;
 
 const localStyles = StyleSheet.create({
     container: {
-        marginTop: -30,
-        paddingTop: 20,
-        height: 90,
-        width: 382,
-        paddingHorizontal: 25,
+        paddingVertical: "3%",
+        height: "12%",
+        width: "100%",
         backgroundColor: rootStyles.colors.white,
         flexDirection: "row",
         alignItems: "center",
+        paddingHorizontal: "5%",
     },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "#F2F2F2",
         borderRadius: 20,
-        paddingHorizontal: 10,
-        width: "85%",
-        height: 40,
+        paddingHorizontal: "3%",
+        flex: 1,
+        height: "70%",
     },
     input: {
         flex: 1,
-        height: "100%",
         color: rootStyles.colors.black,
     },
     iconContainer: {
-        paddingLeft: 10,
-    },
-    refreshIcon: {
-        marginLeft: 10,
-    },
-    filterIcon: {
-        marginLeft: 10,
+        marginLeft: "3%",
     },
 });
