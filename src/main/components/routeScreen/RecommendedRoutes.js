@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 10,
     width: "90%",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "rgba(134, 203, 122, 1)", // Medium green
   },
   resetButton: {
