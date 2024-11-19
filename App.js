@@ -5,6 +5,7 @@ import * as Location from "expo-location";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import BottomTabApp from "./src/main/components/TabBar.js";
+import LoginScreen from "./src/main/screens/LoginScreen.js"
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +24,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <BottomTabApp />
+      <LoginScreen />
     </NavigationContainer>
   );
 };

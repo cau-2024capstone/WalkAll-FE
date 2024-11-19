@@ -24,8 +24,10 @@ export default HistoryCardArea;
 const localStyles = StyleSheet.create({
     cardAreaContainer: {
         flex: 1,
+        flexDirection: "column",
         width: "100%",
         backgroundColor: rootStyles.colors.grey1,
+        alignItems: "center",
     },
     scrollViewContainer: {
         flexGrow: 1,

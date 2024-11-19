@@ -18,6 +18,8 @@ $ npx expo install expo-font
 $ npx expo install react-native-screens react-native-safe-area-context
 npm install @react-navigation/stack
 npm install react-native-maps
+npm install react-native-vector-icons
+
 ```
 
 ```버전 명시 ```

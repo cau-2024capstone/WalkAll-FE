@@ -40,6 +40,7 @@ function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
 
 export default HistoryCard;
 
+
 const localStyles = StyleSheet.create({
     cardContainer: {
         width: "100%",
@@ -52,7 +53,10 @@ const localStyles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
-        alignItems: "center",
+
+    },
+    date: {
+        marginBottom: "4%",
     },
     mapContainer: {
         width: "100%",
@@ -66,7 +70,7 @@ const localStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
-        marginBottom: "5%",
+        marginBottom: "1%",
         flexWrap: "wrap",
     },
     infoButton: {
@@ -78,11 +82,12 @@ const localStyles = StyleSheet.create({
         borderRadius: 15,
         fontSize: 12,
         marginRight: "2%",
-        marginBottom: "2%",
+
     },
     walkButton: {
         width: "90%",
         paddingVertical: "3%",
+        marginHorizontal: "3%",
         borderWidth: 1,
         borderColor: "rgba(74, 143, 62, 1)",
         borderRadius: 10,
@@ -95,3 +100,4 @@ const localStyles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
+

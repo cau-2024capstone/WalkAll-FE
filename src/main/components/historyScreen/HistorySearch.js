@@ -81,7 +81,8 @@ export default HistorySearch;
 
 const localStyles = StyleSheet.create({
     container: {
-        paddingVertical: "3%",
+        paddingTop: "8%",
+        paddingBottom: "2%",
         height: "12%",
         width: "100%",
         backgroundColor: rootStyles.colors.white,
