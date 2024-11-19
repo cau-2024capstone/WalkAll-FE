@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import { Image } from "expo-image";
 
 const StartPointSelection = ({ navigation }) => {
   const [mode, setMode] = useState("start"); // 'start', 'destination', 'waypoint'
@@ -58,7 +59,7 @@ const StartPointSelection = ({ navigation }) => {
       setDestinationMarker(coordinate);
       addAndRemoveTemporaryPin();
     } else if (mode === "waypoint") {
-      const proximityThreshold = 0.0001;
+      const proximityThreshold = 0.0001; // 0.0001도 이내로 선택하면 같은 핑 누른거니까 삭제
 
       // 근처에 있는 경유지 제거 또는 추가
       const nearbyWaypoint = waypoints.find(
@@ -95,7 +96,7 @@ const StartPointSelection = ({ navigation }) => {
   };
 
   const addAndRemoveTemporaryPin = () => {
-    // 지도에 보이지 않는 영역에 임시 핀 추가
+    // 지도에 보이지 않는 영역에 임시 핀 추가 (expo 52업뎃 후 버그 해결용)
     const tempCoordinate = {
       latitude: 30,
       longitude: 120,
@@ -109,14 +110,18 @@ const StartPointSelection = ({ navigation }) => {
   };
 
   const proceedToUserInput = () => {
-    if (startMarker && destinationMarker) {
+    if (!startMarker) {
+      Alert.alert("출발지를 설정해주세요.");
+      return;
+    } else if (!destinationMarker) {
+      Alert.alert("도착지를 설정해주세요.");
+      return;
+    } else {
       navigation.navigate("UserInput", {
         startMarker,
-        waypoints,
         destinationMarker,
+        waypoints,
       });
-    } else {
-      Alert.alert("출발지와 도착지를 모두 설정해주세요.");
     }
   };
 
@@ -124,7 +129,7 @@ const StartPointSelection = ({ navigation }) => {
     return (
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingTitle}>지도 불러오는 중...</Text>
-        <ActivityIndicator size="large" color="#0d6efd" />
+        <ActivityIndicator size="large" color="rgba(74, 143, 62, 1)" />
       </View>
     );
   }
@@ -177,21 +182,43 @@ const StartPointSelection = ({ navigation }) => {
         onPress={handleMapPress}
         showsUserLocation={false}
       >
-        {startMarker && <Marker coordinate={startMarker} pinColor="green" />}
+        <Marker coordinate={region}>
+          <Image
+            source={require("../../assets/images/userPing.png")}
+            style={{ width: 40, height: 40 }}
+          />
+        </Marker>
+        {startMarker && (
+          <Marker coordinate={startMarker}>
+            <Image
+              source={require("../../assets/images/startPing.png")}
+              style={{ width: 60, height: 60 }}
+            />
+          </Marker>
+        )}
         {destinationMarker && (
-          <Marker coordinate={destinationMarker} pinColor="red" />
+          <Marker coordinate={destinationMarker}>
+            <Image
+              source={require("../../assets/images/endPing.png")}
+              style={{ width: 60, height: 60 }}
+            />
+          </Marker>
         )}
         {waypoints.map((wp, index) => (
           <Marker
             key={index}
             coordinate={wp}
-            pinColor="orange"
             onPress={() => {
               if (mode === "waypoint") {
                 setWaypoints(waypoints.filter((w) => w !== wp));
               }
             }}
-          />
+          >
+            <Image
+              source={require("../../assets/images/wayPointPing.png")}
+              style={{ width: 60, height: 60 }}
+            />
+          </Marker>
         ))}
         {temporaryPin && (
           <Marker coordinate={temporaryPin} pinColor="transparent" />

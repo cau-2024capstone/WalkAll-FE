@@ -6,6 +6,7 @@ import StartPointSelection from "../components/routeScreen/StartPointSelection";
 import RecommendedRoutes from "../components/routeScreen/RecommendedRoutes";
 import NavigationScreen from "../components/routeScreen/NavigationScreen";
 import UserInput from "../components/routeScreen/UserInput";
+import LoadingModal from "../components/routeScreen/LoadingModal";
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,6 @@ function RouteStack() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        animationEnabled: false,
       }}
     >
       <Stack.Screen
@@ -22,6 +22,11 @@ function RouteStack() {
         component={StartPointSelection}
       />
       <Stack.Screen name="UserInput" component={UserInput} />
+      <Stack.Screen
+        name="LoadingModal"
+        component={LoadingModal}
+        options={{ headerShown: false }} // 헤더를 숨기고 싶을 경우
+      />
       <Stack.Screen name="RecommendedRoutes" component={RecommendedRoutes} />
       <Stack.Screen name="NavigationScreen" component={NavigationScreen} />
     </Stack.Navigator>
