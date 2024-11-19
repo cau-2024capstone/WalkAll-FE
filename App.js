@@ -1,13 +1,15 @@
 import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import * as Location from "expo-location";
-import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
 import BottomTabApp from "./src/main/components/TabBar.js";
-import LoginScreen from "./src/main/screens/LoginScreen.js"
+import LoginScreen from "./src/main/screens/LoginScreen.js";
+import SignupScreen from "./src/main/screens/SignupScreen.js";
 
 SplashScreen.preventAutoHideAsync();
+
+const Stack = createStackNavigator();
 
 const App = () => {
   const [fontsLoaded, error] = useFonts({
@@ -24,7 +26,11 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <LoginScreen />
+      <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="SignupScreen" component={SignupScreen} />
+        <Stack.Screen name="BottomTabApp" component={BottomTabApp} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

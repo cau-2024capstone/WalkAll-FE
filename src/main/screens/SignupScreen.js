@@ -1,37 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import rootStyles from '../styles/StyleGuide';
 
-function LoginScreen() {
+function SignupScreen() {
     const navigation = useNavigation();
-    const route = useRoute();
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
 
-    useEffect(() => {
-        // route.params로 전달된 값을 상태에 반영
-        if (route.params?.id) setId(route.params.id);
-        if (route.params?.password) setPassword(route.params.password);
-    }, [route.params]);
-
-    const handleLogin = () => {
-        navigation.navigate('BottomTabApp'); // BottomTabApp으로 이동
+    const handleSignup = () => {
+        // id와 password를 LoginScreen으로 전달
+        navigation.navigate('LoginScreen', { id, password });
     };
 
-    const handleSignupNavigation = () => {
-        navigation.navigate('SignupScreen'); // SignupScreen으로 이동
+    const handleLogin = () => {
+        navigation.navigate('LoginScreen'); // 로그인 화면으로 이동
     };
 
     return (
         <View style={localStyles.container}>
+            {/* 상단 텍스트 */}
             <View style={localStyles.header}>
                 <Text style={[rootStyles.fontStyles.mainTitle, { fontSize: 30 }]}>
-                    Login
+                    Register
                 </Text>
                 <Text style={[rootStyles.fontStyles.text, { fontSize: 14 }]}>
-                    돌아오신 걸 환영해요, Walk-ER 님!
+                    Walk-ALL에 가입하고 함께 산책해요!
                 </Text>
             </View>
 
@@ -48,6 +45,27 @@ function LoginScreen() {
                         placeholderTextColor={rootStyles.colors.gray5}
                     />
                 </View>
+                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
+                    아이디는 중복이 불가능해요
+                </Text>
+            </View>
+
+            {/* 이름 입력 필드 */}
+            <View style={localStyles.inputContainer}>
+                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이름</Text>
+                <View style={localStyles.inputField}>
+                    <Icon name="badge" size={20} color={rootStyles.colors.gray4} />
+                    <TextInput
+                        style={localStyles.textInput}
+                        value={name}
+                        onChangeText={setName}
+                        placeholder="이름을 입력하세요"
+                        placeholderTextColor={rootStyles.colors.gray5}
+                    />
+                </View>
+                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
+                    사용자님의 이름을 알려주세요
+                </Text>
             </View>
 
             {/* 비밀번호 입력 필드 */}
@@ -64,28 +82,44 @@ function LoginScreen() {
                         secureTextEntry
                     />
                 </View>
+                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
+                    숫자, 문자를 포함해 8자리 이상 입력해주세요
+                </Text>
             </View>
 
-            {/* 비밀번호 찾기 */}
-            <Text style={[rootStyles.fontStyles.text, localStyles.forgotPassword]}>
-                비밀번호 찾기
-            </Text>
+            {/* 이메일 입력 필드 */}
+            <View style={localStyles.inputContainer}>
+                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이메일</Text>
+                <View style={localStyles.inputField}>
+                    <Icon name="email" size={20} color={rootStyles.colors.gray4} />
+                    <TextInput
+                        style={localStyles.textInput}
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="이메일을 입력하세요"
+                        placeholderTextColor={rootStyles.colors.gray5}
+                    />
+                </View>
+                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
+                    비밀번호 찾기에 사용됩니다
+                </Text>
+            </View>
 
-            {/* 로그인 버튼 */}
-            <TouchableOpacity style={localStyles.loginButton} onPress={handleLogin}>
+            {/* 회원가입 버튼 */}
+            <TouchableOpacity style={localStyles.signupButton} onPress={handleSignup}>
                 <Text style={[rootStyles.fontStyles.text, { fontSize: 16, color: rootStyles.colors.white }]}>
-                    로그인
+                    회원가입
                 </Text>
             </TouchableOpacity>
 
-            {/* 회원가입 텍스트 */}
-            <View style={localStyles.registerContainer}>
+            {/* 하단 로그인 텍스트 */}
+            <View style={localStyles.loginContainer}>
                 <Text style={[rootStyles.fontStyles.text, { fontSize: 12 }]}>
-                    Walk-ALL이 처음이신가요?
+                    이미 Walk-ER이신가요?
                 </Text>
-                <TouchableOpacity onPress={handleSignupNavigation}>
-                    <Text style={[rootStyles.fontStyles.text, localStyles.registerText]}>
-                        회원가입하기
+                <TouchableOpacity onPress={handleLogin}>
+                    <Text style={[rootStyles.fontStyles.text, localStyles.loginText]}>
+                        로그인하기
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -93,7 +127,7 @@ function LoginScreen() {
     );
 }
 
-export default LoginScreen;
+export default SignupScreen;
 
 const localStyles = StyleSheet.create({
     container: {
@@ -127,25 +161,24 @@ const localStyles = StyleSheet.create({
         color: rootStyles.colors.black,
         fontFamily: rootStyles.fontStyles.text.fontFamily,
     },
-    forgotPassword: {
-        textAlign: 'center',
-        color: rootStyles.colors.green5,
-        textDecorationLine: 'underline',
-        marginVertical: 10,
+    helperText: {
+        marginTop: 5,
+        fontSize: 12,
+        color: rootStyles.colors.gray5,
     },
-    loginButton: {
+    signupButton: {
         backgroundColor: rootStyles.colors.green5,
         paddingVertical: 15,
         borderRadius: 8,
         alignItems: 'center',
         width: '100%',
     },
-    registerContainer: {
+    loginContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 20,
     },
-    registerText: {
+    loginText: {
         color: rootStyles.colors.green5,
         textDecorationLine: 'underline',
         marginLeft: 5,
