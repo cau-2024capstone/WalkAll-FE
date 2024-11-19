@@ -1,5 +1,5 @@
-// LoadingModal.js
-import React, { useEffect } from "react";
+// capstone-FE/src/main/components/routeScreen/LoadingModal.js
+import React, { useEffect, useState } from "react";
 import { View, Text, Alert, StyleSheet, Modal } from "react-native";
 import { Image } from "expo-image";
 import { result } from "./backendTest"; // Mock 데이터 사용 시 필요
@@ -17,6 +17,9 @@ const LoadingModal = ({ navigation, route }) => {
   const localIP = "192.168.45.28"; // 자신의 IP로 변경
   const useMockData = false; // true로 설정 시 Mock 데이터 사용
 
+  const [progressMessages, setProgressMessages] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(true);
+
   useEffect(() => {
     if (useMockData) {
       // Mock 데이터 사용
@@ -31,6 +34,7 @@ const LoadingModal = ({ navigation, route }) => {
         latitude: 37.506312931566,
         longitude: 126.9568734886127,
       };
+      setIsModalVisible(false); // 모달 닫기
       navigation.navigate("RecommendedRoutes", {
         routesData,
         start,
@@ -43,18 +47,9 @@ const LoadingModal = ({ navigation, route }) => {
       return;
     }
 
-    // 실제 데이터 사용
     const fetchData = async () => {
       try {
-        // 칼로리 목표는 아직 구현되지 않음
-        if (selectedGoal === "kcal") {
-          Alert.alert(
-            "죄송합니다",
-            "칼로리 목표 설정은 현재 지원되지 않습니다. 다른 목표를 선택해주세요."
-          );
-          navigation.goBack();
-          return;
-        }
+        setProgressMessages(["사용자가 정한 위치 검증 중..."]);
 
         // 가장 가까운 점 ID를 가져오는 함수
         const getClosestPointId = async (lat, lng, pointType) => {
@@ -71,55 +66,79 @@ const LoadingModal = ({ navigation, route }) => {
           }
           const data = await response.text(); // 문자열로 응답을 받음
           if (!data || data === "null") {
-            Alert.alert(
-              "죄송합니다",
-              `${pointType}는 저희가 그린 지도 내에 존재하지 않습니다.`
-            );
-
-            navigation.navigate("StartPointSelection");
-            return;
+            console.log(`${pointType}는 지도 내에 존재하지 않습니다.`);
+            return null;
           }
           console.log(`Closest point ID for ${pointType}:`, data);
-          return data.replace(/"/g, ""); // 문자열에서 불필요한 따옴표 제거 (리스트에서 가져와서 따옴표가 포함되어 있음)
+          return data.replace(/"/g, ""); // 문자열에서 불필요한 따옴표 제거
         };
 
         // 출발지의 가장 가까운 점 ID 가져오기
-        const startId = await getClosestPointId(
+        const startPromise = getClosestPointId(
           startMarker.latitude,
           startMarker.longitude,
           "출발지"
         );
 
         // 도착지의 가장 가까운 점 ID 가져오기
-        let endId;
-        if (destinationMarker) {
-          endId = await getClosestPointId(
-            destinationMarker.latitude,
-            destinationMarker.longitude,
-            "도착지"
-          );
-        } else {
-          endId = startId; // 도착지가 없을 경우 출발지와 동일하게 설정
-        }
+        const endPromise = getClosestPointId(
+          destinationMarker.latitude,
+          destinationMarker.longitude,
+          "도착지"
+        );
 
         // 경유지의 가장 가까운 점 ID 가져오기
-        let waypointIds = [];
+        let waypointPromises = [];
         if (waypoints && waypoints.length > 0) {
-          for (let i = 0; i < waypoints.length; i++) {
-            const wp = waypoints[i];
-            const wpId = await getClosestPointId(
-              wp.latitude,
-              wp.longitude,
-              `경유지 ${i + 1}`
-            );
-            waypointIds.push(wpId.replace(/"/g, "")); // 문자열에서 불필요한 따옴표 제거
-          }
+          waypointPromises = waypoints.map((wp, index) =>
+            getClosestPointId(wp.latitude, wp.longitude, `경유지 ${index + 1}`)
+          );
+        }
+
+        // 모든 closest-point 호출 완료 후
+        const startId = await startPromise;
+        const endId = await endPromise;
+        const waypointIds = await Promise.all(waypointPromises);
+
+        // 검증 완료 메시지로 업데이트
+        setProgressMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1] = "사용자가 정한 위치 검증 완료";
+          return newMessages;
+        });
+
+        // 추천 경로 생성 중 메시지 추가
+        setProgressMessages((prev) => [...prev, "추천 경로 생성 중..."]);
+
+        if (!startId || !endId) {
+          Alert.alert(
+            "죄송합니다",
+            "출발지나 도착지가 지도 내에 존재하지 않습니다."
+          );
+          setIsModalVisible(false); // 모달 닫기
+          navigation.navigate("StartPointSelection");
+          return;
+        }
+
+        // 경유지 중 존재하지 않는 곳이 있는지 확인
+        if (waypointIds.includes(null)) {
+          Alert.alert(
+            "죄송합니다",
+            "경유지 중 일부가 지도 내에 존재하지 않습니다."
+          );
+          setIsModalVisible(false); // 모달 닫기
+          navigation.navigate("StartPointSelection");
+          return;
         }
 
         // 모든 closest-point 호출이 성공적으로 완료된 후에 경로 생성 API 호출
         let body = {};
 
-        if (selectedGoal !== "none" && inputValue) {
+        if (
+          selectedGoal !== "none" &&
+          selectedGoal !== "setGoal" &&
+          inputValue
+        ) {
           if (selectedGoal === "time") {
             body.maxTime = Number(inputValue);
           } else if (selectedGoal === "m") {
@@ -135,75 +154,126 @@ const LoadingModal = ({ navigation, route }) => {
           body.waypointIds = waypointIds;
         }
 
-        let routesData = null;
+        const fetchRoutes = async (bodyParams) => {
+          let routesData = null;
+          if (startId === endId) {
+            // 시작점과 도착점이 동일한 경우
+            bodyParams.startPoint = startId;
 
-        if (startId === endId) {
-          // 시작점과 도착점이 동일한 경우
-          body.startPoint = startId;
+            const url = `http://${localIP}:8082/api/routes/findRoutesWithSameStartPoint`;
+            console.log("Calling findRoutesWithSameStartPoint API:", url);
+            console.log("Request body:", JSON.stringify(bodyParams));
 
-          const url = `http://${localIP}:8082/api/routes/findRoutesWithSameStartPoint`;
-          console.log("Calling findRoutesWithSameStartPoint API:", url);
-          console.log("Request body:", JSON.stringify(body));
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(bodyParams),
+            });
 
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
+            if (!response.ok) {
+              console.log("Failed to fetch routes:", response.statusText);
+              throw new Error("Failed to fetch routes");
+            }
 
-          if (!response.ok) {
-            console.log("Failed to fetch routes:", response.statusText);
-            throw new Error("Failed to fetch routes");
+            routesData = await response.json();
+          } else {
+            // 시작점과 도착점이 다른 경우
+            bodyParams.startId = startId;
+            bodyParams.endId = endId;
+
+            const url = `http://${localIP}:8082/api/routes/findRoutes`;
+            console.log("Calling findRoutes API:", url);
+            console.log("Request body:", JSON.stringify(bodyParams));
+
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(bodyParams),
+            });
+
+            if (!response.ok) {
+              console.log("Failed to fetch routes:", response.statusText);
+              throw new Error("Failed to fetch routes");
+            }
+
+            routesData = await response.json();
           }
+          return routesData;
+        };
 
-          routesData = await response.json();
-        } else {
-          // 시작점과 도착점이 다른 경우
-          body.startId = startId;
-          body.endId = endId;
+        let routesData = await fetchRoutes({ ...body });
 
-          const url = `http://${localIP}:8082/api/routes/findRoutes`;
-          console.log("Calling findRoutes API:", url);
-          console.log("Request body:", JSON.stringify(body));
-
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
+        if (routesData && routesData.length > 0) {
+          // 경로를 성공적으로 찾았을 경우
+          setIsModalVisible(false); // 모달 닫기
+          navigation.navigate("RecommendedRoutes", {
+            routesData,
+            startMarker,
+            waypoints,
+            destinationMarker,
+            selectedPath,
+            selectedGoal,
+            inputValue,
           });
-
-          if (!response.ok) {
-            console.log("Failed to fetch routes:", response.statusText);
-            throw new Error("Failed to fetch routes");
-          }
-
-          routesData = await response.json();
-        }
-
-        // 경로 데이터가 없을 경우 처리
-        if (!routesData || routesData.length === 0) {
-          Alert.alert("죄송합니다", "조건에 맞는 경로를 찾을 수 없습니다.");
-          navigation.navigate("StartPointSelection");
           return;
         }
 
-        // RecommendedRoutes 화면으로 이동
-        navigation.navigate("RecommendedRoutes", {
-          routesData,
-          startMarker,
-          waypoints,
-          destinationMarker,
-          selectedPath,
-          selectedGoal,
-          inputValue,
-        });
+        // routeType 제거하고 다시 시도
+        const failedRouteType = body.routeType;
+        delete body.routeType;
+        routesData = await fetchRoutes({ ...body });
+
+        if (routesData && routesData.length > 0) {
+          Alert.alert(
+            "알림",
+            `${failedRouteType} 경로를 찾지 못했습니다. 경로 타입을 변경해주세요.`
+          );
+          setIsModalVisible(false); // 모달 닫기
+          navigation.navigate("UserInput", {
+            startMarker,
+            waypoints,
+            destinationMarker,
+            failedRouteType: true,
+          });
+          return;
+        }
+
+        // max~ 파라미터 제거하고 다시 시도
+        const failedGoal = selectedGoal;
+        const failedInputValue = inputValue;
+        delete body.maxTime;
+        delete body.maxDistance;
+        routesData = await fetchRoutes({ ...body });
+
+        if (routesData && routesData.length > 0) {
+          Alert.alert(
+            "알림",
+            `${failedInputValue}${
+              selectedGoal === "time" ? "분" : "m"
+            } 이내의 경로를 찾을 수 없습니다. 목표를 수정하시거나 목표 설정을 삭제해주세요.`
+          );
+          setIsModalVisible(false); // 모달 닫기
+          navigation.navigate("UserInput", {
+            startMarker,
+            waypoints,
+            destinationMarker,
+            failedGoal: true,
+          });
+          return;
+        }
+
+        // 조건에 맞는 경로를 찾을 수 없음
+        Alert.alert("죄송합니다", "조건에 맞는 경로를 찾을 수 없습니다.");
+        setIsModalVisible(false); // 모달 닫기
+        navigation.navigate("StartPointSelection");
       } catch (error) {
         console.log("Error in fetchData:", error);
         Alert.alert("오류가 발생했습니다", "다시 시도해주세요.");
+        setIsModalVisible(false); // 모달 닫기
         navigation.navigate("StartPointSelection");
       }
     };
@@ -212,14 +282,18 @@ const LoadingModal = ({ navigation, route }) => {
   }, []);
 
   return (
-    <Modal transparent={true} animationType="fade">
+    <Modal transparent={true} animationType="fade" visible={isModalVisible}>
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
           <Image
             source={require("../../assets/images/walkingAnimation.gif")}
             style={{ width: 100, height: 100 }}
           />
-          <Text style={{ marginTop: 10 }}>추천 경로를 생성 중입니다...</Text>
+          {progressMessages.map((message, index) => (
+            <Text key={index} style={{ marginTop: 10 }}>
+              {message}
+            </Text>
+          ))}
         </View>
       </View>
     </Modal>

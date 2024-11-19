@@ -1,3 +1,4 @@
+// capstone-FE/src/main/components/routeScreen/UserInput.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,13 +14,21 @@ import {
 import MapView, { Marker } from "react-native-maps";
 
 const UserInput = ({ navigation, route }) => {
-  const { startMarker, waypoints, destinationMarker } = route.params;
+  const {
+    startMarker,
+    waypoints,
+    destinationMarker,
+    failedRouteType,
+    failedGoal,
+  } = route.params;
 
   const [selectedPath, setSelectedPath] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState("none");
+  const [selectedGoal, setSelectedGoal] = useState("setGoal");
   const [inputValue, setInputValue] = useState("");
   const [region, setRegion] = useState(null);
+  const [goalFailed, setGoalFailed] = useState(false);
+  const [routeTypeFailed, setRouteTypeFailed] = useState(false);
 
   const pathOptions = [
     { label: "편한 길", value: "Street" },
@@ -28,11 +37,30 @@ const UserInput = ({ navigation, route }) => {
   ];
 
   const goals = [
+    { label: "목표 설정", value: "setGoal" },
     { label: "목표 설정 안하기", value: "none" },
     { label: "거리 (m)", value: "m" },
     { label: "칼로리 (kcal)", value: "kcal" },
     { label: "시간 (분)", value: "time" },
   ];
+
+  useEffect(() => {
+    if (route.params?.failedRouteType) {
+      setSelectedPath(null);
+      setRouteTypeFailed(true);
+      setTimeout(() => {
+        setRouteTypeFailed(false);
+      }, 10000);
+    }
+    if (route.params?.failedGoal) {
+      setSelectedGoal("none");
+      setInputValue("");
+      setGoalFailed(true);
+      setTimeout(() => {
+        setGoalFailed(false);
+      }, 3000);
+    }
+  }, [route.params]);
 
   useEffect(() => {
     const calculateRegion = (points) => {
@@ -50,7 +78,7 @@ const UserInput = ({ navigation, route }) => {
       const minLng = Math.min(...longitudes);
 
       const latitudeDelta = Math.max((maxLat - minLat) * 1.2, 0.003);
-      const longitudeDelta = Math.max((maxLng - minLng) * 1.2, 0.003); //최소값 0.003
+      const longitudeDelta = Math.max((maxLng - minLng) * 1.2, 0.003); // 최소값 0.003
 
       return {
         latitude: centerLat,
@@ -73,7 +101,11 @@ const UserInput = ({ navigation, route }) => {
       return;
     }
 
-    if (selectedGoal !== "none" && isNaN(Number(inputValue))) {
+    if (
+      selectedGoal !== "none" &&
+      selectedGoal !== "setGoal" &&
+      isNaN(Number(inputValue))
+    ) {
       Alert.alert("오류", "입력 값이 숫자가 아닙니다. 숫자를 입력해주세요.");
       return;
     }
@@ -114,13 +146,15 @@ const UserInput = ({ navigation, route }) => {
 
       {/* 목표 선택 Modal */}
       <TouchableOpacity
-        style={styles.dropdownButton}
+        style={[
+          styles.dropdownButton,
+          goalFailed && styles.failedDropdownButton,
+        ]}
         onPress={() => setShowModal(true)}
       >
         <Text style={styles.dropdownButtonText}>
-          {selectedGoal
-            ? goals.find((goal) => goal.value === selectedGoal).label
-            : "목표를 선택하세요"}
+          {selectedGoal &&
+            goals.find((goal) => goal.value === selectedGoal)?.label}
         </Text>
       </TouchableOpacity>
 
@@ -149,7 +183,7 @@ const UserInput = ({ navigation, route }) => {
       </Modal>
 
       {/* 선택된 옵션에 따른 입력 필드와 단위 표시 */}
-      {selectedGoal !== "none" && (
+      {selectedGoal !== "none" && selectedGoal !== "setGoal" && (
         <View style={styles.inputSection}>
           <TextInput
             style={styles.input}
@@ -180,8 +214,15 @@ const UserInput = ({ navigation, route }) => {
             style={[
               styles.pathButton,
               selectedPath === path.value && styles.selectedPathButton,
+              routeTypeFailed && styles.failedPathButton,
             ]}
-            onPress={() => setSelectedPath(path.value)}
+            onPress={() => {
+              if (selectedPath === path.value) {
+                setSelectedPath(null); // 다시 눌러서 취소 가능하게
+              } else {
+                setSelectedPath(path.value);
+              }
+            }}
           >
             <Text
               style={[
@@ -249,6 +290,9 @@ const styles = StyleSheet.create({
   selectedPathButton: {
     backgroundColor: "rgba(74, 143, 62, 1)", // 진한 초록색
   },
+  failedPathButton: {
+    borderColor: "red", // 실패 시 빨간색 테두리
+  },
   pathButtonText: {
     fontSize: 16,
     color: "#000", // 검정색 글자
@@ -265,6 +309,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(74, 143, 62, 1)", // 진한 초록색 테두리
     alignItems: "center",
+  },
+  failedDropdownButton: {
+    borderColor: "red", // 실패 시 빨간색 테두리
   },
   dropdownButtonText: {
     fontSize: 16,
