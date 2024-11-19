@@ -14,7 +14,7 @@ const LoadingModal = ({ navigation, route }) => {
     inputValue,
   } = route.params;
 
-  const localIP = "192.168.45.28"; // 자신의 IP로 변경
+  const localIP = "192.168.0.8"; // 자신의 IP로 변경
   const useMockData = false; // true로 설정 시 Mock 데이터 사용
 
   const [progressMessages, setProgressMessages] = useState([]);
@@ -134,11 +134,7 @@ const LoadingModal = ({ navigation, route }) => {
         // 모든 closest-point 호출이 성공적으로 완료된 후에 경로 생성 API 호출
         let body = {};
 
-        if (
-          selectedGoal !== "none" &&
-          selectedGoal !== "setGoal" &&
-          inputValue
-        ) {
+        if (selectedGoal !== "none" && inputValue) {
           if (selectedGoal === "time") {
             body.maxTime = Number(inputValue);
           } else if (selectedGoal === "m") {

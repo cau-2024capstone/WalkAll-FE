@@ -24,7 +24,7 @@ const UserInput = ({ navigation, route }) => {
 
   const [selectedPath, setSelectedPath] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState("setGoal");
+  const [selectedGoal, setSelectedGoal] = useState("none");
   const [inputValue, setInputValue] = useState("");
   const [region, setRegion] = useState(null);
   const [goalFailed, setGoalFailed] = useState(false);
@@ -33,11 +33,10 @@ const UserInput = ({ navigation, route }) => {
   const pathOptions = [
     { label: "편한 길", value: "Street" },
     { label: "골목길", value: "Alley" },
-    { label: "다이어트 길", value: "diet" },
+    { label: "다이어트 길", value: "Steep" },
   ];
 
   const goals = [
-    { label: "목표 설정", value: "setGoal" },
     { label: "목표 설정 안하기", value: "none" },
     { label: "거리 (m)", value: "m" },
     { label: "칼로리 (kcal)", value: "kcal" },
@@ -50,7 +49,7 @@ const UserInput = ({ navigation, route }) => {
       setRouteTypeFailed(true);
       setTimeout(() => {
         setRouteTypeFailed(false);
-      }, 10000);
+      }, 5000);
     }
     if (route.params?.failedGoal) {
       setSelectedGoal("none");
@@ -58,7 +57,7 @@ const UserInput = ({ navigation, route }) => {
       setGoalFailed(true);
       setTimeout(() => {
         setGoalFailed(false);
-      }, 3000);
+      }, 5000);
     }
   }, [route.params]);
 
@@ -101,11 +100,7 @@ const UserInput = ({ navigation, route }) => {
       return;
     }
 
-    if (
-      selectedGoal !== "none" &&
-      selectedGoal !== "setGoal" &&
-      isNaN(Number(inputValue))
-    ) {
+    if (selectedGoal !== "none" && isNaN(Number(inputValue))) {
       Alert.alert("오류", "입력 값이 숫자가 아닙니다. 숫자를 입력해주세요.");
       return;
     }
@@ -183,7 +178,7 @@ const UserInput = ({ navigation, route }) => {
       </Modal>
 
       {/* 선택된 옵션에 따른 입력 필드와 단위 표시 */}
-      {selectedGoal !== "none" && selectedGoal !== "setGoal" && (
+      {selectedGoal !== "none" && (
         <View style={styles.inputSection}>
           <TextInput
             style={styles.input}
