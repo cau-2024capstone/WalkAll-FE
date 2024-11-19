@@ -80,9 +80,11 @@ const RecommendedRoutes = ({ navigation, route }) => {
     if (roadTypeArray.includes("Steep")) {
       return "orange";
     } else if (roadTypeArray.includes("Street")) {
-      return "rgb(226, 226, 40)";
+      return "#024CAA";
     } else if (roadTypeArray.includes("Alley")) {
       return "brown";
+    } else if (roadTypeArray.includes("Tree")) {
+      return "#347928";
     } else {
       return "gray"; // Default color
     }
@@ -176,16 +178,19 @@ const RecommendedRoutes = ({ navigation, route }) => {
         </View>
         <View style={styles.legendItem}>
           <View
-            style={[
-              styles.legendColorBox,
-              { backgroundColor: "rgb(226, 226, 40)" },
-            ]}
+            style={[styles.legendColorBox, { backgroundColor: "#024CAA" }]}
           />
           <Text style={styles.legendText}>대로</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendColorBox, { backgroundColor: "brown" }]} />
           <Text style={styles.legendText}>골목길</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View
+            style={[styles.legendColorBox, { backgroundColor: "#347928" }]}
+          />
+          <Text style={styles.legendText}>자연친화 길</Text>
         </View>
       </View>
 
@@ -212,10 +217,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(254, 254, 254, 1)", // White
   },
   title: {
-    paddingTop: 40,
-    paddingBottom: 10,
+    paddingTop: 60,
+    paddingBottom: 15,
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 23,
     color: "rgba(23, 29, 27, 1)", // Dark green
     fontWeight: "bold",
   },
@@ -228,6 +233,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginHorizontal: 5,
+    paddingBottom: 4,
   },
   legendColorBox: {
     width: 20,

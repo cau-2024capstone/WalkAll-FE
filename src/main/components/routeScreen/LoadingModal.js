@@ -66,7 +66,7 @@ const LoadingModal = ({ navigation, route }) => {
           }
           const data = await response.text(); // 문자열로 응답을 받음
           if (!data || data === "null") {
-            console.log(`${pointType}는 지도 내에 존재하지 않습니다.`);
+            console.log(`${pointType}는 데이터베이스 내에 존재하지 않습니다.`);
             return null;
           }
           console.log(`Closest point ID for ${pointType}:`, data);
@@ -113,7 +113,7 @@ const LoadingModal = ({ navigation, route }) => {
         if (!startId || !endId) {
           Alert.alert(
             "죄송합니다",
-            "출발지나 도착지가 지도 내에 존재하지 않습니다."
+            "출발지나 도착지가 데이터베이스 내에 존재하지 않습니다."
           );
           setIsModalVisible(false); // 모달 닫기
           navigation.navigate("StartPointSelection");
@@ -124,7 +124,7 @@ const LoadingModal = ({ navigation, route }) => {
         if (waypointIds.includes(null)) {
           Alert.alert(
             "죄송합니다",
-            "경유지 중 일부가 지도 내에 존재하지 않습니다."
+            "경유지 중 일부가 데이터베이스 내에 존재하지 않습니다."
           );
           setIsModalVisible(false); // 모달 닫기
           navigation.navigate("StartPointSelection");

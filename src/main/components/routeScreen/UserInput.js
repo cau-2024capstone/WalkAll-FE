@@ -34,6 +34,7 @@ const UserInput = ({ navigation, route }) => {
     { label: "편한 길", value: "Street" },
     { label: "골목길", value: "Alley" },
     { label: "다이어트 길", value: "Steep" },
+    { label: "자연 친화 길", value: "Tree" },
   ];
 
   const goals = [
@@ -276,7 +277,7 @@ const styles = StyleSheet.create({
   },
   pathButton: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     backgroundColor: "#F2F2F2", // 연한 회색
     borderRadius: 20,
     borderWidth: 1,
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
     borderColor: "red", // 실패 시 빨간색 테두리
   },
   pathButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#000", // 검정색 글자
   },
   selectedPathButtonText: {
