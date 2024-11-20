@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, Alert, } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import { Image } from "expo-image";
 
 const RecommendedRoutes = ({ navigation, route }) => {
   const {
-    //혹시나 나중에 사용할까봐 일단 파라미터로 받아놓음
     startMarker,
     waypoints,
     destinationMarker,
@@ -18,9 +12,13 @@ const RecommendedRoutes = ({ navigation, route }) => {
     selectedGoal,
     inputValue,
     routesData,
+    userIdf,
+    localIP,
   } = route.params;
+
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [routes, setRoutes] = useState([]);
+  const [isSavingRoute, setIsSavingRoute] = useState(false);
 
   useEffect(() => {
     let sortedRoutes = routesData;
@@ -90,6 +88,45 @@ const RecommendedRoutes = ({ navigation, route }) => {
     }
   };
 
+  const handleFollowRoute = async (selectedRoute) => {
+    setIsSavingRoute(true); // 로딩 상태 시작
+    try {
+      const url = `http://${localIP}:8082/api/routes/saveSelectedRouteToUser?userIdf=${userIdf}`;
+      console.log("Saving selected route to user:", url);
+      console.log("Request body:", JSON.stringify(selectedRoute));
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedRoute),
+      });
+
+      if (!response.ok) {
+        console.log("Failed to save selected route:", response.statusText);
+        throw new Error("Failed to save selected route");
+      }
+
+      const savedRoute = await response.json();
+      console.log("Saved route:", savedRoute);
+
+      // fetch 요청 완료 후에만 네비게이션 실행
+      setIsSavingRoute(false);
+
+      navigation.navigate("NavigationScreen", {
+        //route: savedRoute, // 이게 맞는데
+        route: selectedRoute,
+        localIP,
+        userIdf,
+      });
+    } catch (error) {
+      console.log("Error saving selected route:", error);
+      Alert.alert("오류가 발생했습니다", "다시 시도해주세요.");
+      setIsSavingRoute(false); // 로딩 상태 종료
+    }
+  };
+
   const renderRouteItem = ({ item }) => {
     const isSelected = selectedRouteId === item.routeIdf;
     const { center, pointsMap } = calculateCenterFromRoads(item.roads);
@@ -153,9 +190,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
         {isSelected && (
           <TouchableOpacity
             style={styles.followButton}
-            onPress={() =>
-              navigation.navigate("NavigationScreen", { route: item })
-            }
+            onPress={() => handleFollowRoute(item)}
           >
             <Text style={styles.buttonText}>이 경로로 따라가기</Text>
           </TouchableOpacity>
@@ -205,6 +240,21 @@ const RecommendedRoutes = ({ navigation, route }) => {
       >
         <Text style={styles.buttonText}>맵핑 재설정하기</Text>
       </TouchableOpacity>
+
+      {/* Loading Modal */}
+      {isSavingRoute && (
+        <Modal transparent={true} animationType="fade" visible={isSavingRoute}>
+          <View style={styles.modalBackground}>
+            <View style={styles.activityIndicatorWrapper}>
+              <Image
+                source={require("../../assets/images/walkingAnimation.gif")}
+                style={{ width: 100, height: 100 }}
+              />
+              <Text style={{ marginTop: 10 }}>경로 저장 중...</Text>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -292,5 +342,17 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: "center",
     fontWeight: "bold",
+  },
+  modalBackground: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#00000040", // 반투명 배경색
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: "#FFFFFF",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
   },
 });

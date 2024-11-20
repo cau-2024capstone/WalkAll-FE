@@ -1,32 +1,81 @@
-//capstone-FE/src/main/components/myPageScreen/UserInfo.js
-
-import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    TextInput,
-} from "react-native";
-import { Svg, Path } from "react-native-svg";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import axios from "axios";
 import rootStyles from "../../styles/StyleGuide";
 
-function UserInfo() {
+function UserInfo({ route, navigation }) {
+    const [userData, setUserData] = useState({
+        email: "",
+        password: "",
+        name: "",
+        phoneNumber: "",
+    });
+    const [isLoading, setIsLoading] = useState(true);
+
+    // 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+        try {
+            const response = await axios.get("http://10.210.132.89:8082/api/users/email/test@gmail.com");
+            if (response.status === 200) {
+                const { userEmail, userPassword, userName, userPhoneNumber } = response.data;
+                setUserData({
+                    email: userEmail,
+                    password: userPassword || "", // 비밀번호 기본값 설정
+                    name: userName,
+                    phoneNumber: userPhoneNumber,
+                });
+                setIsLoading(false); // 로딩 완료
+            }
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+            Alert.alert("오류", "사용자 정보를 불러오지 못했습니다.");
+        }
+    };
+
+    // 처음 로드 시 사용자 정보 가져오기
+    useEffect(() => {
+        fetchUserInfo();
+    }, []);
+
+    // 수정사항 저장
+    const handleSave = async () => {
+        try {
+            const response = await axios.put("http://10.210.132.89:8082/api/users/email/mj10050203@gmail.com", {
+                userName: userData.name,
+                userPhoneNumber: userData.phoneNumber,
+                userPassword: userData.password,
+            });
+            if ([200, 201, 202, 203, 204].includes(response.status)) {
+                Alert.alert("저장 완료", "사용자 정보가 성공적으로 저장되었습니다.");
+            }
+        } catch (error) {
+            console.error("Error saving user info:", error);
+            Alert.alert("오류", "정보를 저장하지 못했습니다.");
+        }
+    };
+
+    // 비밀번호 암호화 문자열 생성
+    const maskedPassword = "********"
+
+    if (isLoading) {
+        return (
+            <View style={localStyles.loadingContainer}>
+                <Text>사용자 정보를 불러오는 중...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={localStyles.container}>
-            {/* 이름 */}
-            <Text style={localStyles.label}>이름</Text>
-            <View style={localStyles.inputContainer}>
+            {/* 이메일 */}
+            <Text style={localStyles.label}>이메일(수정불가)</Text>
+            <View style={localStyles.emailInputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="김워커"
+                    value={userData.email}
+                    keyboardType="email-address"
+                    editable={false} // 읽기 전용
                 />
-            </View>
-
-            {/* 아이디 (읽기 전용) */}
-            <Text style={localStyles.label}>아이디</Text>
-            <View style={localStyles.inputContainer}>
-                <Text style={localStyles.inputText}>WalkAll001</Text>
             </View>
 
             {/* 비밀번호 */}
@@ -34,45 +83,36 @@ function UserInfo() {
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="************"
+                    value={maskedPassword} // 암호화된 비밀번호 표시
                     secureTextEntry
+                    onChangeText={(text) => setUserData({ ...userData, password: text })}
                 />
             </View>
 
-            {/* 이메일 */}
-            <Text style={localStyles.label}>이메일</Text>
+            {/* 이름 */}
+            <Text style={localStyles.label}>이름</Text>
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="WalkAll001@gmail.com"
-                    keyboardType="email-address"
+                    value={userData.name}
+                    onChangeText={(text) => setUserData({ ...userData, name: text })}
                 />
             </View>
 
-            {/* 생일 */}
-            <Text style={localStyles.label}>생일</Text>
+            {/* 휴대전화 번호 */}
+            <Text style={localStyles.label}>휴대전화 번호</Text>
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="2024/11/14"
+                    value={userData.phoneNumber}
+                    keyboardType="phone-pad"
+                    onChangeText={(text) => setUserData({ ...userData, phoneNumber: text })}
                 />
-                <Svg
-                    style={localStyles.icon}
-                    width="18"
-                    height="10"
-                    viewBox="0 0 18 10"
-                    fill="none"
-                >
-                    <Path
-                        d="M17.3334 1.66667L9.00002 10L0.666687 1.66667L2.14585 0.1875L9.00002 7.04167L15.8542 0.1875L17.3334 1.66667Z"
-                        fill="black"
-                    />
-                </Svg>
             </View>
 
-            {/* 변경내용 저장 */}
-            <TouchableOpacity style={localStyles.saveButton}>
-                <Text style={localStyles.saveButtonText}>변경내용 저장</Text>
+            {/* 변경사항 저장 버튼 */}
+            <TouchableOpacity style={localStyles.saveButton} onPress={handleSave}>
+                <Text style={localStyles.saveButtonText}>수정사항 저장</Text>
             </TouchableOpacity>
         </View>
     );
@@ -82,22 +122,39 @@ export default UserInfo;
 
 const localStyles = StyleSheet.create({
     container: {
-        width: "100%", // 화면 전체 너비 사용
-        paddingHorizontal: "5%", // 내부 패딩 비율로 조정
-        backgroundColor: "white",
-        flex: 1, // 전체 화면 높이 사용
+        width: "100%",
+        paddingHorizontal: "5%",
+        backgroundColor: rootStyles.colors.white,
+        flex: 1,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: rootStyles.colors.white,
     },
     label: {
         ...rootStyles.fontStyles.subTitle,
-        color: "#000",
-        marginTop: "5%", // 상대적 여백
+        color: rootStyles.colors.black,
+        marginTop: "5%",
     },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        height: 50, // 입력창 높이를 고정 값에서 조정
+        height: 50,
         borderWidth: 1,
-        borderColor: "rgba(84, 76, 76, 0.14)",
+        borderColor: rootStyles.colors.gray3,
+        borderRadius: 6,
+        paddingHorizontal: "4%",
+        marginTop: "2%",
+    },
+    emailInputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        height: 50,
+        borderWidth: 1,
+        borderColor: rootStyles.colors.gray3,
+        backgroundColor: rootStyles.colors.gray2,
         borderRadius: 6,
         paddingHorizontal: "4%",
         marginTop: "2%",
@@ -105,10 +162,7 @@ const localStyles = StyleSheet.create({
     inputText: {
         ...rootStyles.fontStyles.text,
         flex: 1,
-        color: "rgba(84, 76, 76, 1)",
-    },
-    icon: {
-        marginLeft: 10,
+        color: rootStyles.colors.black,
     },
     saveButton: {
         marginTop: "10%",
@@ -121,6 +175,6 @@ const localStyles = StyleSheet.create({
     },
     saveButtonText: {
         ...rootStyles.fontStyles.subTitle,
-        color: "rgba(255, 255, 255, 1)",
+        color: rootStyles.colors.white,
     },
 });

@@ -24,13 +24,18 @@ export default HistoryCardArea;
 const localStyles = StyleSheet.create({
     cardAreaContainer: {
         flex: 1,
+        flexDirection: "column",
         width: "100%",
         backgroundColor: rootStyles.colors.grey1,
+        alignItems: "center",
+        justifyContent: "space-between",
     },
     scrollViewContainer: {
         flexGrow: 1,
         flexDirection: "column",
         alignItems: "center",
         paddingBottom: "5%",
+        justifyContent: "space-between",
     },
+
 });
