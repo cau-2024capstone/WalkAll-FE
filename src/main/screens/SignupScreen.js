@@ -1,19 +1,57 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import rootStyles from '../styles/StyleGuide';
 
 function SignupScreen() {
     const navigation = useNavigation();
     const [id, setId] = useState('');
-    const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [emailError, setEmailError] = useState('');
 
-    const handleSignup = () => {
-        // id와 password를 LoginScreen으로 전달
-        navigation.navigate('LoginScreen', { id, password });
+    const handleSignup = async () => {
+        try {
+            const response = await axios.post('http://localhost:8082/auth/register', {
+                userName: name,
+                userPhoneNumber: phoneNumber,
+                userEmail: email,
+                userPassword: password,
+            });
+
+            if (response.status === 200) {
+                Alert.alert('회원가입 성공', 'Walk-ALL에 가입하신 것을 환영합니다!');
+                navigation.navigate('LoginScreen', { email, password });
+            }
+        } catch (error) {
+            if (error.response && error.response.data) {
+                setEmailError(error.response.data.message || '이미 가입된 이메일이에요.');
+            } else {
+                Alert.alert('회원가입 실패', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+            }
+        }
+    };
+
+    const checkEmailDuplication = async () => {
+        try {
+            const response = await axios.post('http://your-api-url.com/auth/check-email', {
+                userEmail: email,
+            });
+
+            if (response.status === 200) {
+                setEmailError(''); // 이메일 중복 없음
+            }
+        } catch (error) {
+            if (error.response && error.response.data) {
+                setEmailError('이미 가입된 이메일이에요.');
+            } else {
+                setEmailError('이메일 중복 확인 중 오류가 발생했습니다.');
+            }
+        }
     };
 
     const handleLogin = () => {
@@ -32,40 +70,31 @@ function SignupScreen() {
                 </Text>
             </View>
 
-            {/* 아이디 입력 필드 */}
-            <View style={localStyles.inputContainer}>
-                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>아이디</Text>
-                <View style={localStyles.inputField}>
-                    <Icon name="person" size={20} color={rootStyles.colors.gray4} />
-                    <TextInput
-                        style={localStyles.textInput}
-                        value={id}
-                        onChangeText={setId}
-                        placeholder="아이디를 입력하세요"
-                        placeholderTextColor={rootStyles.colors.gray5}
-                    />
-                </View>
-                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
-                    아이디는 중복이 불가능해요
-                </Text>
-            </View>
 
-            {/* 이름 입력 필드 */}
+            {/* 이메일 입력 필드 */}
             <View style={localStyles.inputContainer}>
-                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이름</Text>
+                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이메일</Text>
                 <View style={localStyles.inputField}>
-                    <Icon name="badge" size={20} color={rootStyles.colors.gray4} />
+                    <Icon name="email" size={20} color={rootStyles.colors.gray4} />
                     <TextInput
                         style={localStyles.textInput}
-                        value={name}
-                        onChangeText={setName}
-                        placeholder="이름을 입력하세요"
+                        value={email}
+                        onChangeText={(text) => {
+                            setEmail(text);
+                            setEmailError(''); // 입력 시 에러 초기화
+                        }}
+                        onBlur={checkEmailDuplication}
+                        placeholder="이메일을 입력하세요"
                         placeholderTextColor={rootStyles.colors.gray5}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
                     />
                 </View>
-                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
-                    사용자님의 이름을 알려주세요
-                </Text>
+                {emailError ? (
+                    <Text style={[rootStyles.fontStyles.text, { color: 'red', marginTop: 5 }]}>
+                        {emailError}
+                    </Text>
+                ) : null}
             </View>
 
             {/* 비밀번호 입력 필드 */}
@@ -82,27 +111,37 @@ function SignupScreen() {
                         secureTextEntry
                     />
                 </View>
-                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
-                    숫자, 문자를 포함해 8자리 이상 입력해주세요
-                </Text>
             </View>
 
-            {/* 이메일 입력 필드 */}
+            {/* 이름 입력 필드 */}
             <View style={localStyles.inputContainer}>
-                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이메일</Text>
+                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이름</Text>
                 <View style={localStyles.inputField}>
-                    <Icon name="email" size={20} color={rootStyles.colors.gray4} />
+                    <Icon name="badge" size={20} color={rootStyles.colors.gray4} />
                     <TextInput
                         style={localStyles.textInput}
-                        value={email}
-                        onChangeText={setEmail}
-                        placeholder="이메일을 입력하세요"
+                        value={name}
+                        onChangeText={setName}
+                        placeholder="이름을 입력하세요"
                         placeholderTextColor={rootStyles.colors.gray5}
                     />
                 </View>
-                <Text style={[rootStyles.fontStyles.text, localStyles.helperText]}>
-                    비밀번호 찾기에 사용됩니다
-                </Text>
+            </View>
+
+            {/* 휴대전화 번호 입력 필드 */}
+            <View style={localStyles.inputContainer}>
+                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>휴대전화 번호</Text>
+                <View style={localStyles.inputField}>
+                    <Icon name="phone" size={20} color={rootStyles.colors.gray4} />
+                    <TextInput
+                        style={localStyles.textInput}
+                        value={phoneNumber}
+                        onChangeText={setPhoneNumber}
+                        placeholder="휴대전화 번호를 입력하세요"
+                        placeholderTextColor={rootStyles.colors.gray5}
+                        keyboardType="phone-pad"
+                    />
+                </View>
             </View>
 
             {/* 회원가입 버튼 */}
@@ -152,6 +191,7 @@ const localStyles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         padding: 10,
+        marginTop: 6,
         backgroundColor: rootStyles.colors.white,
     },
     textInput: {
@@ -161,17 +201,13 @@ const localStyles = StyleSheet.create({
         color: rootStyles.colors.black,
         fontFamily: rootStyles.fontStyles.text.fontFamily,
     },
-    helperText: {
-        marginTop: 5,
-        fontSize: 12,
-        color: rootStyles.colors.gray5,
-    },
     signupButton: {
         backgroundColor: rootStyles.colors.green5,
         paddingVertical: 15,
         borderRadius: 8,
         alignItems: 'center',
         width: '100%',
+        marginTop: 10,
     },
     loginContainer: {
         flexDirection: 'row',

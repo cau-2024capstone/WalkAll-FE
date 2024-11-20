@@ -19,6 +19,8 @@ $ npx expo install react-native-screens react-native-safe-area-context
 npm install @react-navigation/stack
 npm install react-native-maps
 npm install react-native-vector-icons
+npm install axios
+npm install @react-native-async-storage/async-storage
 
 ```
 

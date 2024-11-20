@@ -1,27 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import rootStyles from '../styles/StyleGuide';
 
 function LoginScreen() {
     const navigation = useNavigation();
     const route = useRoute();
-    const [id, setId] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     useEffect(() => {
-        // route.params로 전달된 값을 상태에 반영
-        if (route.params?.id) setId(route.params.id);
+        if (route.params?.email) setEmail(route.params.email);
         if (route.params?.password) setPassword(route.params.password);
     }, [route.params]);
 
+    //프론트 테스트용 코드
     const handleLogin = () => {
         navigation.navigate('BottomTabApp'); // BottomTabApp으로 이동
     };
 
+    /*  백엔드 통합용
+        const handleLogin = async () => {
+            try {
+                const response = await axios.post('http://localhost:8082/auth/login', {
+                    userEmail: email,
+                    userPassword: password,
+                });
+    
+                if (response.status === 200) {
+                    const { jwt, message } = response.data;
+    
+                    // JWT 토큰 저장
+                    await AsyncStorage.setItem('jwt', jwt);
+    
+                    // 성공 메시지 표시 및 화면 이동
+                    Alert.alert('로그인 성공', message);
+                    navigation.navigate('BottomTabApp');
+                }
+            } catch (error) {
+                // 에러 처리
+                if (error.response && error.response.data) {
+                    Alert.alert('로그인 실패', error.response.data.message || '이메일 또는 비밀번호가 잘못되었습니다.');
+                } else {
+                    Alert.alert('로그인 실패', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+                }
+            }
+        };
+    */
+
+
     const handleSignupNavigation = () => {
-        navigation.navigate('SignupScreen'); // SignupScreen으로 이동
+        navigation.navigate('SignupScreen');
     };
 
     return (
@@ -35,17 +67,19 @@ function LoginScreen() {
                 </Text>
             </View>
 
-            {/* 아이디 입력 필드 */}
+            {/* 이메일 입력 필드 */}
             <View style={localStyles.inputContainer}>
-                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>아이디</Text>
+                <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이메일</Text>
                 <View style={localStyles.inputField}>
-                    <Icon name="person" size={20} color={rootStyles.colors.gray4} />
+                    <Icon name="email" size={20} color={rootStyles.colors.gray4} />
                     <TextInput
                         style={localStyles.textInput}
-                        value={id}
-                        onChangeText={setId}
-                        placeholder="아이디를 입력하세요"
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="이메일을 입력하세요"
                         placeholderTextColor={rootStyles.colors.gray5}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
                     />
                 </View>
             </View>
@@ -66,11 +100,6 @@ function LoginScreen() {
                 </View>
             </View>
 
-            {/* 비밀번호 찾기 */}
-            <Text style={[rootStyles.fontStyles.text, localStyles.forgotPassword]}>
-                비밀번호 찾기
-            </Text>
-
             {/* 로그인 버튼 */}
             <TouchableOpacity style={localStyles.loginButton} onPress={handleLogin}>
                 <Text style={[rootStyles.fontStyles.text, { fontSize: 16, color: rootStyles.colors.white }]}>
@@ -86,6 +115,18 @@ function LoginScreen() {
                 <TouchableOpacity onPress={handleSignupNavigation}>
                     <Text style={[rootStyles.fontStyles.text, localStyles.registerText]}>
                         회원가입하기
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* 비밀번호 찾기 */}
+            <View style={localStyles.forgotPasswordContainer}>
+                <Text style={[rootStyles.fontStyles.text, { fontSize: 12 }]}>
+                    비밀번호를 잊으셨나요?
+                </Text>
+                <TouchableOpacity onPress={handleSignupNavigation}>
+                    <Text style={[rootStyles.fontStyles.text, localStyles.forgotPassword]}>
+                        비밀번호 찾기
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -118,6 +159,7 @@ const localStyles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         padding: 10,
+        marginTop: 6,
         backgroundColor: rootStyles.colors.white,
     },
     textInput: {
@@ -127,11 +169,15 @@ const localStyles = StyleSheet.create({
         color: rootStyles.colors.black,
         fontFamily: rootStyles.fontStyles.text.fontFamily,
     },
+    forgotPasswordContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 8,
+    },
     forgotPassword: {
-        textAlign: 'center',
         color: rootStyles.colors.green5,
         textDecorationLine: 'underline',
-        marginVertical: 10,
+        marginLeft: 5,
     },
     loginButton: {
         backgroundColor: rootStyles.colors.green5,
@@ -139,11 +185,12 @@ const localStyles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         width: '100%',
+        marginTop: 16,
     },
     registerContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: 30,
     },
     registerText: {
         color: rootStyles.colors.green5,
