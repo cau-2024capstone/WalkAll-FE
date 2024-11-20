@@ -33,7 +33,14 @@ const NavigationScreen = ({ navigation, route }) => {
       </View>
     );
   } else if (mode === "currentLocation") {
-    return <CurrentLocationScreen />;
+    return (
+      <CurrentLocationScreen
+        selectedRoute={selectedRoute}
+        localIP={localIP}
+        userIdf={userIdf}
+        navigation={navigation}
+      />
+    );
   } else if (mode === "testMode") {
     return (
       <TestScreen

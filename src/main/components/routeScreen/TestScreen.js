@@ -35,7 +35,6 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   const [userDeviatedPoints, setUserDeviatedPoints] = useState([]);
   const [newPoints, setNewPoints] = useState([]); // 추가된 새로운 포인트들
   const [newEdges, setNewEdges] = useState([]); // 추가된 새로운 엣지들
-  const [problemRoutes, setProblemRoutes] = useState([]); // 문제 경로들
   const mapRef = useRef(null); // 지도 참조
 
   useEffect(() => {
@@ -219,7 +218,19 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
           `문의한 시작 핀 ID: ${startId}, 문의한 도착 핀 ID: ${endId}`
         );
 
+        // 아직 구현되지 않은 API 호출 주석 처리
+        // const routeResponse = await fetch(
+        //   `http://${localIP}:8082/api/routes/`
+        // );
+
         // 세분화된 포인트 중 가장 가까운 두 점 찾기
+
+        /* 
+        concat
+        두 배열을 합치는 함수
+        지나간 경로와 경로 포인트를 합쳐서 가장 가까운 두 점을 찾음
+        (회색 경로에서도 가장 가까운 두 점을 찾아야 하기 때문에 concat 사용)
+        */
         const nearestStartPoint = findNearestPoint(
           problemStartPoint,
           routePoints.concat(passedRoutePoints)
@@ -230,16 +241,13 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
         );
 
         // 검은색 선으로 연결
-        setProblemRoutes((prevRoutes) => {
-          const updatedRoutes = [
-            ...prevRoutes,
-            {
-              coordinates: [nearestStartPoint, nearestEndPoint],
-              color: "black",
-            },
-          ];
-          return updatedRoutes;
-        });
+        setDeviatedEdges((prevEdges) => [
+          ...prevEdges,
+          {
+            coordinates: [nearestStartPoint, nearestEndPoint],
+            color: "black",
+          },
+        ]);
 
         Alert.alert("문의 완료", "문의가 성공적으로 접수되었습니다.");
       }
@@ -250,9 +258,25 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
       setShowCompletionModal(false);
       setProblemRouteSetting(null);
       setShowReportButtons(false);
-      // 문제 경로 설정 후 마커 제거
-      setProblemStartPoint(null);
-      setProblemEndPoint(null);
+      // 산책 종료 여부 확인
+      Alert.alert(
+        "산책 종료",
+        "산책을 종료하시겠습니까?",
+        [
+          {
+            text: "아니오",
+            onPress: () => {},
+            style: "cancel",
+          },
+          {
+            text: "네",
+            onPress: () => {
+              navigation.navigate("StartPointSelection");
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   };
 
@@ -272,19 +296,18 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   };
 
   // 네비게이션 종료 확인 모달에서 확인 버튼 클릭 시 호출
-  const confirmEndNavigation = async () => {
+  const confirmEndNavigation = () => {
     setShowEndNavigationConfirm(false);
     setShowCompletionModal(true);
 
     // 사용자 이탈 경로 처리
-    await processUserDeviations();
+    processUserDeviations();
 
-    setShowCompletionModal(false);
-    navigation.navigate("ResultScreen", {
-      passedRoutePoints,
-      deviatedEdges,
-      problemRoutes,
-    });
+    setTimeout(() => {
+      setShowCompletionModal(false);
+      Alert.alert("산책 종료", "산책이 종료되었습니다.");
+      navigation.navigate("StartPointSelection");
+    }, 2000);
   };
 
   // 네비게이션 종료 확인 모달에서 취소 버튼 클릭 시 호출
@@ -351,7 +374,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
         const nearestPoint = findNearestPoint(
           location,
           routePoints.concat(passedRoutePoints) //지나간 경로도 포함
-        ); //가장 가까운 세분화된 포인트 찾기
+        ); //가장 가까운 세부화된 포인트 찾기
         const newEdge = [lastOffRoutePoint, nearestPoint]; // 복귀 바로 전 지점과 가장 가까운 지점을 연결
         // 이탈 경로 저장
         setDeviatedEdges((prevEdges) => [
@@ -485,18 +508,18 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   };
 
   // 도착 버튼 클릭 시 호출
-  const handleArriveButtonPress = async () => {
+  const handleArriveButtonPress = () => {
     setShowCompletionModal(true);
 
     // 사용자 이탈 경로 처리 (아직 약간 부족해보임)
-    await processUserDeviations();
+    processUserDeviations();
 
-    setShowCompletionModal(false);
-    navigation.navigate("ResultScreen", {
-      passedRoutePoints,
-      deviatedEdges,
-      problemRoutes,
-    });
+    // 2초 후에 도착 모달 표시 (이거 테스트용이고 나중에 계산)
+    setTimeout(() => {
+      setShowCompletionModal(false);
+      Alert.alert("축하합니다", "축하합니다! 경로를 완주하셨습니다!");
+      navigation.navigate("StartPointSelection");
+    }, 2000);
   };
 
   /*
@@ -505,14 +528,123 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   
   */
   const processUserDeviations = async () => {
-    if (userDeviatedPoints.length === 0) return;
+    if (userDeviatedPoints.length === 0) return; //이탈한 이력이 없네? 넌 그냥 갔다온거야
 
     // 로딩 모달 표시 오래걸림
     setShowCompletionModal(true);
 
-    // 여기서 사용자 이탈 경로를 처리하는 로직이 있습니다.
-    // ...
+    const pointIds = [];
+    const closestPointsLatLng = []; // 가장 가까운 점의 lat/lng 저장
+    console.log("Processing user deviations...");
 
+    for (let i = 0; i < userDeviatedPoints.length; i++) {
+      //이탈한 포인트들을 하나씩 처리
+      const point = userDeviatedPoints[i];
+      console.log(
+        `Calling closest-point API for point ${i}: lat=${point.latitude}, lng=${point.longitude}`
+      );
+      //우리 데이터 베이스 내에 있는 점인지 확인
+      const response = await fetch(
+        `http://${localIP}:8082/api/points/closest-point?lat=${point.latitude}&lng=${point.longitude}&radius=5`
+      );
+      const data = await response.text();
+      if (data && data !== "null") {
+        const pointId = data.replace(/"/g, "");
+        pointIds.push(pointId);
+        closestPointsLatLng.push({ lat: point.latitude, lng: point.longitude });
+      } else {
+        pointIds.push(null);
+        closestPointsLatLng.push({ lat: point.latitude, lng: point.longitude });
+      }
+    }
+
+    console.log("Point IDs:", pointIds);
+
+    // 두 개 이상의 null이 있는지 확인
+    const nullCount = pointIds.filter((id) => id === null).length;
+    if (nullCount >= 2) {
+      Alert.alert("축하합니다!", "경로를 개척하였습니다!");
+    }
+
+    // 새로운 포인트와 엣지 생성
+    /*
+    여기서부터 복잡함.
+    리턴 값을 현재 pointIds에 저장했잖아
+    예를들어서 [null(1), "point_1", null(2), "point_2", null(3)] 이런식으로 저장되어 있음
+    null이 나온건 우리 데이터베이스에 없는 점이라는 뜻임
+
+    이제 이걸 가지고 새로운 포인트와 엣지를 생성해야함
+    예시를 통해 설명해면
+    null(1)은 null(1) - point_1을 잇어야함 
+    null(2)는 point_1 - null(2), null(2) - point_2를 잇어야함 
+    null(3)은 point_2 - null(3)을 잇어야함
+
+    근데 만약에 리스트가 [point_1, null(1), null(2), point_2)] 이렇게 되어있으면
+    point_1 - null(1), null(1) - null(2), null(2) - point_2 이렇게 연결해야함
+    아래는 로직은 이걸 구현한 것임
+    이때 null 양 옆에 있는 포인트에 대해서 우리 지도의 세분화 점과 가장 가까운 점이 있다면
+    그 점을 찾아서 연결해야함 (세분화 점은 우리 점을 세분화 한거니까 실제 point(우리 데이터베이스에 있는 점)가 아님)
+    따라서 이 경우에는 새로운 포인트를 생성해야함
+    */
+    const newPointsArray = [];
+    const newEdgesArray = [];
+    let lastPointId = null;
+    let lastPointLatLng = null;
+
+    for (let i = 0; i < pointIds.length; i++) {
+      const pointId = pointIds[i];
+      const pointLatLng = closestPointsLatLng[i];
+
+      let currentPointId = null;
+      if (pointId === null) {
+        // 새로운 포인트 생성
+        currentPointId = `new_${i}`;
+        newPointsArray.push({
+          id: currentPointId,
+          lat: pointLatLng.lat,
+          lng: pointLatLng.lng,
+        });
+      } else {
+        currentPointId = pointId;
+      }
+
+      if (lastPointId !== null) {
+        // 이전 포인트와 현재 포인트를 연결하는 엣지 생성
+        newEdgesArray.push({
+          from: lastPointId,
+          to: currentPointId,
+          fromLat: lastPointLatLng.lat,
+          fromLng: lastPointLatLng.lng,
+          toLat: pointLatLng.lat,
+          toLng: pointLatLng.lng,
+        });
+      } else {
+        // 이탈 전 마지막 세분화된 포인트와 첫 번째 이탈 위치를 연결
+        const lastPassedPoint = passedRoutePoints[passedRoutePoints.length - 1];
+        if (lastPassedPoint) {
+          newEdgesArray.push({
+            from: `route_point_${passedRoutePoints.length - 1}`,
+            to: currentPointId,
+            fromLat: lastPassedPoint.latitude,
+            fromLng: lastPassedPoint.longitude,
+            toLat: pointLatLng.lat,
+            toLng: pointLatLng.lng,
+          });
+        }
+      }
+
+      lastPointId = currentPointId;
+      lastPointLatLng = pointLatLng;
+    }
+
+    console.log("New Points:", JSON.stringify(newPointsArray));
+    console.log("New Edges:", JSON.stringify(newEdgesArray));
+
+    // 새로운 포인트와 엣지 저장 (이건 나중에 백엔드에서 처리해야함)
+    setNewPoints(newPointsArray);
+    setNewEdges(newEdgesArray);
+
+    // 로딩 모달 숨김
     setShowCompletionModal(false);
   };
 
@@ -549,14 +681,6 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
             key={`deviatedEdge-${index}`}
             coordinates={edge.coordinates}
             strokeColor={edge.color}
-            strokeWidth={3}
-          />
-        ))}
-        {problemRoutes.map((route, index) => (
-          <Polyline
-            key={`problemRoute-${index}`}
-            coordinates={route.coordinates}
-            strokeColor={route.color}
             strokeWidth={3}
           />
         ))}

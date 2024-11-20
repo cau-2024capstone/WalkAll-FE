@@ -12,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { Image } from "expo-image";
 
 const UserInput = ({ navigation, route }) => {
   const {
@@ -128,14 +129,29 @@ const UserInput = ({ navigation, route }) => {
           onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
         >
           {startMarker && (
-            <Marker coordinate={startMarker} pinColor="#008000" />
+            <Marker coordinate={startMarker}>
+              <Image
+                source={require("../../assets/images/startPing.png")}
+                style={{ width: 60, height: 60 }}
+              />
+            </Marker>
           )}
           {waypoints &&
             waypoints.map((wp, index) => (
-              <Marker key={index} coordinate={wp} pinColor="#FFA500" />
+              <Marker key={index} coordinate={wp}>
+                <Image
+                  source={require("../../assets/images/wayPointPing.png")}
+                  style={{ width: 60, height: 60 }}
+                />
+              </Marker>
             ))}
           {destinationMarker && (
-            <Marker coordinate={destinationMarker} pinColor="#FF0000" />
+            <Marker coordinate={destinationMarker}>
+              <Image
+                source={require("../../assets/images/endPing.png")}
+                style={{ width: 60, height: 60 }}
+              />
+            </Marker>
           )}
         </MapView>
       )}

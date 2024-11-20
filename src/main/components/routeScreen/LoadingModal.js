@@ -15,9 +15,9 @@ const LoadingModal = ({ navigation, route }) => {
     inputValue,
   } = route.params;
 
-  const localIP = "192.168.45.198"; // 자신의 IP로 변경
+  const localIP = "192.168.45.211"; // 자신의 IP로 변경
   const useMockData = false; // true로 설정 시 Mock 데이터 사용
-  const userIdf = 0; // 사용자 ID, 필요에 따라 변경
+  const userIdf = "U:7c36bacd-4710-4f7c-a8f3-2f0e12800ffc"; // 사용자 ID, 필요에 따라 변경
 
   const [progressMessages, setProgressMessages] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(true);
@@ -302,10 +302,10 @@ const LoadingModal = ({ navigation, route }) => {
     <Modal transparent={true} animationType="fade" visible={isModalVisible}>
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
-          {/* <Image
+          <Image
             source={require("../../assets/images/walkingAnimation.gif")}
             style={{ width: 100, height: 100 }}
-          /> */}
+          />
           {progressMessages.map((message, index) => (
             <Text key={index} style={{ marginTop: 10 }}>
               {message}
