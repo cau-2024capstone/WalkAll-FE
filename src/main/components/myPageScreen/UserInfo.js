@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    TextInput,
+    Alert,
+} from "react-native";
 import axios from "axios";
 import rootStyles from "../../styles/StyleGuide";
 
@@ -15,9 +22,12 @@ function UserInfo({ route, navigation }) {
     // 사용자 정보 가져오기
     const fetchUserInfo = async () => {
         try {
-            const response = await axios.get("http://10.210.132.89:8082/api/users/email/test@gmail.com");
+            const response = await axios.get(
+                "http://192.168.45.211:8082/api/users/email/mj10050203@gmail.com"
+            );
             if (response.status === 200) {
-                const { userEmail, userPassword, userName, userPhoneNumber } = response.data;
+                const { userEmail, userPassword, userName, userPhoneNumber } =
+                    response.data;
                 setUserData({
                     email: userEmail,
                     password: userPassword || "", // 비밀번호 기본값 설정
@@ -40,13 +50,19 @@ function UserInfo({ route, navigation }) {
     // 수정사항 저장
     const handleSave = async () => {
         try {
-            const response = await axios.put("http://10.210.132.89:8082/api/users/email/mj10050203@gmail.com", {
-                userName: userData.name,
-                userPhoneNumber: userData.phoneNumber,
-                userPassword: userData.password,
-            });
+            const response = await axios.put(
+                "http://192.168.45.211:8082/api/users/email/mj10050203@gmail.com",
+                {
+                    userName: userData.name,
+                    userPhoneNumber: userData.phoneNumber,
+                    userPassword: userData.password,
+                }
+            );
             if ([200, 201, 202, 203, 204].includes(response.status)) {
-                Alert.alert("저장 완료", "사용자 정보가 성공적으로 저장되었습니다.");
+                Alert.alert(
+                    "저장 완료",
+                    "사용자 정보가 성공적으로 저장되었습니다."
+                );
             }
         } catch (error) {
             console.error("Error saving user info:", error);
@@ -55,7 +71,7 @@ function UserInfo({ route, navigation }) {
     };
 
     // 비밀번호 암호화 문자열 생성
-    const maskedPassword = "********"
+    const maskedPassword = "********";
 
     if (isLoading) {
         return (
@@ -85,7 +101,9 @@ function UserInfo({ route, navigation }) {
                     style={localStyles.inputText}
                     value={maskedPassword} // 암호화된 비밀번호 표시
                     secureTextEntry
-                    onChangeText={(text) => setUserData({ ...userData, password: text })}
+                    onChangeText={(text) =>
+                        setUserData({ ...userData, password: text })
+                    }
                 />
             </View>
 
@@ -95,7 +113,9 @@ function UserInfo({ route, navigation }) {
                 <TextInput
                     style={localStyles.inputText}
                     value={userData.name}
-                    onChangeText={(text) => setUserData({ ...userData, name: text })}
+                    onChangeText={(text) =>
+                        setUserData({ ...userData, name: text })
+                    }
                 />
             </View>
 
@@ -106,12 +126,17 @@ function UserInfo({ route, navigation }) {
                     style={localStyles.inputText}
                     value={userData.phoneNumber}
                     keyboardType="phone-pad"
-                    onChangeText={(text) => setUserData({ ...userData, phoneNumber: text })}
+                    onChangeText={(text) =>
+                        setUserData({ ...userData, phoneNumber: text })
+                    }
                 />
             </View>
 
             {/* 변경사항 저장 버튼 */}
-            <TouchableOpacity style={localStyles.saveButton} onPress={handleSave}>
+            <TouchableOpacity
+                style={localStyles.saveButton}
+                onPress={handleSave}
+            >
                 <Text style={localStyles.saveButtonText}>수정사항 저장</Text>
             </TouchableOpacity>
         </View>

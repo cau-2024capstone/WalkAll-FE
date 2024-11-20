@@ -302,10 +302,10 @@ const LoadingModal = ({ navigation, route }) => {
     <Modal transparent={true} animationType="fade" visible={isModalVisible}>
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
-          <Image
+          {/* <Image
             source={require("../../assets/images/walkingAnimation.gif")}
             style={{ width: 100, height: 100 }}
-          />
+          /> */}
           {progressMessages.map((message, index) => (
             <Text key={index} style={{ marginTop: 10 }}>
               {message}

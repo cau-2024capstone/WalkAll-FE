@@ -16,3 +16,11 @@ indent_size = 4
 [src/main/screens/MyPageScreen.js]
 indent_style = space
 indent_size = 4
+
+[src/main/screens/SignupScreen.js]
+indent_style = space
+indent_size = 4
+
+[src/main/screens/LoginScreen.js]
+indent_style = space
+indent_size = 4

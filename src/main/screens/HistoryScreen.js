@@ -20,9 +20,10 @@ function HistoryScreen() {
       );
       if (response.status === 200 && response.data.results.length > 0) {
         const addressComponents = response.data.results[0].address_components;
-        const dong = addressComponents.find((comp) =>
-          comp.types.includes("sublocality_level_2") || // 동(소단위)
-          comp.types.includes("sublocality_level_1")    // 구(대단위)
+        const dong = addressComponents.find(
+          (comp) =>
+            comp.types.includes("sublocality_level_2") || // 동(소단위)
+            comp.types.includes("sublocality_level_1") // 구(대단위)
         );
         return dong ? dong.long_name : "위치 불명";
       } else if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
@@ -42,7 +43,7 @@ function HistoryScreen() {
   const fetchHistoryData = async () => {
     try {
       const response = await axios.get(
-        "http://10.210.132.89:8082/api/users/email/mj10050203@gmail.com"
+        "http://192.168.45.211:8082/api/users/email/mj10050203@gmail.com"
       );
       if (response.status === 200) {
         const routes = response.data.routes || [];
