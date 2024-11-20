@@ -40,7 +40,7 @@ function UserInfo({ route, navigation }) {
     // 수정사항 저장
     const handleSave = async () => {
         try {
-            const response = await axios.put("http://10.210.132.89:8082/api/users/email/test@gmail.com", {
+            const response = await axios.put("http://10.210.132.89:8082/api/users/email/mj10050203@gmail.com", {
                 userName: userData.name,
                 userPhoneNumber: userData.phoneNumber,
                 userPassword: userData.password,

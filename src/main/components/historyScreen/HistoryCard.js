@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import rootStyles from "../../styles/StyleGuide";
 import { Image } from "expo-image";
 
-function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
-    const infoItems = [start, end, duration, `${distance} km`, totalDistance];
+function HistoryCard({ date, start, end, duration, distance }) {
+    const infoItems = [start, end, duration, distance];
 
     return (
         <View style={localStyles.cardContainer}>
@@ -13,7 +13,7 @@ function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
             {/* 지도 이미지 (임시 이미지 사용) */}
             <View style={localStyles.mapContainer}>
                 <Image
-                    source={{ uri: "https://via.placeholder.com/327x150" }} // 임시 지도 이미지 링크
+                    //source={{ uri: "https://via.placeholder.com/327x150" }} // 임시 지도 이미지 링크
                     style={localStyles.mapImage}
                     contentFit="cover" // 이미지의 콘텐츠 맞춤 방식 설정
                 />
@@ -24,10 +24,7 @@ function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
                 {infoItems.map((item, index) => (
                     <Text
                         key={index}
-                        style={[
-                            localStyles.infoButton,
-                            index === infoItems.length - 1 && { marginRight: 0 },
-                        ]}
+                        style={[localStyles.infoButton, index === infoItems.length - 1 && { marginRight: 0 }]}
                     >
                         {item}
                     </Text>
@@ -101,8 +98,7 @@ const localStyles = StyleSheet.create({
     walkButtonText: {
         color: rootStyles.colors.green5,
         fontSize: rootStyles.fontStyles.subTitle.fontSize,
-        fontFamily: 'NotoSansKR-Bold',
+        fontFamily: "NotoSansKR-Bold",
         lineHeight: 20,
     },
-
 });
