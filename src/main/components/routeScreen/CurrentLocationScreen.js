@@ -382,50 +382,118 @@ const CurrentLocationScreen = ({
       return;
     }
 
+    // 로딩 표시
     setShowCompletionModal(true);
 
+    // 두 포인트의 가장 가까운 세분화된 점 찾기
     try {
-      const allRoutePoints = routePoints
-        .concat(passedRoutePoints)
-        .concat(deviatedEdges.flatMap((edge) => edge.coordinates));
-
-      const nearestStartPoint = findNearestPoint(
-        problemStartPoint,
-        allRoutePoints
+      console.log(
+        `문제 시작 지점에 대한 closest-point API 호출: lat=${problemStartPoint.latitude}, lng=${problemStartPoint.longitude}`
       );
-      const nearestEndPoint = findNearestPoint(problemEndPoint, allRoutePoints);
-
-      const startIndex = allRoutePoints.findIndex(
-        (point) =>
-          point.latitude === nearestStartPoint.latitude &&
-          point.longitude === nearestStartPoint.longitude
+      const startPointResponse = await fetch(
+        `http://${localIP}:8082/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
       );
-      const endIndex = allRoutePoints.findIndex(
-        (point) =>
-          point.latitude === nearestEndPoint.latitude &&
-          point.longitude === nearestEndPoint.longitude
+      const endPointResponse = await fetch(
+        `http://${localIP}:8082/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
       );
 
-      let problemRoutePoints;
-      if (startIndex <= endIndex) {
-        problemRoutePoints = allRoutePoints.slice(startIndex, endIndex + 1);
+      const startPointData = await startPointResponse.text(); // 응답을 텍스트로 받음
+      const endPointData = await endPointResponse.text();
+
+      if (
+        !startPointData ||
+        startPointData === "null" ||
+        !endPointData ||
+        endPointData === "null"
+      ) {
+        Alert.alert("문의 실패", "잘못된 문의 위치입니다.");
       } else {
-        problemRoutePoints = allRoutePoints.slice(endIndex, startIndex + 1);
+        // 가장 가까운 점의 ID 추출
+        const startId = startPointData.replace(/"/g, "");
+        const endId = endPointData.replace(/"/g, "");
+
+        console.log(
+          `문의한 시작 핀 ID: ${startId}, 문의한 도착 핀 ID: ${endId}`
+        );
+
+        // 문의 정보를 서버로 전송하는 API 호출 추가
+        const userID = "U:7c36bacd-4710-4f7c-a8f3-2f0e12800ffc"; // 사용자 ID
+        const inquiryBody = {
+          startNodeIdf: startId,
+          endNodeIdf: endId,
+          actionType: "REMOVE",
+        };
+
+        try {
+          const inquiryResponse = await fetch(
+            `http://${localIP}:8082/api/users/submit-inquiry/${userID}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(inquiryBody),
+            }
+          );
+
+          if (!inquiryResponse.ok) {
+            // 오류 처리
+            const errorText = await inquiryResponse.text();
+            console.error("문의 제출 오류:", errorText);
+            Alert.alert("문의 실패", "문의 제출 중 오류가 발생했습니다.");
+          } else {
+            Alert.alert("문의 완료", "문의가 성공적으로 접수되었습니다.");
+          }
+        } catch (error) {
+          console.error("문의 제출 중 오류 발생:", error);
+          Alert.alert("문의 실패", "API 호출 실패");
+        }
+
+        // 세분화된 포인트 중 가장 가까운 두 점 찾기
+        const nearestStartPoint = findNearestPoint(
+          problemStartPoint,
+          routePoints.concat(passedRoutePoints)
+        );
+        const nearestEndPoint = findNearestPoint(
+          problemEndPoint,
+          routePoints.concat(passedRoutePoints)
+        );
+
+        // 검은색 선으로 연결
+        setDeviatedEdges((prevEdges) => [
+          ...prevEdges,
+          {
+            coordinates: [nearestStartPoint, nearestEndPoint],
+            color: "black",
+          },
+        ]);
       }
-
-      setProblemRoutes((prevRoutes) => [
-        ...prevRoutes,
-        { coordinates: problemRoutePoints, color: "black" },
-      ]);
-
-      setIssueReportingStage(null);
-      setProblemStartPoint(null);
-      setProblemEndPoint(null);
     } catch (error) {
-      console.log("Error processing problem route:", error);
-      Alert.alert("문의 실패", "오류가 발생했습니다.");
+      console.log("가장 가까운 포인트를 가져오는 중 오류 발생:", error);
+      Alert.alert("문의 실패", "API 호출 실패");
     } finally {
       setShowCompletionModal(false);
+      setProblemRouteSetting(null);
+      setShowReportButtons(false);
+      // 산책 종료 여부 확인
+      Alert.alert(
+        "산책 종료",
+        "산책을 종료하시겠습니까?",
+        [
+          {
+            text: "아니오",
+            onPress: () => {},
+            style: "cancel",
+          },
+          {
+            text: "네",
+            onPress: () => {
+              navigation.navigate("StartPointSelection");
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   };
 

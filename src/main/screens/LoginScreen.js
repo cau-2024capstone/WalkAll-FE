@@ -143,7 +143,6 @@ function LoginScreen() {
                     로그인
                 </Text>
             </TouchableOpacity>
-
             {/* 회원가입 텍스트 */}
             <View style={localStyles.registerContainer}>
                 <Text style={[rootStyles.fontStyles.text, { fontSize: 12 }]}>
