@@ -28,11 +28,14 @@ const localStyles = StyleSheet.create({
         width: "100%",
         backgroundColor: rootStyles.colors.grey1,
         alignItems: "center",
+        justifyContent: "space-between",
     },
     scrollViewContainer: {
         flexGrow: 1,
         flexDirection: "column",
         alignItems: "center",
         paddingBottom: "5%",
+        justifyContent: "space-between",
     },
+
 });

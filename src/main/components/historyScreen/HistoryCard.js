@@ -1,36 +1,42 @@
-//capstone-FE/src/main/components/historyScreen/HistoryCard.js
-
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import rootStyles from "../../styles/StyleGuide";
 import { Image } from "expo-image";
 
 function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
+    const infoItems = [start, end, duration, `${distance} km`, totalDistance];
+
     return (
         <View style={localStyles.cardContainer}>
-            <Text style={localStyles.date}>{date}</Text>
+            <Text style={[rootStyles.fontStyles.subTitle, localStyles.date]}>{date}</Text>
 
             {/* 지도 이미지 (임시 이미지 사용) */}
             <View style={localStyles.mapContainer}>
                 <Image
-                    source={{ uri: "https://via.placeholder.com/327x150" }} // 임시 지도 이미지 링크
+                    source={{ uri: "https://via.placeholder.com/327x150" }}
                     style={localStyles.mapImage}
-                    contentFit="cover" // 이미지의 콘텐츠 맞춤 방식 설정
+                    contentFit="cover"
                 />
             </View>
 
             {/* 정보 버튼들 */}
             <View style={localStyles.infoContainer}>
-                <Text style={localStyles.infoButton}>{start}</Text>
-                <Text style={localStyles.infoButton}>{end}</Text>
-                <Text style={localStyles.infoButton}>{duration}</Text>
-                <Text style={localStyles.infoButton}>{`${distance} km`}</Text>
-                <Text style={localStyles.infoButton}>{totalDistance}</Text>
+                {infoItems.map((item, index) => (
+                    <Text
+                        key={index}
+                        style={[
+                            localStyles.infoButton,
+                            index === infoItems.length - 1 && { marginRight: 0 },
+                        ]}
+                    >
+                        {item}
+                    </Text>
+                ))}
             </View>
 
             {/* 다시 걷기 버튼 */}
             <TouchableOpacity style={localStyles.walkButton}>
-                <Text style={localStyles.walkButtonText}>
+                <Text style={[rootStyles.fontStyles.text, localStyles.walkButtonText]}>
                     이 루트로 다시 걷기
                 </Text>
             </TouchableOpacity>
@@ -40,31 +46,29 @@ function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
 
 export default HistoryCard;
 
-
 const localStyles = StyleSheet.create({
     cardContainer: {
         width: "100%",
         paddingVertical: "4%",
         paddingHorizontal: "5%",
         marginBottom: "5%",
-        backgroundColor: "#FEFEFE",
+        backgroundColor: rootStyles.colors.white,
         borderRadius: 15,
-        shadowColor: "#000",
+        shadowColor: rootStyles.colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 5,
-
     },
     date: {
         marginBottom: "4%",
     },
     mapContainer: {
         width: "100%",
-        aspectRatio: 2.5, // 지도 이미지 비율 유지
+        aspectRatio: 2.5,
         borderRadius: 10,
         overflow: "hidden",
         marginBottom: "5%",
-        backgroundColor: "#F2F2F2",
+        backgroundColor: rootStyles.colors.gray2,
     },
     infoContainer: {
         flexDirection: "row",
@@ -74,30 +78,31 @@ const localStyles = StyleSheet.create({
         flexWrap: "wrap",
     },
     infoButton: {
-        backgroundColor: "rgba(223, 247, 202, 1)",
-        color: "rgba(74, 143, 62, 1)",
+        backgroundColor: rootStyles.colors.green1,
+        color: rootStyles.colors.green5,
         textAlign: "center",
         paddingVertical: "2%",
         paddingHorizontal: "4%",
         borderRadius: 15,
-        fontSize: 12,
+        fontSize: rootStyles.fontStyles.text.fontSize,
         marginRight: "2%",
-
+        marginBottom: "2%",
     },
     walkButton: {
         width: "90%",
         paddingVertical: "3%",
-        marginHorizontal: "3%",
+        marginHorizontal: "5%",
         borderWidth: 1,
-        borderColor: "rgba(74, 143, 62, 1)",
+        borderColor: rootStyles.colors.green5,
         borderRadius: 10,
         alignItems: "center",
-        marginTop: "5%",
+        marginTop: "2%",
     },
     walkButtonText: {
-        color: "rgba(74, 143, 62, 1)",
-        fontSize: 16,
-        fontWeight: "bold",
+        color: rootStyles.colors.green5,
+        fontSize: rootStyles.fontStyles.subTitle.fontSize,
+        fontFamily: 'NotoSansKR-Bold',
+        lineHeight: 20,
     },
-});
 
+});
