@@ -1,4 +1,5 @@
-// capstone-FE/src/main/components/routeScreen/LoadingModal.js
+// LoadingModal.js
+
 import React, { useEffect, useState } from "react";
 import { View, Text, Alert, StyleSheet, Modal } from "react-native";
 import { Image } from "expo-image";
@@ -14,8 +15,9 @@ const LoadingModal = ({ navigation, route }) => {
     inputValue,
   } = route.params;
 
-  const localIP = "192.168.0.8"; // 자신의 IP로 변경
+  const localIP = "192.168.45.198"; // 자신의 IP로 변경
   const useMockData = false; // true로 설정 시 Mock 데이터 사용
+  const userIdf = 0; // 사용자 ID, 필요에 따라 변경
 
   const [progressMessages, setProgressMessages] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(true);
@@ -43,6 +45,8 @@ const LoadingModal = ({ navigation, route }) => {
         selectedPath,
         selectedGoal,
         inputValue,
+        userIdf,
+        localIP,
       });
       return;
     }
@@ -174,6 +178,21 @@ const LoadingModal = ({ navigation, route }) => {
             }
 
             routesData = await response.json();
+
+            // Filter out duplicate routes (same route in different directions)
+            const uniqueRoutes = [];
+            const routeSet = new Set();
+            routesData.forEach((route) => {
+              const routeKey = route.roads
+                .map((road) => road.idf)
+                .sort()
+                .join(",");
+              if (!routeSet.has(routeKey)) {
+                routeSet.add(routeKey);
+                uniqueRoutes.push(route);
+              }
+            });
+            routesData = uniqueRoutes;
           } else {
             // 시작점과 도착점이 다른 경우
             bodyParams.startId = startId;
@@ -214,6 +233,8 @@ const LoadingModal = ({ navigation, route }) => {
             selectedPath,
             selectedGoal,
             inputValue,
+            userIdf,
+            localIP,
           });
           return;
         }

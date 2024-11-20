@@ -1,13 +1,13 @@
-// src/main/components/NavigationScreen.js
+// NavigationScreen.js
 
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import CurrentLocationScreen from "./CurrentLocationScreen";
 import TestScreen from "./TestScreen";
 
-const NavigationScreen = ({ route }) => {
+const NavigationScreen = ({ navigation, route }) => {
   const [mode, setMode] = useState(null);
-  const { route: selectedRoute } = route.params;
+  const { route: selectedRoute, localIP, userIdf } = route.params;
 
   const handleCurrentLocationMode = () => {
     setMode("currentLocation");
@@ -35,7 +35,14 @@ const NavigationScreen = ({ route }) => {
   } else if (mode === "currentLocation") {
     return <CurrentLocationScreen />;
   } else if (mode === "testMode") {
-    return <TestScreen selectedRoute={selectedRoute} />;
+    return (
+      <TestScreen
+        selectedRoute={selectedRoute}
+        localIP={localIP}
+        userIdf={userIdf}
+        navigation={navigation}
+      />
+    );
   }
 };
 

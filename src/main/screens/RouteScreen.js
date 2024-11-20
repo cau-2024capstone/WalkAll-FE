@@ -7,6 +7,7 @@ import RecommendedRoutes from "../components/routeScreen/RecommendedRoutes";
 import NavigationScreen from "../components/routeScreen/NavigationScreen";
 import UserInput from "../components/routeScreen/UserInput";
 import LoadingModal from "../components/routeScreen/LoadingModal";
+import ResultScreen from "../components/routeScreen/ResultScreen";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ function RouteStack() {
       />
       <Stack.Screen name="RecommendedRoutes" component={RecommendedRoutes} />
       <Stack.Screen name="NavigationScreen" component={NavigationScreen} />
+      <Stack.Screen name="ResultScreen" component={ResultScreen} />
     </Stack.Navigator>
   );
 }

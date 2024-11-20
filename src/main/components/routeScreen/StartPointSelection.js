@@ -136,6 +136,10 @@ const StartPointSelection = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* 상단 타이틀 */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>산책 포인트를 설정해주세요</Text>
+      </View>
       {/* 모드 선택 버튼 */}
       <View style={styles.modeButtonContainer}>
         <TouchableOpacity
@@ -166,12 +170,10 @@ const StartPointSelection = ({ navigation }) => {
           <Text style={styles.buttonText}>도착지</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.modeButton, styles.completeButton]}
-          onPress={proceedToUserInput}
+          style={styles.modeButton}
+          onPress={setCurrentLocationAs}
         >
-          <Text style={[styles.buttonText, styles.completeButtonText]}>
-            설정 완료
-          </Text>
+          <Text style={styles.buttonText}>현재 위치로 설정</Text>
         </TouchableOpacity>
       </View>
       {/* 지도 */}
@@ -224,10 +226,13 @@ const StartPointSelection = ({ navigation }) => {
           <Marker coordinate={temporaryPin} pinColor="transparent" />
         )}
       </MapView>
-      {/* 현재 위치로 설정 버튼 */}
-      <View style={styles.currentLocationButtonContainer}>
-        <TouchableOpacity style={styles.button} onPress={setCurrentLocationAs}>
-          <Text style={styles.currentLocationButtonText}>현재위치로 설정</Text>
+      {/* 설정 완료 버튼 */}
+      <View style={styles.completeButtonContainer}>
+        <TouchableOpacity
+          style={styles.completeButton}
+          onPress={proceedToUserInput}
+        >
+          <Text style={styles.completeButtonText}>설정 완료</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -251,15 +256,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
   },
-  modeButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  titleContainer: {
     paddingTop: 60,
     paddingBottom: 10,
     backgroundColor: "#FEFEFE",
+    alignItems: "center",
+  },
+  titleText: {
+    fontSize: 23,
+    color: "rgba(74, 143, 62, 1)",
+    fontWeight: "bold",
+  },
+  modeButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: "#FEFEFE",
   },
   modeButton: {
-    padding: 10,
+    paddingVertical: 10, // 버튼의 상하 여백
+    paddingHorizontal: 12, // 버튼의 좌우 여백
     backgroundColor: "#F2F2F2",
     borderRadius: 8,
     borderWidth: 1,
@@ -269,35 +286,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
+    flex: 1,
+    marginHorizontal: 5,
+    justifyContent: "center", // 텍스트를 버튼의 중앙에 배치
+    alignItems: "center", // 텍스트를 버튼의 중앙에 배치
   },
+
   activeModeButton: {
     backgroundColor: "rgba(223, 247, 202, 1)",
-  },
-  completeButton: {
-    backgroundColor: "rgba(74, 143, 62, 1)",
   },
   buttonText: {
     color: "rgba(74, 143, 62, 1)",
     textAlign: "center",
-  },
-  completeButtonText: {
-    color: "#FEFEFE",
+    fontSize: 12,
   },
   map: {
     flex: 1,
   },
-  currentLocationButtonContainer: {
+  completeButtonContainer: {
     padding: 10,
     alignItems: "center",
   },
-  button: {
+  completeButton: {
     backgroundColor: "rgba(74, 143, 62, 1)",
     padding: 15,
     borderRadius: 8,
     width: "90%",
+    alignItems: "center",
   },
-  currentLocationButtonText: {
-    color: "#fEFEFE",
+  completeButtonText: {
+    color: "#FEFEFE",
     textAlign: "center",
+    fontSize: 16,
   },
 });
