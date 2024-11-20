@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Modal,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, Alert, } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { Image } from "expo-image";
 

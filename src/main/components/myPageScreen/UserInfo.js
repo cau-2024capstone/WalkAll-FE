@@ -45,7 +45,7 @@ function UserInfo({ route, navigation }) {
                 userPhoneNumber: userData.phoneNumber,
                 userPassword: userData.password,
             });
-            if (response.status === 200) {
+            if ([200, 201, 202, 203, 204].includes(response.status)) {
                 Alert.alert("저장 완료", "사용자 정보가 성공적으로 저장되었습니다.");
             }
         } catch (error) {

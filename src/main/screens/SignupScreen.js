@@ -21,7 +21,7 @@ function SignupScreen() {
                 userEmail: email,
                 userPassword: password,
             });
-            if (response.status === 201) {
+            if ([200, 201, 202, 203, 204].includes(response.status)) {
                 Alert.alert('회원가입 성공', 'Walk-ALL에 가입하신 것을 환영합니다!');
                 navigation.navigate('LoginScreen', {
                     email,

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { FontAwesome } from '@expo/vector-icons'; // FontAwesome으로 변경
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import rootStyles from '../styles/StyleGuide';
+import * as Font from "expo-font";
+import { MaterialIcons } from "@expo/vector-icons";
 
 function LoginScreen() {
     const navigation = useNavigation();
@@ -16,12 +18,6 @@ function LoginScreen() {
         if (route.params?.email) setEmail(route.params.email);
         if (route.params?.password) setPassword(route.params.password);
     }, [route.params]);
-
-    /*프론트 테스트용 코드
-    const handleLogin = () => {
-        navigation.navigate('BottomTabApp'); // BottomTabApp으로 이동
-    };
-*/
 
     const handleLogin = async () => {
         try {
@@ -50,8 +46,6 @@ function LoginScreen() {
         }
     };
 
-
-
     const handleSignupNavigation = () => {
         navigation.navigate('SignupScreen');
     };
@@ -71,7 +65,7 @@ function LoginScreen() {
             <View style={localStyles.inputContainer}>
                 <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>이메일</Text>
                 <View style={localStyles.inputField}>
-                    <Icon name="email" size={20} color={rootStyles.colors.gray4} />
+                    <MaterialIcons name="email" size={20} color={rootStyles.colors.gray4} />
                     <TextInput
                         style={localStyles.textInput}
                         value={email}
@@ -88,7 +82,7 @@ function LoginScreen() {
             <View style={localStyles.inputContainer}>
                 <Text style={[rootStyles.fontStyles.subTitle, { fontSize: 16 }]}>비밀번호</Text>
                 <View style={localStyles.inputField}>
-                    <Icon name="lock" size={20} color={rootStyles.colors.gray4} />
+                    <MaterialIcons name="lock" size={20} color={rootStyles.colors.gray4} />
                     <TextInput
                         style={localStyles.textInput}
                         value={password}
@@ -115,18 +109,6 @@ function LoginScreen() {
                 <TouchableOpacity onPress={handleSignupNavigation}>
                     <Text style={[rootStyles.fontStyles.text, localStyles.registerText]}>
                         회원가입하기
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* 비밀번호 찾기 */}
-            <View style={localStyles.forgotPasswordContainer}>
-                <Text style={[rootStyles.fontStyles.text, { fontSize: 12 }]}>
-                    비밀번호를 잊으셨나요?
-                </Text>
-                <TouchableOpacity onPress={handleSignupNavigation}>
-                    <Text style={[rootStyles.fontStyles.text, localStyles.forgotPassword]}>
-                        비밀번호 찾기
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -168,16 +150,6 @@ const localStyles = StyleSheet.create({
         fontSize: 14,
         color: rootStyles.colors.black,
         fontFamily: rootStyles.fontStyles.text.fontFamily,
-    },
-    forgotPasswordContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 8,
-    },
-    forgotPassword: {
-        color: rootStyles.colors.green5,
-        textDecorationLine: 'underline',
-        marginLeft: 5,
     },
     loginButton: {
         backgroundColor: rootStyles.colors.green5,
