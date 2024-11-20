@@ -17,39 +17,39 @@ function LoginScreen() {
         if (route.params?.password) setPassword(route.params.password);
     }, [route.params]);
 
-    //프론트 테스트용 코드
+    /*프론트 테스트용 코드
     const handleLogin = () => {
         navigation.navigate('BottomTabApp'); // BottomTabApp으로 이동
     };
+*/
 
-    /*  백엔드 통합용
-        const handleLogin = async () => {
-            try {
-                const response = await axios.post('http://localhost:8082/auth/login', {
-                    userEmail: email,
-                    userPassword: password,
-                });
-    
-                if (response.status === 200) {
-                    const { jwt, message } = response.data;
-    
-                    // JWT 토큰 저장
-                    await AsyncStorage.setItem('jwt', jwt);
-    
-                    // 성공 메시지 표시 및 화면 이동
-                    Alert.alert('로그인 성공', message);
-                    navigation.navigate('BottomTabApp');
-                }
-            } catch (error) {
-                // 에러 처리
-                if (error.response && error.response.data) {
-                    Alert.alert('로그인 실패', error.response.data.message || '이메일 또는 비밀번호가 잘못되었습니다.');
-                } else {
-                    Alert.alert('로그인 실패', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
-                }
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('http://10.210.132.89:8082/auth/login', {
+                userEmail: email,
+                userPassword: password,
+            });
+
+            if (response.status === 201) {
+                const { jwt, message } = response.data;
+
+                // JWT 토큰 저장
+                await AsyncStorage.setItem('jwt', jwt);
+
+                // 성공 메시지 표시 및 화면 이동
+                Alert.alert('로그인 성공', message);
+                navigation.navigate('BottomTabApp');
             }
-        };
-    */
+        } catch (error) {
+            // 에러 처리
+            if (error.response && error.response.data) {
+                Alert.alert('로그인 실패', error.response.data.message || '이메일 또는 비밀번호가 잘못되었습니다.');
+            } else {
+                Alert.alert('로그인 실패', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+            }
+        }
+    };
+
 
 
     const handleSignupNavigation = () => {

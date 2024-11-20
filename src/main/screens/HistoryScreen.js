@@ -1,5 +1,3 @@
-//capstone-FE/src/main/screens/HistoryScreen.js
-
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import rootStyles from "../styles/StyleGuide";

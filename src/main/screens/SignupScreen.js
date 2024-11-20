@@ -15,19 +15,17 @@ function SignupScreen() {
 
     const handleSignup = async () => {
         try {
-            const response = await axios.post('http://localhost:8082/auth/register', {
+            const response = await axios.post('http://10.210.132.89:8082/auth/register', {
                 userName: name,
                 userPhoneNumber: phoneNumber,
                 userEmail: email,
                 userPassword: password,
             });
-
             if (response.status === 201) {
                 Alert.alert('회원가입 성공', 'Walk-ALL에 가입하신 것을 환영합니다!');
-                navigation.navigate('UserInfo', {
-                    name,
+                navigation.navigate('LoginScreen', {
                     email,
-                    phoneNumber,
+                    password,
                 });
             }
         } catch (error) {

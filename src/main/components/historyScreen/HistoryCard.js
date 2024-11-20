@@ -13,9 +13,9 @@ function HistoryCard({ date, start, end, duration, distance, totalDistance }) {
             {/* 지도 이미지 (임시 이미지 사용) */}
             <View style={localStyles.mapContainer}>
                 <Image
-                    source={{ uri: "https://via.placeholder.com/327x150" }}
+                    source={{ uri: "https://via.placeholder.com/327x150" }} // 임시 지도 이미지 링크
                     style={localStyles.mapImage}
-                    contentFit="cover"
+                    contentFit="cover" // 이미지의 콘텐츠 맞춤 방식 설정
                 />
             </View>
 
