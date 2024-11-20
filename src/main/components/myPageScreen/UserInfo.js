@@ -1,32 +1,25 @@
-//capstone-FE/src/main/components/myPageScreen/UserInfo.js
-
 import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    TextInput,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import rootStyles from "../../styles/StyleGuide";
 
-function UserInfo() {
+function UserInfo({ route, navigation }) {
+    const { id, name, email, phoneNumber } = route.params || {}; // 전달받은 정보
+
     return (
+
+
         <View style={localStyles.container}>
-            {/* 이름 */}
-            <Text style={localStyles.label}>이름</Text>
+
+            {/* 이메일 */}
+            <Text style={localStyles.label}>이메일</Text>
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="김워커"
+                    defaultValue={email || ""}
+                    keyboardType="email-address"
+                    editable={false} // 읽기 전용
                 />
-            </View>
-
-            {/* 아이디 (읽기 전용) */}
-            <Text style={localStyles.label}>아이디</Text>
-            <View style={localStyles.inputContainer}>
-                <Text style={localStyles.inputText}>WalkAll001</Text>
             </View>
 
             {/* 비밀번호 */}
@@ -34,44 +27,39 @@ function UserInfo() {
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="************"
+                    defaultValue="************" // 비밀번호 숨김
                     secureTextEntry
+                    editable={ture} // 읽기 전용
                 />
             </View>
 
-            {/* 이메일 */}
-            <Text style={localStyles.label}>이메일</Text>
+            {/* 이름 */}
+            <Text style={localStyles.label}>이름</Text>
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="WalkAll001@gmail.com"
-                    keyboardType="email-address"
+                    defaultValue={name || ""}
+                    editable={false} // 읽기 전용
                 />
             </View>
 
-            {/* 생일 */}
-            <Text style={localStyles.label}>생일</Text>
+
+            {/* 휴대전화 번호 */}
+            <Text style={localStyles.label}>휴대전화 번호</Text>
             <View style={localStyles.inputContainer}>
                 <TextInput
                     style={localStyles.inputText}
-                    defaultValue="2024/11/14"
+                    defaultValue={phoneNumber || ""}
+                    keyboardType="phone-pad"
+                    editable={true} // 읽기 전용
                 />
-                <Svg
-                    style={localStyles.icon}
-                    width="18"
-                    height="10"
-                    viewBox="0 0 18 10"
-                    fill="none"
-                >
-                    <Path
-                        d="M17.3334 1.66667L9.00002 10L0.666687 1.66667L2.14585 0.1875L9.00002 7.04167L15.8542 0.1875L17.3334 1.66667Z"
-                        fill="black"
-                    />
-                </Svg>
             </View>
 
             {/* 변경내용 저장 */}
-            <TouchableOpacity style={localStyles.saveButton}>
+            <TouchableOpacity
+                style={localStyles.saveButton}
+                onPress={() => Alert.alert("저장", "정보가 저장되었습니다.")}
+            >
                 <Text style={localStyles.saveButtonText}>변경내용 저장</Text>
             </TouchableOpacity>
         </View>
@@ -82,22 +70,22 @@ export default UserInfo;
 
 const localStyles = StyleSheet.create({
     container: {
-        width: "100%", // 화면 전체 너비 사용
-        paddingHorizontal: "5%", // 내부 패딩 비율로 조정
-        backgroundColor: "white",
-        flex: 1, // 전체 화면 높이 사용
+        width: "100%",
+        paddingHorizontal: "5%",
+        backgroundColor: rootStyles.colors.white,
+        flex: 1,
     },
     label: {
         ...rootStyles.fontStyles.subTitle,
-        color: "#000",
-        marginTop: "5%", // 상대적 여백
+        color: rootStyles.colors.black,
+        marginTop: "5%",
     },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        height: 50, // 입력창 높이를 고정 값에서 조정
+        height: 50,
         borderWidth: 1,
-        borderColor: "rgba(84, 76, 76, 0.14)",
+        borderColor: rootStyles.colors.gray3,
         borderRadius: 6,
         paddingHorizontal: "4%",
         marginTop: "2%",
@@ -105,10 +93,7 @@ const localStyles = StyleSheet.create({
     inputText: {
         ...rootStyles.fontStyles.text,
         flex: 1,
-        color: "rgba(84, 76, 76, 1)",
-    },
-    icon: {
-        marginLeft: 10,
+        color: rootStyles.colors.black,
     },
     saveButton: {
         marginTop: "10%",
@@ -121,6 +106,6 @@ const localStyles = StyleSheet.create({
     },
     saveButtonText: {
         ...rootStyles.fontStyles.subTitle,
-        color: "rgba(255, 255, 255, 1)",
+        color: rootStyles.colors.white,
     },
 });
