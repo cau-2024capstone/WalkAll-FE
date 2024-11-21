@@ -45,7 +45,9 @@ function HistoryScreen() {
       const response = await axios.get(
         "https://accurately-healthy-duckling.ngrok-free.app/api/users/email/mj10050203@gmail.com"
       );
+
       if (response.status === 200) {
+        console.log("History data response:", response.data); // 디버깅 로그
         const routes = response.data.routes || [];
         const formattedData = await Promise.all(
           routes.map(async (route) => {

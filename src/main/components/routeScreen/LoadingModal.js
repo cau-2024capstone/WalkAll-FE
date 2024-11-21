@@ -17,7 +17,7 @@ const LoadingModal = ({ navigation, route }) => {
 
   const localIP = "192.168.45.211"; // 자신의 IP로 변경
   const useMockData = false; // true로 설정 시 Mock 데이터 사용
-  const userIdf = "U:7c36bacd-4710-4f7c-a8f3-2f0e12800ffc"; // 사용자 ID, 필요에 따라 변경
+  const userIdf = "U0"; // 사용자 ID, 필요에 따라 변경
 
   const [progressMessages, setProgressMessages] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(true);

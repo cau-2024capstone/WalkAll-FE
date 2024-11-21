@@ -117,7 +117,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
       }
 
       const savedRoute = await response.json();
-      console.log("Saved route:", savedRoute);
+      console.log("Saved route: 로딩 및 저장 성공", savedRoute);
 
       // fetch 요청 완료 후에만 네비게이션 실행
       setIsSavingRoute(false);

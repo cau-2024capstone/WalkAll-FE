@@ -8,12 +8,14 @@ function HistoryCard({ date, start, end, duration, distance }) {
 
     return (
         <View style={localStyles.cardContainer}>
-            <Text style={[rootStyles.fontStyles.subTitle, localStyles.date]}>{date}</Text>
+            <Text style={[rootStyles.fontStyles.subTitle, localStyles.date]}>
+                {date}
+            </Text>
 
             {/* 지도 이미지 (임시 이미지 사용) */}
             <View style={localStyles.mapContainer}>
                 <Image
-                    //source={{ uri: "https://via.placeholder.com/327x150" }} // 임시 지도 이미지 링크
+                    source={{ uri: "https://via.placeholder.com/327x150" }} // 임시 지도 이미지 링크
                     style={localStyles.mapImage}
                     contentFit="cover" // 이미지의 콘텐츠 맞춤 방식 설정
                 />
@@ -24,7 +26,12 @@ function HistoryCard({ date, start, end, duration, distance }) {
                 {infoItems.map((item, index) => (
                     <Text
                         key={index}
-                        style={[localStyles.infoButton, index === infoItems.length - 1 && { marginRight: 0 }]}
+                        style={[
+                            localStyles.infoButton,
+                            index === infoItems.length - 1 && {
+                                marginRight: 0,
+                            },
+                        ]}
                     >
                         {item}
                     </Text>
@@ -33,7 +40,12 @@ function HistoryCard({ date, start, end, duration, distance }) {
 
             {/* 다시 걷기 버튼 */}
             <TouchableOpacity style={localStyles.walkButton}>
-                <Text style={[rootStyles.fontStyles.text, localStyles.walkButtonText]}>
+                <Text
+                    style={[
+                        rootStyles.fontStyles.text,
+                        localStyles.walkButtonText,
+                    ]}
+                >
                     이 루트로 다시 걷기
                 </Text>
             </TouchableOpacity>

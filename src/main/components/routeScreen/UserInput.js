@@ -122,7 +122,7 @@ const UserInput = ({ navigation, route }) => {
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>산책 목표를 설정해주세요</Text>
       </View>
-      {region && (
+      {region ? (
         <MapView
           style={styles.routeMap}
           region={region}
@@ -154,6 +154,10 @@ const UserInput = ({ navigation, route }) => {
             </Marker>
           )}
         </MapView>
+      ) : (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>지도 데이터를 불러오는 중...</Text>
+        </View>
       )}
 
       {/* 목표 선택 Modal */}
@@ -388,5 +392,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FEFEFE", // 흰색
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 300, // 지도 영역 높이와 동일하게 설정
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#000", // 검정색
   },
 });

@@ -30,7 +30,6 @@ const CurrentLocationScreen = ({
   const [showEndNavigationConfirm, setShowEndNavigationConfirm] =
     useState(false);
 
-  const [deviatedEdges, setDeviatedEdges] = useState([]);
   const [isOffRoute, setIsOffRoute] = useState(false);
   const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null);
   const [lastOffRoutePoint, setLastOffRoutePoint] = useState(null);
@@ -47,9 +46,6 @@ const CurrentLocationScreen = ({
   const [temporaryPin, setTemporaryPin] = useState(null);
 
   const mapRef = useRef(null);
-
-  const [isMapTouched, setIsMapTouched] = useState(false);
-  const mapTimeout = useRef(null);
 
   const locationInterval = useRef(null); // 위치 업데이트를 위한 Interval 참조
 
@@ -222,19 +218,9 @@ const CurrentLocationScreen = ({
 
     if (isOnRoute) {
       if (isOffRoute) {
-        const nearestPoint = findNearestPoint(
-          location,
-          routePoints.concat(passedRoutePoints)
-        );
-        const newEdge = [lastOffRoutePoint, nearestPoint];
-        setDeviatedEdges((prevEdges) => [
-          ...prevEdges,
-          { coordinates: newEdge, color: "purple" },
-        ]);
-
         setIsOffRoute(false);
         setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
-        setLastOnRoutePoint(nearestPoint);
+        setLastOnRoutePoint(location);
 
         console.log("사용자가 경로로 복귀했습니다.");
       }
@@ -257,15 +243,6 @@ const CurrentLocationScreen = ({
       }
     } else {
       if (!isOffRoute) {
-        const nearestPoint = findNearestPoint(
-          lastOnRoutePoint,
-          routePoints.concat(passedRoutePoints)
-        );
-        const newEdge = [nearestPoint, location];
-        setDeviatedEdges((prevEdges) => [
-          ...prevEdges,
-          { coordinates: newEdge, color: "purple" },
-        ]);
         setIsOffRoute(true);
         setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
         setLastOffRoutePoint(location);
@@ -284,16 +261,6 @@ const CurrentLocationScreen = ({
           "사용자가 경로를 이탈했습니다. 새로운 포인트를 생성합니다."
         );
       } else {
-        setDeviatedEdges((prevEdges) => {
-          const updatedEdges = [...prevEdges];
-          const lastEdge = updatedEdges[updatedEdges.length - 1];
-          const updatedCoordinates = [...lastEdge.coordinates, location];
-          updatedEdges[updatedEdges.length - 1] = {
-            ...lastEdge,
-            coordinates: updatedCoordinates,
-          };
-          return updatedEdges;
-        });
         setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
         setLastOffRoutePoint(location);
       }
@@ -357,7 +324,7 @@ const CurrentLocationScreen = ({
     setShowCompletionModal(false);
     navigation.navigate("ResultScreen", {
       passedRoutePoints,
-      deviatedEdges,
+      deviatedEdges: [], // 보라색 경로를 삭제하였으므로 빈 배열로 전달
       problemRoutes,
     });
   };
@@ -417,7 +384,7 @@ const CurrentLocationScreen = ({
         );
 
         // 문의 정보를 서버로 전송하는 API 호출 추가
-        const userID = "U:7c36bacd-4710-4f7c-a8f3-2f0e12800ffc"; // 사용자 ID
+        const userEmail = "mj10050203@gmail.com"; // 사용자 ID
         const inquiryBody = {
           startNodeIdf: startId,
           endNodeIdf: endId,
@@ -425,8 +392,11 @@ const CurrentLocationScreen = ({
         };
 
         try {
+          console.log(
+            `https://accurately-healthy-duckling.ngrok-free.app/api/users/submit-inquiry/${userEmail}`
+          );
           const inquiryResponse = await fetch(
-            `https://accurately-healthy-duckling.ngrok-free.app/api/users/submit-inquiry/${userID}`,
+            `https://accurately-healthy-duckling.ngrok-free.app/api/users/submit-inquiry/${userEmail}`,
             {
               method: "POST",
               headers: {
@@ -443,38 +413,32 @@ const CurrentLocationScreen = ({
             Alert.alert("문의 실패", "문의 제출 중 오류가 발생했습니다.");
           } else {
             Alert.alert("문의 완료", "문의가 성공적으로 접수되었습니다.");
+
+            // 문의 핀 제거 및 검은색 선 추가
+            setProblemStartPoint(null);
+            setProblemEndPoint(null);
+
+            setProblemRoutes((prevRoutes) => [
+              ...prevRoutes,
+              {
+                coordinates: [problemStartPoint, problemEndPoint],
+                color: "black",
+              },
+            ]);
+
+            addAndRemoveTemporaryPin();
           }
         } catch (error) {
           console.error("문의 제출 중 오류 발생:", error);
           Alert.alert("문의 실패", "API 호출 실패");
         }
-
-        // 세분화된 포인트 중 가장 가까운 두 점 찾기
-        const nearestStartPoint = findNearestPoint(
-          problemStartPoint,
-          routePoints.concat(passedRoutePoints)
-        );
-        const nearestEndPoint = findNearestPoint(
-          problemEndPoint,
-          routePoints.concat(passedRoutePoints)
-        );
-
-        // 검은색 선으로 연결
-        setDeviatedEdges((prevEdges) => [
-          ...prevEdges,
-          {
-            coordinates: [nearestStartPoint, nearestEndPoint],
-            color: "black",
-          },
-        ]);
       }
     } catch (error) {
       console.log("가장 가까운 포인트를 가져오는 중 오류 발생:", error);
       Alert.alert("문의 실패", "API 호출 실패");
     } finally {
       setShowCompletionModal(false);
-      setProblemRouteSetting(null);
-      setShowReportButtons(false);
+      setIssueReportingStage(null);
       // 산책 종료 여부 확인
       Alert.alert(
         "산책 종료",
@@ -518,25 +482,6 @@ const CurrentLocationScreen = ({
     }
   };
 
-  const recenterMap = () => {
-    if (userLocation && mapRef.current) {
-      mapRef.current.animateToRegion(
-        {
-          ...userLocation,
-          latitudeDelta: 0.002,
-          longitudeDelta: 0.002,
-        },
-        1000
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (userLocation && !isMapTouched) {
-      recenterMap();
-    }
-  }, [userLocation, isMapTouched]);
-
   const handleEndNavigation = () => {
     setShowEndNavigationConfirm(true);
   };
@@ -550,7 +495,7 @@ const CurrentLocationScreen = ({
     setShowCompletionModal(false);
     navigation.navigate("ResultScreen", {
       passedRoutePoints,
-      deviatedEdges,
+      deviatedEdges: [], // 보라색 경로를 삭제하였으므로 빈 배열로 전달
       problemRoutes,
     });
   };
@@ -589,22 +534,7 @@ const CurrentLocationScreen = ({
           longitudeDelta: 0.002,
         }}
         onPress={onMapPress}
-        onRegionChange={() => {
-          setIsMapTouched(true);
-          if (mapTimeout.current) {
-            clearTimeout(mapTimeout.current);
-          }
-        }}
-        onRegionChangeComplete={() => {
-          if (mapTimeout.current) {
-            clearTimeout(mapTimeout.current);
-          }
-          mapTimeout.current = setTimeout(() => {
-            setIsMapTouched(false);
-            recenterMap();
-          }, 5000);
-        }}
-        scrollEnabled={!issueReportingStage}
+        scrollEnabled={true} // 문의할 때 지도 움직일 수 있게 수정
       >
         {passedRoutePoints.length > 0 && (
           <Polyline
@@ -627,14 +557,6 @@ const CurrentLocationScreen = ({
             strokeColor={route.color}
             strokeWidth={3}
             zIndex={2}
-          />
-        ))}
-        {deviatedEdges.map((edge, index) => (
-          <Polyline
-            key={`deviatedEdge-${index}`}
-            coordinates={edge.coordinates}
-            strokeColor={edge.color}
-            strokeWidth={3}
           />
         ))}
         {userLocation && (
@@ -758,14 +680,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 50,
     alignSelf: "center",
-    backgroundColor: "#FEFEFEaa",
+    backgroundColor: "#FFFFFF", // 배경색 추가
     padding: 10,
     borderRadius: 8,
     zIndex: 10,
+    borderWidth: 1,
+    borderColor: "rgba(74, 143, 62, 1)", // 테두리 추가
   },
   titleText: {
     fontSize: 16,
     color: "rgba(74, 143, 62, 1)",
+    fontWeight: "bold", // 글자 두껍게
   },
   buttonContainer: {
     position: "absolute",
