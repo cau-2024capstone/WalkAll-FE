@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Alert } from "react-native";
-import axios from "axios";
 import { GOOGLE_MAPS_API_KEY } from "@env"; // 환경 변수에서 API 키 가져오기
 import rootStyles from "../styles/StyleGuide";
 import HistorySearch from "../components/historyScreen/HistorySearch";
@@ -15,22 +14,35 @@ function HistoryScreen() {
   const reverseGeocode = async (lat, lng) => {
     try {
       console.log(`Requesting reverse geocode for lat: ${lat}, lng: ${lng}`); // 디버깅 로그
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}&language=ko` // 한글 응답 추가
+
+      // 유효 범위 체크
+      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        console.error("Latitude or longitude out of range");
+        return "위치 불명";
+      }
+
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}&language=ko`
       );
-      if (response.status === 200 && response.data.results.length > 0) {
-        const addressComponents = response.data.results[0].address_components;
+
+      if (!response.ok) {
+        throw new Error(
+          `Geocoding API request failed with status ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (data.results.length > 0) {
+        const addressComponents = data.results[0].address_components;
         const dong = addressComponents.find(
           (comp) =>
             comp.types.includes("sublocality_level_2") || // 동(소단위)
             comp.types.includes("sublocality_level_1") // 구(대단위)
         );
         return dong ? dong.long_name : "위치 불명";
-      } else if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        console.error("Latitude or longitude out of range");
-        return "위치 불명";
       } else {
-        console.error("Invalid response from Geocoding API:", response.data);
+        console.error("Invalid response from Geocoding API:", data);
         return "위치 불명";
       }
     } catch (error) {
@@ -42,37 +54,40 @@ function HistoryScreen() {
   // API로부터 데이터 가져오기
   const fetchHistoryData = async () => {
     try {
-      const response = await axios.get(
+      const response = await fetch(
         "https://accurately-healthy-duckling.ngrok-free.app/api/users/email/mj10050203@gmail.com"
       );
 
-      if (response.status === 200) {
-        console.log("History data response:", response.data); // 디버깅 로그
-        const routes = response.data.routes || [];
-        const formattedData = await Promise.all(
-          routes.map(async (route) => {
-            // 위도와 경도의 순서 교정
-            const [startLng, startLat] = route.startCood.split(",").map(Number);
-            const [endLng, endLat] = route.endCood.split(",").map(Number);
-
-            // 주소로 변환
-            const startDong = await reverseGeocode(startLat, startLng);
-            const endDong = await reverseGeocode(endLat, endLng);
-
-            return {
-              id: route.id,
-              date: route.date,
-              start: startDong,
-              end: endDong,
-              duration: `${route.routeTime} mins`,
-              distance: `${route.routeDistance} m`,
-            };
-          })
-        );
-
-        setHistoryData(formattedData);
-        setSearchResults(formattedData); // 초기 검색 결과는 전체 데이터
+      if (!response.ok) {
+        throw new Error("Failed to fetch history data");
       }
+
+      const data = await response.json();
+      console.log("History data response:", data); // 디버깅 로그
+      const routes = data.routes || [];
+      const formattedData = await Promise.all(
+        routes.map(async (route) => {
+          // 위도와 경도의 순서 교정
+          const [startLng, startLat] = route.startCood.split(",").map(Number);
+          const [endLng, endLat] = route.endCood.split(",").map(Number);
+
+          // 주소로 변환
+          const startDong = await reverseGeocode(startLat, startLng);
+          const endDong = await reverseGeocode(endLat, endLng);
+
+          return {
+            id: route.id,
+            date: route.date,
+            start: startDong,
+            end: endDong,
+            duration: `${route.routeTime} mins`,
+            distance: `${route.routeDistance} m`,
+          };
+        })
+      );
+
+      setHistoryData(formattedData);
+      setSearchResults(formattedData); // 초기 검색 결과는 전체 데이터
     } catch (error) {
       console.error("Error fetching history data:", error);
       Alert.alert("오류", "기록 데이터를 불러오지 못했습니다.");
@@ -80,7 +95,10 @@ function HistoryScreen() {
   };
 
   useEffect(() => {
-    fetchHistoryData();
+    const fetchData = async () => {
+      await fetchHistoryData();
+    };
+    fetchData();
   }, []);
 
   // 검색 핸들러
