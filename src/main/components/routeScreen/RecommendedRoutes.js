@@ -144,46 +144,56 @@ const RecommendedRoutes = ({ navigation, route }) => {
 
     return (
       <View style={styles.routeItem}>
-        <MapView
-          style={styles.routeMap}
-          initialRegion={{
-            latitude: center.latitude,
-            longitude: center.longitude,
-            latitudeDelta: 0.002,
-            longitudeDelta: 0.002,
-          }}
-          scrollEnabled={false}
-          zoomEnabled={false}
-          rotateEnabled={false}
-          pointerEvents="none"
-        >
-          {item.roads.map((road, index) => (
-            <Polyline
-              key={index}
-              coordinates={[
-                { latitude: road.startLat, longitude: road.startLng },
-                { latitude: road.endLat, longitude: road.endLng },
-              ]}
-              strokeColor={getColorFromRoadType(road.roadType)}
-              strokeWidth={3}
-            />
-          ))}
-          {startPoint && (
-            <Marker
-              coordinate={{
-                latitude: startPoint.lat,
-                longitude: startPoint.lng,
-              }}
-              pinColor="green"
-            />
-          )}
-          {endPoint && (
-            <Marker
-              coordinate={{ latitude: endPoint.lat, longitude: endPoint.lng }}
-              pinColor="red"
-            />
-          )}
-        </MapView>
+        <View style={styles.routeMapContainer}>
+          <MapView
+            style={styles.routeMap}
+            initialRegion={{
+              latitude: center.latitude,
+              longitude: center.longitude,
+              latitudeDelta: 0.002,
+              longitudeDelta: 0.002,
+            }}
+            scrollEnabled={false}
+            zoomEnabled={false}
+            rotateEnabled={false}
+            pointerEvents="none"
+          >
+            {item.roads.map((road, index) => (
+              <Polyline
+                key={index}
+                coordinates={[
+                  { latitude: road.startLat, longitude: road.startLng },
+                  { latitude: road.endLat, longitude: road.endLng },
+                ]}
+                strokeColor={getColorFromRoadType(road.roadType)}
+                strokeWidth={3}
+              />
+            ))}
+            {startPoint && (
+              <Marker
+                coordinate={{
+                  latitude: startPoint.lat,
+                  longitude: startPoint.lng,
+                }}
+                pinColor="green"
+              />
+            )}
+            {endPoint && (
+              <Marker
+                coordinate={{
+                  latitude: endPoint.lat,
+                  longitude: endPoint.lng,
+                }}
+                pinColor="red"
+              />
+            )}
+          </MapView>
+          {/* 지도 우측 하단에 거리와 시간 표시 */}
+          <View style={styles.infoOverlay}>
+            <Text style={styles.infoText}>거리: {item.totalRoadDistance}m</Text>
+            <Text style={styles.infoText}>시간: {item.totalTime}분</Text>
+          </View>
+        </View>
 
         <TouchableOpacity
           style={styles.selectButton}
@@ -312,13 +322,31 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  routeMap: {
+  routeMapContainer: {
     width: "90%",
     height: 200,
     borderRadius: 10,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "rgba(74, 143, 62, 1)", // Dark green
+    position: "relative",
+  },
+  routeMap: {
+    width: "100%",
+    height: "100%",
+  },
+  infoOverlay: {
+    position: "absolute",
+    right: 5,
+    bottom: 5,
+    backgroundColor: "rgba(255, 255, 255, 0.8)", // 약간 투명한 흰색 배경
+    padding: 5,
+    borderRadius: 5,
+    alignItems: "flex-end",
+  },
+  infoText: {
+    fontSize: 12,
+    color: "#000",
   },
   selectButton: {
     backgroundColor: "rgba(74, 143, 62, 1)", // Dark green

@@ -21,7 +21,7 @@ const CurrentLocationScreen = ({
   const [userLocation, setUserLocation] = useState(null);
   const [isLocationLoading, setIsLocationLoading] = useState(true);
 
-  // 기타 상태 관리 변수들
+  // 상태 관리 변수들
   const [routePoints, setRoutePoints] = useState([]);
   const [passedRoutePoints, setPassedRoutePoints] = useState([]);
   const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false);
@@ -29,13 +29,6 @@ const CurrentLocationScreen = ({
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showEndNavigationConfirm, setShowEndNavigationConfirm] =
     useState(false);
-
-  const [isOffRoute, setIsOffRoute] = useState(false);
-  const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null);
-  const [lastOffRoutePoint, setLastOffRoutePoint] = useState(null);
-  const [userDeviatedPoints, setUserDeviatedPoints] = useState([]);
-  const [newPoints, setNewPoints] = useState([]);
-  const [newEdges, setNewEdges] = useState([]);
 
   const [problemRoutes, setProblemRoutes] = useState([]);
 
@@ -90,6 +83,12 @@ const CurrentLocationScreen = ({
     console.log("points:", points);
     setRoutePoints(points);
 
+    if (points.length > 0) {
+      setLastDestinationPoint(points[points.length - 1]);
+      addAndRemoveTemporaryPin();
+      updateUserLocation();
+    }
+
     // 컴포넌트 언마운트 시 위치 업데이트 중지
     return () => {
       if (locationInterval.current) {
@@ -97,25 +96,6 @@ const CurrentLocationScreen = ({
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (routePoints.length > 0) {
-      setLastOnRoutePoint(routePoints[0]);
-      setLastDestinationPoint(routePoints[routePoints.length - 1]);
-      addAndRemoveTemporaryPin();
-    }
-  }, [routePoints]);
-
-  useEffect(() => {
-    if (lastOnRoutePoint) {
-      console.log("lastOnRoutePoint:", lastOnRoutePoint);
-      console.log("routePoints.length:", routePoints.length);
-      console.log("passedRoutePoints.length:", passedRoutePoints.length);
-
-      // 이제 위치 업데이트를 시작합니다.
-      updateUserLocation();
-    }
-  }, [lastOnRoutePoint]);
 
   const addAndRemoveTemporaryPin = () => {
     const tempCoordinate = {
@@ -176,94 +156,39 @@ const CurrentLocationScreen = ({
         const { latitude, longitude } = location.coords;
         const newLocation = { latitude, longitude };
         setUserLocation(newLocation);
-        checkUserLocation(newLocation);
+        updatePassedRoutePoints(newLocation);
         console.log(`현재 위치 (업데이트): ${latitude}, ${longitude}`);
-      }, 5000); // 5초마다 위치 업데이트
+      }, 3000); // 5초마다 위치 업데이트
     } catch (error) {
       console.log("위치 업데이트 오류:", error);
       setIsLocationLoading(false);
     }
   };
 
-  // 이하 코드는 기존과 동일합니다.
+  // 사용자의 위치에 따라 지나간 경로를 업데이트하는 함수
+  const updatePassedRoutePoints = (location) => {
+    if (routePoints.length === 0) return;
 
-  // 사용자가 경로 위에 있는지 확인하는 함수
-  const isUserOnRoute = (location, points, threshold) => {
-    for (let point of points) {
-      const distance = calculateDistance(location, point);
-      if (distance <= threshold) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const checkUserLocation = (location) => {
     const threshold = 0.0002;
 
-    if (
-      !lastOnRoutePoint ||
-      (routePoints.length === 0 && passedRoutePoints.length === 0)
-    ) {
-      console.log("경로 정보가 아직 준비되지 않았습니다.");
-      console.log("lastOnRoutePoint:", lastOnRoutePoint);
-      console.log("routePoints.length:", routePoints.length);
-      console.log("passedRoutePoints.length:", passedRoutePoints.length);
-      return;
-    }
+    const nearestPointIndex = findNearestRoutePointIndex(location, routePoints);
 
-    const isOnRoute =
-      isUserOnRoute(location, routePoints, threshold) ||
-      isUserOnRoute(location, passedRoutePoints, threshold);
-
-    if (isOnRoute) {
-      if (isOffRoute) {
-        setIsOffRoute(false);
-        setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
-        setLastOnRoutePoint(location);
-
-        console.log("사용자가 경로로 복귀했습니다.");
-      }
-
-      const nearestPointIndex = findNearestRoutePointIndex(
+    if (nearestPointIndex !== -1) {
+      const distance = calculateDistance(
         location,
-        routePoints
+        routePoints[nearestPointIndex]
       );
-
-      if (nearestPointIndex !== -1) {
+      if (distance <= threshold) {
         const passedPoints = routePoints.slice(0, nearestPointIndex + 1);
         setPassedRoutePoints((prevPoints) => [...prevPoints, ...passedPoints]);
 
         const remainingRoutePoints = routePoints.slice(nearestPointIndex + 1);
         setRoutePoints(remainingRoutePoints);
       }
+    }
 
-      if (routePoints.length === 0 || isNearDestination(location)) {
-        setArrivalButtonEnabled(true);
-      }
-    } else {
-      if (!isOffRoute) {
-        setIsOffRoute(true);
-        setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
-        setLastOffRoutePoint(location);
-
-        const newPointId = `new_${userDeviatedPoints.length}`;
-        setNewPoints((prevPoints) => [
-          ...prevPoints,
-          {
-            id: newPointId,
-            lat: location.latitude,
-            lng: location.longitude,
-          },
-        ]);
-
-        console.log(
-          "사용자가 경로를 이탈했습니다. 새로운 포인트를 생성합니다."
-        );
-      } else {
-        setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
-        setLastOffRoutePoint(location);
-      }
+    if (routePoints.length === 0 || isNearDestination(location)) {
+      setArrivalButtonEnabled(true);
     }
   };
 
@@ -278,22 +203,6 @@ const CurrentLocationScreen = ({
       }
     });
     return nearestIndex;
-  };
-
-  const findNearestPoint = (location, points) => {
-    if (!location || points.length === 0) {
-      return null;
-    }
-    let minDistance = Infinity;
-    let nearestPoint = null;
-    points.forEach((point) => {
-      const distance = calculateDistance(location, point);
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestPoint = point;
-      }
-    });
-    return nearestPoint;
   };
 
   const calculateDistance = (loc1, loc2) => {
@@ -316,10 +225,8 @@ const CurrentLocationScreen = ({
     return distance <= arrivalThreshold;
   };
 
-  const handleArriveButtonPress = async () => {
+  const handleArriveButtonPress = () => {
     setShowCompletionModal(true);
-
-    await processUserDeviations();
 
     setShowCompletionModal(false);
     navigation.navigate("ResultScreen", {
@@ -327,16 +234,6 @@ const CurrentLocationScreen = ({
       deviatedEdges: [], // 보라색 경로를 삭제하였으므로 빈 배열로 전달
       problemRoutes,
     });
-  };
-
-  const processUserDeviations = async () => {
-    if (userDeviatedPoints.length === 0) return;
-
-    setShowCompletionModal(true);
-
-    // 이탈 경로 처리 로직
-
-    setShowCompletionModal(false);
   };
 
   const handleReportProblemRoute = () => {
@@ -482,15 +379,29 @@ const CurrentLocationScreen = ({
     }
   };
 
+  const findNearestPoint = (location, points) => {
+    if (!location || points.length === 0) {
+      return null;
+    }
+    let minDistance = Infinity;
+    let nearestPoint = null;
+    points.forEach((point) => {
+      const distance = calculateDistance(location, point);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestPoint = point;
+      }
+    });
+    return nearestPoint;
+  };
+
   const handleEndNavigation = () => {
     setShowEndNavigationConfirm(true);
   };
 
-  const confirmEndNavigation = async () => {
+  const confirmEndNavigation = () => {
     setShowEndNavigationConfirm(false);
     setShowCompletionModal(true);
-
-    await processUserDeviations();
 
     setShowCompletionModal(false);
     navigation.navigate("ResultScreen", {
@@ -680,17 +591,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 50,
     alignSelf: "center",
-    backgroundColor: "#FFFFFF", // 배경색 추가
+    backgroundColor: "#FFFFFF",
     padding: 10,
     borderRadius: 8,
     zIndex: 10,
     borderWidth: 1,
-    borderColor: "rgba(74, 143, 62, 1)", // 테두리 추가
+    borderColor: "rgba(74, 143, 62, 1)",
   },
   titleText: {
     fontSize: 16,
     color: "rgba(74, 143, 62, 1)",
-    fontWeight: "bold", // 글자 두껍게
+    fontWeight: "bold",
   },
   buttonContainer: {
     position: "absolute",
@@ -756,7 +667,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#00000040", // 반투명 배경색
+    backgroundColor: "#00000040",
   },
   activityIndicatorWrapper: {
     backgroundColor: "#FFFFFF",
