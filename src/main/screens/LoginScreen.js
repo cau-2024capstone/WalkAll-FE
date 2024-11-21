@@ -6,6 +6,7 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
+    Modal,
     ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -29,16 +30,15 @@ function LoginScreen() {
     }, [route.params]);
 
     const handleLogin = async () => {
-        // 테스트 로그인 처리
-        if (email === "a" && password === "a") {
-            const jwt = "test_jwt_token"; // 임시 JWT 토큰
-            await AsyncStorage.setItem("jwt", jwt);
-            Alert.alert("로그인 성공", "테스트 로그인 성공");
-            navigation.navigate("BottomTabApp");
-        } else {
-            // 로딩 시작
-            setLoading(true);
-            try {
+        setLoading(true); // 로딩 시작
+        try {
+            // 테스트 로그인 처리
+            if (email === "a" && password === "a") {
+                const jwt = "test_jwt_token"; // 임시 JWT 토큰
+                await AsyncStorage.setItem("jwt", jwt);
+                Alert.alert("로그인 성공", "테스트 로그인 성공");
+                navigation.navigate("BottomTabApp");
+            } else {
                 const response = await axios.post(
                     "https://accurately-healthy-duckling.ngrok-free.app/auth/login",
                     {
@@ -63,43 +63,29 @@ function LoginScreen() {
                         navigation.navigate("BottomTabApp");
                     }
                 }
-            } catch (error) {
-                // 에러 처리
-                if (error.response && error.response.data) {
-                    Alert.alert(
-                        "로그인 실패",
-                        error.response.data.message ||
-                            "이메일 또는 비밀번호가 잘못되었습니다."
-                    );
-                } else {
-                    Alert.alert(
-                        "로그인 실패",
-                        "네트워크 오류가 발생했습니다. 다시 시도해주세요."
-                    );
-                }
-            } finally {
-                // 로딩 종료
-                setLoading(false);
             }
+        } catch (error) {
+            // 에러 처리
+            if (error.response && error.response.data) {
+                Alert.alert(
+                    "로그인 실패",
+                    error.response.data.message ||
+                        "이메일 또는 비밀번호가 잘못되었습니다."
+                );
+            } else {
+                Alert.alert(
+                    "로그인 실패",
+                    "네트워크 오류가 발생했습니다. 다시 시도해주세요."
+                );
+            }
+        } finally {
+            setLoading(false); // 로딩 종료
         }
     };
 
     const handleSignupNavigation = () => {
         navigation.navigate("SignupScreen");
     };
-
-    if (loading) {
-        // 로딩 화면
-        return (
-            <View style={localStyles.loadingContainer}>
-                <ActivityIndicator
-                    size="large"
-                    color={rootStyles.colors.white}
-                />
-                <Text style={localStyles.loadingText}>로그인 중...</Text>
-            </View>
-        );
-    }
 
     if (isAdmin) {
         // AdminScreen 컴포넌트 렌더링
@@ -108,6 +94,16 @@ function LoginScreen() {
 
     return (
         <View style={localStyles.container}>
+            {/* 로딩 모달 */}
+            <Modal transparent={true} visible={loading}>
+                <View style={localStyles.modalBackground}>
+                    <View style={localStyles.modalContainer}>
+                        <ActivityIndicator size="large" color="green" />
+                        <Text style={localStyles.modalText}>로그인 중...</Text>
+                    </View>
+                </View>
+            </Modal>
+
             <View style={localStyles.header}>
                 <Text
                     style={[rootStyles.fontStyles.mainTitle, { fontSize: 30 }]}
@@ -255,15 +251,21 @@ const localStyles = StyleSheet.create({
         textDecorationLine: "underline",
         marginLeft: 5,
     },
-    loadingContainer: {
+    modalBackground: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: rootStyles.colors.green5, // 초록색 배경
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
-    loadingText: {
+    modalContainer: {
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    modalText: {
         marginTop: 10,
-        color: rootStyles.colors.white,
         fontSize: 16,
+        color: "green",
     },
 });

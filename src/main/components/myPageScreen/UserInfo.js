@@ -1,3 +1,4 @@
+//capstone-FE/src/main/components/myPageScreen/UserInfo.js
 import React, { useState, useEffect } from "react";
 import {
     View,

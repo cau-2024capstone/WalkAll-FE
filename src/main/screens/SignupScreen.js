@@ -106,7 +106,7 @@ function SignupScreen() {
                     value: phoneNumber,
                     onChange: setPhoneNumber,
                     placeholder: "휴대전화 번호를 입력하세요",
-                    keyboardType: "phone-pad",
+                    keyboardType: "default",
                     icon: "phone",
                 },
             ].map((field, index) => (

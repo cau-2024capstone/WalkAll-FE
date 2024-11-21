@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  Modal,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { GOOGLE_MAPS_API_KEY } from "@env"; // 환경 변수에서 API 키 가져오기
 import rootStyles from "../styles/StyleGuide";
 import HistorySearch from "../components/historyScreen/HistorySearch";
@@ -8,6 +15,7 @@ import HistoryCardArea from "../components/historyScreen/HistoryCardArea";
 function HistoryScreen() {
   const [historyData, setHistoryData] = useState([]); // 서버에서 가져온 데이터
   const [searchResults, setSearchResults] = useState([]); // 검색 결과
+  const [loading, setLoading] = useState(false); // 로딩 상태
   const searchInputRef = React.useRef(); // 검색어 상태 초기화 참조
 
   // 위도, 경도를 주소로 변환하는 함수
@@ -53,6 +61,7 @@ function HistoryScreen() {
 
   // API로부터 데이터 가져오기
   const fetchHistoryData = async () => {
+    setLoading(true); // 로딩 시작
     try {
       const response = await fetch(
         "https://accurately-healthy-duckling.ngrok-free.app/api/users/email/mj10050203@gmail.com"
@@ -91,6 +100,8 @@ function HistoryScreen() {
     } catch (error) {
       console.error("Error fetching history data:", error);
       Alert.alert("오류", "기록 데이터를 불러오지 못했습니다.");
+    } finally {
+      setLoading(false); // 로딩 종료
     }
   };
 
@@ -122,6 +133,14 @@ function HistoryScreen() {
 
   return (
     <View style={localStyles.container}>
+      <Modal transparent={true} visible={loading}>
+        <View style={localStyles.modalBackground}>
+          <View style={localStyles.modalContainer}>
+            <ActivityIndicator size="large" color="green" />
+            <Text style={localStyles.modalText}>경로 불러오는 중입니다...</Text>
+          </View>
+        </View>
+      </Modal>
       <HistorySearch
         onSearch={handleSearch}
         onRefresh={handleRefresh}
@@ -141,5 +160,22 @@ const localStyles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     backgroundColor: rootStyles.colors.grey1,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "green",
   },
 });
