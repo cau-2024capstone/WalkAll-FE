@@ -99,7 +99,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
   const handleFollowRoute = async (selectedRoute) => {
     setIsSavingRoute(true); // 로딩 상태 시작
     try {
-      const url = `http://${localIP}:8082/api/routes/saveSelectedRouteToUser?userIdf=${userIdf}`;
+      const url = `https://accurately-healthy-duckling.ngrok-free.app/api/routes/saveSelectedRouteToUser?userIdf=${userIdf}`;
       console.log("Saving selected route to user:", url);
       console.log("Request body:", JSON.stringify(selectedRoute));
 

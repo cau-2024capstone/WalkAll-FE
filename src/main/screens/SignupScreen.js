@@ -23,7 +23,7 @@ function SignupScreen() {
     const handleSignup = async () => {
         try {
             const response = await axios.post(
-                "http://192.168.45.211:8082/auth/register",
+                "https://accurately-healthy-duckling.ngrok-free.app/auth/register",
                 {
                     userName: name,
                     userPhoneNumber: phoneNumber,

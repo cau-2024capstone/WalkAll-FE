@@ -193,10 +193,10 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
         `문제 시작 지점에 대한 closest-point API 호출 (휘수형 부분): lat=${problemStartPoint.latitude}, lng=${problemStartPoint.longitude}`
       );
       const startPointResponse = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
       );
       const endPointResponse = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
       );
 
       const startPointData = await startPointResponse.text(); //응답이 JSON이 아니라 text로 받아옴
@@ -545,7 +545,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
       );
       //우리 데이터 베이스 내에 있는 점인지 확인
       const response = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${point.latitude}&lng=${point.longitude}&radius=5`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${point.latitude}&lng=${point.longitude}&radius=5`
       );
       const data = await response.text();
       if (data && data !== "null") {

@@ -391,10 +391,10 @@ const CurrentLocationScreen = ({
         `문제 시작 지점에 대한 closest-point API 호출: lat=${problemStartPoint.latitude}, lng=${problemStartPoint.longitude}`
       );
       const startPointResponse = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
       );
       const endPointResponse = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
       );
 
       const startPointData = await startPointResponse.text(); // 응답을 텍스트로 받음
@@ -426,7 +426,7 @@ const CurrentLocationScreen = ({
 
         try {
           const inquiryResponse = await fetch(
-            `http://${localIP}:8082/api/users/submit-inquiry/${userID}`,
+            `https://accurately-healthy-duckling.ngrok-free.app/api/users/submit-inquiry/${userID}`,
             {
               method: "POST",
               headers: {

@@ -23,7 +23,7 @@ function UserInfo({ route, navigation }) {
     const fetchUserInfo = async () => {
         try {
             const response = await axios.get(
-                "http://192.168.45.211:8082/api/users/email/mj10050203@gmail.com"
+                "https://accurately-healthy-duckling.ngrok-free.app/api/users/email/mj10050203@gmail.com"
             );
             if (response.status === 200) {
                 const { userEmail, userPassword, userName, userPhoneNumber } =
@@ -51,7 +51,7 @@ function UserInfo({ route, navigation }) {
     const handleSave = async () => {
         try {
             const response = await axios.put(
-                "http://192.168.45.211:8082/api/users/email/mj10050203@gmail.com",
+                "https://accurately-healthy-duckling.ngrok-free.app/api/users/email/mj10050203@gmail.com",
                 {
                     userName: userData.name,
                     userPhoneNumber: userData.phoneNumber,

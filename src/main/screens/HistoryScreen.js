@@ -43,7 +43,7 @@ function HistoryScreen() {
   const fetchHistoryData = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.45.211:8082/api/users/email/mj10050203@gmail.com"
+        "https://accurately-healthy-duckling.ngrok-free.app/api/users/email/mj10050203@gmail.com"
       );
       if (response.status === 200) {
         const routes = response.data.routes || [];

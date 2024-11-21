@@ -57,7 +57,7 @@ const LoadingModal = ({ navigation, route }) => {
 
         // 가장 가까운 점 ID를 가져오는 함수
         const getClosestPointId = async (lat, lng, pointType) => {
-          const url = `http://${localIP}:8082/api/points/closest-point?lat=${lat}&lng=${lng}&radius=50`;
+          const url = `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${lat}&lng=${lng}&radius=50`;
           console.log(`Fetching closest point for ${pointType}: ${url}`);
 
           const response = await fetch(url);
@@ -160,7 +160,7 @@ const LoadingModal = ({ navigation, route }) => {
             // 시작점과 도착점이 동일한 경우
             bodyParams.startPoint = startId;
 
-            const url = `http://${localIP}:8082/api/routes/findRoutesWithSameStartPoint`;
+            const url = `https://accurately-healthy-duckling.ngrok-free.app/api/routes/findRoutesWithSameStartPoint`;
             console.log("Calling findRoutesWithSameStartPoint API:", url);
             console.log("Request body:", JSON.stringify(bodyParams));
 
@@ -198,7 +198,7 @@ const LoadingModal = ({ navigation, route }) => {
             bodyParams.startId = startId;
             bodyParams.endId = endId;
 
-            const url = `http://${localIP}:8082/api/routes/findRoutes`;
+            const url = `https://accurately-healthy-duckling.ngrok-free.app/api/routes/findRoutes`;
             console.log("Calling findRoutes API:", url);
             console.log("Request body:", JSON.stringify(bodyParams));
 

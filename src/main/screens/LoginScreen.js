@@ -6,20 +6,22 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
+    ActivityIndicator,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons"; // FontAwesome으로 변경
 import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import rootStyles from "../styles/StyleGuide";
-import * as Font from "expo-font";
 import { MaterialIcons } from "@expo/vector-icons";
+import AdminScreen from "./AdminScreen";
 
 function LoginScreen() {
     const navigation = useNavigation();
     const route = useRoute();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false); // 로딩 상태 추가
+    const [isAdmin, setIsAdmin] = useState(false); // admin 상태 추가
 
     useEffect(() => {
         if (route.params?.email) setEmail(route.params.email);
@@ -27,38 +29,57 @@ function LoginScreen() {
     }, [route.params]);
 
     const handleLogin = async () => {
-        try {
-            const response = await axios.post(
-                "http://192.168.45.211:8082/auth/login",
-                {
-                    userEmail: email,
-                    userPassword: password,
+        // 테스트 로그인 처리
+        if (email === "a" && password === "a") {
+            const jwt = "test_jwt_token"; // 임시 JWT 토큰
+            await AsyncStorage.setItem("jwt", jwt);
+            Alert.alert("로그인 성공", "테스트 로그인 성공");
+            navigation.navigate("BottomTabApp");
+        } else {
+            // 로딩 시작
+            setLoading(true);
+            try {
+                const response = await axios.post(
+                    "https://accurately-healthy-duckling.ngrok-free.app/auth/login",
+                    {
+                        userEmail: email,
+                        userPassword: password,
+                    }
+                );
+
+                if (response.status === 201) {
+                    const { jwt, message, role } = response.data;
+
+                    // JWT 토큰 저장
+                    await AsyncStorage.setItem("jwt", jwt);
+
+                    // 성공 메시지 표시 및 화면 이동
+                    Alert.alert("로그인 성공", message);
+
+                    if (email === "admin@admin.com") {
+                        // Admin 화면 렌더링
+                        setIsAdmin(true);
+                    } else {
+                        navigation.navigate("BottomTabApp");
+                    }
                 }
-            );
-
-            if (response.status === 201) {
-                const { jwt, message } = response.data;
-
-                // JWT 토큰 저장
-                await AsyncStorage.setItem("jwt", jwt);
-
-                // 성공 메시지 표시 및 화면 이동
-                Alert.alert("로그인 성공", message);
-                navigation.navigate("BottomTabApp");
-            }
-        } catch (error) {
-            // 에러 처리
-            if (error.response && error.response.data) {
-                Alert.alert(
-                    "로그인 실패",
-                    error.response.data.message ||
-                        "이메일 또는 비밀번호가 잘못되었습니다."
-                );
-            } else {
-                Alert.alert(
-                    "로그인 실패",
-                    "네트워크 오류가 발생했습니다. 다시 시도해주세요."
-                );
+            } catch (error) {
+                // 에러 처리
+                if (error.response && error.response.data) {
+                    Alert.alert(
+                        "로그인 실패",
+                        error.response.data.message ||
+                            "이메일 또는 비밀번호가 잘못되었습니다."
+                    );
+                } else {
+                    Alert.alert(
+                        "로그인 실패",
+                        "네트워크 오류가 발생했습니다. 다시 시도해주세요."
+                    );
+                }
+            } finally {
+                // 로딩 종료
+                setLoading(false);
             }
         }
     };
@@ -66,6 +87,24 @@ function LoginScreen() {
     const handleSignupNavigation = () => {
         navigation.navigate("SignupScreen");
     };
+
+    if (loading) {
+        // 로딩 화면
+        return (
+            <View style={localStyles.loadingContainer}>
+                <ActivityIndicator
+                    size="large"
+                    color={rootStyles.colors.white}
+                />
+                <Text style={localStyles.loadingText}>로그인 중...</Text>
+            </View>
+        );
+    }
+
+    if (isAdmin) {
+        // AdminScreen 컴포넌트 렌더링
+        return <AdminScreen />;
+    }
 
     return (
         <View style={localStyles.container}>
@@ -215,5 +254,16 @@ const localStyles = StyleSheet.create({
         color: rootStyles.colors.green5,
         textDecorationLine: "underline",
         marginLeft: 5,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: rootStyles.colors.green5, // 초록색 배경
+    },
+    loadingText: {
+        marginTop: 10,
+        color: rootStyles.colors.white,
+        fontSize: 16,
     },
 });

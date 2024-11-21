@@ -24,3 +24,8 @@ indent_size = 4
 [src/main/screens/LoginScreen.js]
 indent_style = space
 indent_size = 4
+
+
+[src/main/components/TabBar.js]
+indent_style = space
+indent_size = 4
