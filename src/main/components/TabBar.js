@@ -1,10 +1,11 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import HistoryScreen from '../screens/HistoryScreen';
-import RouteScreen from '../screens/RouteScreen';
-import MyPageScreen from '../screens/MyPageScreen';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import HistoryScreen from "../screens/HistoryScreen";
+import RouteScreen from "../screens/RouteScreen";
+import MyPageScreen from "../screens/MyPageScreen";
 import rootStyles from "../styles/StyleGuide";
+import AdminScreen from "../screens/AdminScreen";
 
 const Tab = createBottomTabNavigator(); // 하단 탭 선언
 
@@ -23,7 +24,7 @@ function BottomTabApp() {
                 name="History"
                 component={HistoryScreen}
                 options={{
-                    title: '히스토리',
+                    title: "히스토리",
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="history" color={color} size={size} />
                     ),
@@ -43,7 +44,7 @@ function BottomTabApp() {
                 name="MyPage"
                 component={MyPageScreen}
                 options={{
-                    title: '마이페이지',
+                    title: "마이페이지",
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="person" color={color} size={size} />
                     ),

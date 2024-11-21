@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, Alert, } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Modal,
+  Alert,
+} from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import { Image } from "expo-image";
 
@@ -40,7 +48,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
     setRoutes(sortedRoutes);
   }, [selectedPath]);
 
-  // Function to calculate center from roads
+  // 로드를 통해 중심점 계산
   const calculateCenterFromRoads = (roads) => {
     const pointsMap = new Map();
 
@@ -91,7 +99,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
   const handleFollowRoute = async (selectedRoute) => {
     setIsSavingRoute(true); // 로딩 상태 시작
     try {
-      const url = `http://${localIP}:8082/api/routes/saveSelectedRouteToUser?userIdf=${userIdf}`;
+      const url = `https://accurately-healthy-duckling.ngrok-free.app/api/routes/saveSelectedRouteToUser?userIdf=${userIdf}`;
       console.log("Saving selected route to user:", url);
       console.log("Request body:", JSON.stringify(selectedRoute));
 
@@ -109,14 +117,13 @@ const RecommendedRoutes = ({ navigation, route }) => {
       }
 
       const savedRoute = await response.json();
-      console.log("Saved route:", savedRoute);
+      console.log("Saved route: 로딩 및 저장 성공", savedRoute);
 
       // fetch 요청 완료 후에만 네비게이션 실행
       setIsSavingRoute(false);
 
       navigation.navigate("NavigationScreen", {
-        //route: savedRoute, // 이게 맞는데
-        route: selectedRoute,
+        route: savedRoute,
         localIP,
         userIdf,
       });
@@ -131,7 +138,7 @@ const RecommendedRoutes = ({ navigation, route }) => {
     const isSelected = selectedRouteId === item.routeIdf;
     const { center, pointsMap } = calculateCenterFromRoads(item.roads);
 
-    // Get start and end points from pointsMap
+    // 시작점과 끝점 마커
     const startPoint = pointsMap.get(item.start);
     const endPoint = pointsMap.get(item.end);
 

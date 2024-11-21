@@ -39,12 +39,14 @@ const StartPointSelection = ({ navigation }) => {
       setIsLocationLoading(false);
 
       // 테스트용 좌표입니다.
-      setRegion({
-        latitude: 37.504558,
-        longitude: 126.956951,
-        latitudeDelta: 0.002,
-        longitudeDelta: 0.002,
-      });
+      // setRegion({
+      //   latitude: 37.504558,
+      //   longitude: 126.956951, // 중앙대
+      //   // latitude: 37.498366, 우리집
+      //   // longitude: 127.059448,
+      //   latitudeDelta: 0.002,
+      //   longitudeDelta: 0.002,
+      // });
       setIsLocationLoading(false);
     })();
   }, []);
@@ -170,10 +172,15 @@ const StartPointSelection = ({ navigation }) => {
           <Text style={styles.buttonText}>도착지</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.modeButton}
+          style={[
+            styles.modeButton,
+            { backgroundColor: "rgba(74, 143, 62, 1)" }, // 버튼 배경색 변경
+          ]}
           onPress={setCurrentLocationAs}
         >
-          <Text style={styles.buttonText}>현재 위치로 설정</Text>
+          <Text style={[styles.buttonText, { color: "#FEFEFE" }]}>
+            현재 위치로 설정
+          </Text>
         </TouchableOpacity>
       </View>
       {/* 지도 */}

@@ -1,4 +1,4 @@
-// TestScreen.js
+// Updated TestScreen.js
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -17,11 +17,10 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   const [isMoveMapActive, setIsMoveMapActive] = useState(false); // 지도 이동 활성화 여부
   const [userLocation, setUserLocation] = useState(null); // 사용자 위치
   const [routePoints, setRoutePoints] = useState([]); // 경로 포인트
-  const [deviatedEdges, setDeviatedEdges] = useState([]); // 사용자 이탈 경로
   const [isOffRoute, setIsOffRoute] = useState(false); // 이전 사용자 위치가 경로를 이탈했는 지 여부
   const [lastOnRoutePoint, setLastOnRoutePoint] = useState(null); // 마지막으로 경로 위에 있던 포인트
   const [lastOffRoutePoint, setLastOffRoutePoint] = useState(null); // 마지막 이탈 포인트
-  const [passedRoutePoints, setPassedRoutePoints] = useState([]); //지나온 경로 포인트
+  const [passedRoutePoints, setPassedRoutePoints] = useState([]); // 지나온 경로 포인트
   const [arrivalButtonEnabled, setArrivalButtonEnabled] = useState(false); // 도착 버튼 활성화 여부
   const [temporaryPin, setTemporaryPin] = useState(null); // 임시 핀
   const [lastDestinationPoint, setLastDestinationPoint] = useState(null); // 마지막 목적지 포인트
@@ -35,29 +34,14 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   const [userDeviatedPoints, setUserDeviatedPoints] = useState([]);
   const [newPoints, setNewPoints] = useState([]); // 추가된 새로운 포인트들
   const [newEdges, setNewEdges] = useState([]); // 추가된 새로운 엣지들
-  const [problemRoutes, setProblemRoutes] = useState([]); // 문제 경로들
+  const [problemRoutes, setProblemRoutes] = useState([]); // 문제 경로를 저장할 배열
   const mapRef = useRef(null); // 지도 참조
 
   useEffect(() => {
-    /* 
-    도로의 올바른 방향 처리하는 함수
-    도로의 순서는 정해져 있지만 1->2, 2->1로 연결된 이동 순서는 다를 수 있음 이를 바로잡아주는 함수임
-
-    처리 후에 processedRoads에 저장하여 반환
-    저장되는건
-    [
-      {
-        idf: "2_3",
-        startLat: 37.501,
-        startLng: 126.953,
-        endLat: 37.502,
-        endLng: 126.954,
-      }, ...
-    ]
-    */
+    // 경로 처리 로직
     const processRoads = (roads, startId) => {
       let currentPointId = startId;
-      const processedRoads = []; // 도로를 처리한 후 저장할 배열
+      const processedRoads = [];
 
       roads.forEach((road) => {
         const [fromId, toId] = road.idf.split("_");
@@ -92,7 +76,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
     const processedRoads = processRoads(roads, start);
     const points = generateRoutePoints(processedRoads);
     setRoutePoints(points);
-    setLastOnRoutePoint(points[0]); //사용자 경로 이탈 전 마지막 세분화된 포인트
+    setLastOnRoutePoint(points[0]); // 사용자 경로 이탈 전 마지막 세분화된 포인트
     setLastDestinationPoint(points[points.length - 1]); // 마지막 목적지 포인트
     addAndRemoveTemporaryPin(); // 임시 핀 추가 및 제거 (맵 리렌더링)
   }, []);
@@ -111,11 +95,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
     }, 50);
   };
 
-  /*
-  이 함수는 도로들을 받아서 각 도로의 시작점과 끝점 사이를 세분화하여 반환합니다.
-  세분화 하는 이유는 우리의 도로 길이가 길 경우 위치 처리가 너무 복잡했음(어디에 매핑시켜야 하는 지 애매)
-  따라서 도로의 시작점과 끝점 사이를 10개의 점으로 도로를 세분화하는 함수임
-  */
+  // 경로 포인트 생성 함수
   const generateRoutePoints = (roads) => {
     let routePoints = [];
     for (let i = 0; i < roads.length; i++) {
@@ -128,7 +108,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
     return routePoints;
   };
 
-  // 두 지점 사이를 세분화하여 반환 (10개의 점) 자세한 설명은 위 generateRoutePoints 함수 참고
+  // 두 지점 사이를 세분화하여 반환 (10개의 점)
   const interpolatePoints = (start, end, numPoints = 10) => {
     const points = [];
     for (let i = 0; i <= numPoints; i++) {
@@ -194,13 +174,13 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
         `문제 시작 지점에 대한 closest-point API 호출 (휘수형 부분): lat=${problemStartPoint.latitude}, lng=${problemStartPoint.longitude}`
       );
       const startPointResponse = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${problemStartPoint.latitude}&lng=${problemStartPoint.longitude}&radius=20`
       );
       const endPointResponse = await fetch(
-        `http://${localIP}:8082/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${problemEndPoint.latitude}&lng=${problemEndPoint.longitude}&radius=20`
       );
 
-      const startPointData = await startPointResponse.text(); //응답이 JSON이 아니라 text로 받아옴
+      const startPointData = await startPointResponse.text(); // 응답이 JSON이 아니라 text로 받아옴
       const endPointData = await endPointResponse.text();
 
       if (
@@ -230,16 +210,18 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
         );
 
         // 검은색 선으로 연결
-        setProblemRoutes((prevRoutes) => {
-          const updatedRoutes = [
-            ...prevRoutes,
-            {
-              coordinates: [nearestStartPoint, nearestEndPoint],
-              color: "black",
-            },
-          ];
-          return updatedRoutes;
-        });
+        setProblemRoutes((prevRoutes) => [
+          ...prevRoutes,
+          {
+            coordinates: [nearestStartPoint, nearestEndPoint],
+            color: "black",
+          },
+        ]);
+
+        // 문의 핀 제거 및 임시 핀 추가
+        setProblemStartPoint(null);
+        setProblemEndPoint(null);
+        addAndRemoveTemporaryPin();
 
         Alert.alert("문의 완료", "문의가 성공적으로 접수되었습니다.");
       }
@@ -250,13 +232,29 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
       setShowCompletionModal(false);
       setProblemRouteSetting(null);
       setShowReportButtons(false);
-      // 문제 경로 설정 후 마커 제거
-      setProblemStartPoint(null);
-      setProblemEndPoint(null);
+      // 산책 종료 여부 확인
+      Alert.alert(
+        "산책 종료",
+        "산책을 종료하시겠습니까?",
+        [
+          {
+            text: "아니오",
+            onPress: () => {},
+            style: "cancel",
+          },
+          {
+            text: "네",
+            onPress: () => {
+              navigation.navigate("StartPointSelection");
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   };
 
-  //사용자 위치 설정 취소
+  // 사용자 위치 설정 취소
   const handleCancelProblemRoute = () => {
     setShowReportButtons(false);
     setProblemRouteSetting(null);
@@ -272,19 +270,18 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   };
 
   // 네비게이션 종료 확인 모달에서 확인 버튼 클릭 시 호출
-  const confirmEndNavigation = async () => {
+  const confirmEndNavigation = () => {
     setShowEndNavigationConfirm(false);
     setShowCompletionModal(true);
 
     // 사용자 이탈 경로 처리
-    await processUserDeviations();
+    processUserDeviations();
 
-    setShowCompletionModal(false);
-    navigation.navigate("ResultScreen", {
-      passedRoutePoints,
-      deviatedEdges,
-      problemRoutes,
-    });
+    setTimeout(() => {
+      setShowCompletionModal(false);
+      Alert.alert("산책 종료", "산책이 종료되었습니다.");
+      navigation.navigate("StartPointSelection");
+    }, 2000);
   };
 
   // 네비게이션 종료 확인 모달에서 취소 버튼 클릭 시 호출
@@ -294,21 +291,15 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
 
   const onMapPress = (e) => {
     const { latitude, longitude } = e.nativeEvent.coordinate;
-    //문제 경로 시작 지점 설정
+    // 문제 경로 시작 지점 설정
     if (problemRouteSetting === "start") {
       setProblemStartPoint({ latitude, longitude });
       addAndRemoveTemporaryPin();
-      setProblemRouteSetting(null);
       Alert.alert("알림", "문제 경로 시작 지점이 설정되었습니다.");
-
-      //문제 경로 도착 지점 설정
     } else if (problemRouteSetting === "end") {
       setProblemEndPoint({ latitude, longitude });
       addAndRemoveTemporaryPin();
-      setProblemRouteSetting(null);
       Alert.alert("알림", "문제 경로 도착 지점이 설정되었습니다.");
-
-      //사용자 위치 설정
     } else if (isSetUserLocationActive) {
       const newLocation = { latitude, longitude };
       setUserLocation(newLocation);
@@ -328,43 +319,20 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
     return false;
   };
 
-  /*
-  목표 경로 이탈 여부를 확인하고 사용자의 위치를 확인하는 함수
-  isOnRoute: 사용자가 경로 위에 있는지 여부
-  isOffRoute: 이전 사용자 위치가 경로를 이탈했는 지 여부 (이전 사용자 위치가 경로를 이탈했으면 true)
-  
-  */
+  // 사용자 위치 확인 및 경로 이탈 여부 체크
   const checkUserLocation = (location) => {
     const threshold = 0.0002;
 
-    // 사용자가 경로 안에 있는 지 확인 (지나간 경로(회색 경로)도 포함시킴)
+    // 사용자가 경로 안에 있는 지 확인 (지나간 경로 포함)
     const isOnRoute =
       isUserOnRoute(location, routePoints, threshold) ||
       isUserOnRoute(location, passedRoutePoints, threshold);
 
-    //확인했더니 경로 안에 있네?
     if (isOnRoute) {
-      // 돌아오기 전 사용자가 위치가 경로 위에 있음
       if (isOffRoute) {
-        //이전 사용자 위치가 경로를 이탈했었음
-        // 따라서 이건 경로를 방금 나갔었는데 다시 들어온 경우 처리임
-        const nearestPoint = findNearestPoint(
-          location,
-          routePoints.concat(passedRoutePoints) //지나간 경로도 포함
-        ); //가장 가까운 세분화된 포인트 찾기
-        const newEdge = [lastOffRoutePoint, nearestPoint]; // 복귀 바로 전 지점과 가장 가까운 지점을 연결
-        // 이탈 경로 저장
-        setDeviatedEdges((prevEdges) => [
-          ...prevEdges,
-          { coordinates: newEdge, color: "purple" },
-        ]);
-
-        //돌아왔으니까 이탈 여부 false로 변경
         setIsOffRoute(false);
-        //이탈 포인트 저장
         setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
-        //마지막으로 경로 위에 있던 포인트 저장
-        setLastOnRoutePoint(nearestPoint);
+        setLastOnRoutePoint(location);
 
         console.log("사용자가 경로로 복귀했습니다.");
       }
@@ -374,9 +342,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
         routePoints
       );
 
-      // 가장 가까운 경로 포인트를 찾았으면
       if (nearestPointIndex !== -1) {
-        //지나간 경로에 추가
         const passedPoints = routePoints.slice(0, nearestPointIndex + 1);
         setPassedRoutePoints((prevPoints) => [...prevPoints, ...passedPoints]);
 
@@ -388,21 +354,8 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
       if (routePoints.length === 0 || isNearDestination(location)) {
         setArrivalButtonEnabled(true);
       }
-
-      //isOnRoute가 false인 경우 (사용자가 경로를 이탈한 경우)
     } else {
-      // 처음으로 경로를 이탈함
-      //이탈 끝 ~ 과 마찬가지의 로직 (위에 확인)
       if (!isOffRoute) {
-        const nearestPoint = findNearestPoint(
-          lastOnRoutePoint,
-          routePoints.concat(passedRoutePoints)
-        );
-        const newEdge = [nearestPoint, location];
-        setDeviatedEdges((prevEdges) => [
-          ...prevEdges,
-          { coordinates: newEdge, color: "purple" },
-        ]);
         setIsOffRoute(true);
         setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
         setLastOffRoutePoint(location);
@@ -422,18 +375,6 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
           "사용자가 경로를 이탈했습니다. 새로운 포인트를 생성합니다."
         );
       } else {
-        //이탈했는데 이전껏도 이탈임 (벗어난 점 + 벗언난 점 연결)
-        // 계속해서 경로를 이탈 중
-        setDeviatedEdges((prevEdges) => {
-          const updatedEdges = [...prevEdges];
-          const lastEdge = updatedEdges[updatedEdges.length - 1];
-          const updatedCoordinates = [...lastEdge.coordinates, location];
-          updatedEdges[updatedEdges.length - 1] = {
-            ...lastEdge,
-            coordinates: updatedCoordinates,
-          };
-          return updatedEdges;
-        });
         setUserDeviatedPoints((prevPoints) => [...prevPoints, location]);
         setLastOffRoutePoint(location);
       }
@@ -468,7 +409,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
     return nearestPoint;
   };
 
-  //거리 계산
+  // 거리 계산
   const calculateDistance = (loc1, loc2) => {
     const deltaLat = loc1.latitude - loc2.latitude;
     const deltaLon = loc1.longitude - loc2.longitude;
@@ -485,39 +426,132 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
   };
 
   // 도착 버튼 클릭 시 호출
-  const handleArriveButtonPress = async () => {
+  const handleArriveButtonPress = () => {
     setShowCompletionModal(true);
 
-    // 사용자 이탈 경로 처리 (아직 약간 부족해보임)
-    await processUserDeviations();
+    // 사용자 이탈 경로 처리
+    processUserDeviations();
 
-    setShowCompletionModal(false);
-    navigation.navigate("ResultScreen", {
-      passedRoutePoints,
-      deviatedEdges,
-      problemRoutes,
-    });
+    // 2초 후에 도착 모달 표시
+    setTimeout(() => {
+      setShowCompletionModal(false);
+      Alert.alert("축하합니다", "축하합니다! 경로를 완주하셨습니다!");
+      navigation.navigate("StartPointSelection");
+    }, 2000);
   };
 
-  /*
-  경로 이탈 처리 함수
-  
-  
-  */
+  // 경로 이탈 처리 함수
   const processUserDeviations = async () => {
     if (userDeviatedPoints.length === 0) return;
 
-    // 로딩 모달 표시 오래걸림
+    // 로딩 모달 표시
     setShowCompletionModal(true);
 
-    // 여기서 사용자 이탈 경로를 처리하는 로직이 있습니다.
-    // ...
+    const pointIds = [];
+    const closestPointsLatLng = [];
+    console.log("Processing user deviations...");
 
+    for (let i = 0; i < userDeviatedPoints.length; i++) {
+      const point = userDeviatedPoints[i];
+      console.log(
+        `Calling closest-point API for point ${i}: lat=${point.latitude}, lng=${point.longitude}`
+      );
+      const response = await fetch(
+        `https://accurately-healthy-duckling.ngrok-free.app/api/points/closest-point?lat=${point.latitude}&lng=${point.longitude}&radius=5`
+      );
+      const data = await response.text();
+      if (data && data !== "null") {
+        const pointId = data.replace(/"/g, "");
+        pointIds.push(pointId);
+        closestPointsLatLng.push({ lat: point.latitude, lng: point.longitude });
+      } else {
+        pointIds.push(null);
+        closestPointsLatLng.push({ lat: point.latitude, lng: point.longitude });
+      }
+    }
+
+    console.log("Point IDs:", pointIds);
+
+    // 두 개 이상의 null이 있는지 확인
+    const nullCount = pointIds.filter((id) => id === null).length;
+    if (nullCount >= 2) {
+      Alert.alert("축하합니다!", "경로를 개척하였습니다!");
+    }
+
+    // 새로운 포인트와 엣지 생성
+    const newPointsArray = [];
+    const newEdgesArray = [];
+    let lastPointId = null;
+    let lastPointLatLng = null;
+
+    for (let i = 0; i < pointIds.length; i++) {
+      const pointId = pointIds[i];
+      const pointLatLng = closestPointsLatLng[i];
+
+      let currentPointId = null;
+      if (pointId === null) {
+        // 새로운 포인트 생성
+        currentPointId = `new_${i}`;
+        newPointsArray.push({
+          id: currentPointId,
+          lat: pointLatLng.lat,
+          lng: pointLatLng.lng,
+        });
+      } else {
+        currentPointId = pointId;
+      }
+
+      if (lastPointId !== null) {
+        // 이전 포인트와 현재 포인트를 연결하는 엣지 생성
+        newEdgesArray.push({
+          from: lastPointId,
+          to: currentPointId,
+          fromLat: lastPointLatLng.lat,
+          fromLng: lastPointLatLng.lng,
+          toLat: pointLatLng.lat,
+          toLng: pointLatLng.lng,
+        });
+      } else {
+        // 이탈 전 마지막 세분화된 포인트와 첫 번째 이탈 위치를 연결
+        const lastPassedPoint = passedRoutePoints[passedRoutePoints.length - 1];
+        if (lastPassedPoint) {
+          newEdgesArray.push({
+            from: `route_point_${passedRoutePoints.length - 1}`,
+            to: currentPointId,
+            fromLat: lastPassedPoint.latitude,
+            fromLng: lastPassedPoint.longitude,
+            toLat: pointLatLng.lat,
+            toLng: pointLatLng.lng,
+          });
+        }
+      }
+
+      lastPointId = currentPointId;
+      lastPointLatLng = pointLatLng;
+    }
+
+    console.log("New Points:", JSON.stringify(newPointsArray));
+    console.log("New Edges:", JSON.stringify(newEdgesArray));
+
+    // 새로운 포인트와 엣지 저장
+    setNewPoints(newPointsArray);
+    setNewEdges(newEdgesArray);
+
+    // 로딩 모달 숨김
     setShowCompletionModal(false);
   };
 
   return (
     <View style={styles.container}>
+      {problemRouteSetting && (
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>
+            {problemRouteSetting === "start"
+              ? "문제 시작 위치를 선택하세요"
+              : "문제 종료 위치를 선택하세요"}
+          </Text>
+        </View>
+      )}
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -528,7 +562,7 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
           longitudeDelta: 0.002,
         }}
         onPress={onMapPress}
-        scrollEnabled={!isSetUserLocationActive && !problemRouteSetting}
+        scrollEnabled={true} // 문의할 때 지도 움직일 수 있게 수정
       >
         {passedRoutePoints.length > 0 && (
           <Polyline
@@ -544,20 +578,13 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
             strokeWidth={3}
           />
         )}
-        {deviatedEdges.map((edge, index) => (
-          <Polyline
-            key={`deviatedEdge-${index}`}
-            coordinates={edge.coordinates}
-            strokeColor={edge.color}
-            strokeWidth={3}
-          />
-        ))}
         {problemRoutes.map((route, index) => (
           <Polyline
             key={`problemRoute-${index}`}
             coordinates={route.coordinates}
             strokeColor={route.color}
             strokeWidth={3}
+            zIndex={2}
           />
         ))}
         {userLocation && (
@@ -570,14 +597,14 @@ const TestScreen = ({ selectedRoute, localIP, userIdf, navigation }) => {
           <Marker
             coordinate={problemStartPoint}
             pinColor="green"
-            title="문제 경로 시작 지점"
+            title="문제 시작 위치"
           />
         )}
         {problemEndPoint && (
           <Marker
             coordinate={problemEndPoint}
             pinColor="red"
-            title="문제 경로 도착 지점"
+            title="문제 종료 위치"
           />
         )}
       </MapView>
@@ -690,6 +717,22 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  titleContainer: {
+    position: "absolute",
+    top: 50,
+    alignSelf: "center",
+    backgroundColor: "#FFFFFF", // 배경색 추가
+    padding: 10,
+    borderRadius: 8,
+    zIndex: 10,
+    borderWidth: 1,
+    borderColor: "rgba(74, 143, 62, 1)", // 테두리 추가
+  },
+  titleText: {
+    fontSize: 16,
+    color: "rgba(74, 143, 62, 1)",
+    fontWeight: "bold", // 글자 두껍게
   },
   buttonContainer: {
     position: "absolute",
