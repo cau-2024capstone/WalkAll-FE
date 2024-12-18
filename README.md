@@ -4,7 +4,7 @@
 <img src="https://github.com/user-attachments/assets/2f8b2b9b-4cc9-4a63-8ae7-65ac30a3bb46" width="150" style="border-radius:10px;"> 
 
 
-### 서비스 소개
+## 서비스 소개
 
 **Walk-All**은 사용자와 함께 지도를 만들어나가는 산책어플입니다.
 아래와 같은 특징을 통해 더욱 다양하고 맞춤형인 산책 경험을 제공합니다.
@@ -24,8 +24,14 @@
 
 
 ---
+## 매뉴얼 PDF
 
-### 사용설명
+자세한 사용 방법 및 기능 설명은 아래 **매뉴얼 PDF**에서 확인하실 수 있습니다.  
+[매뉴얼 PDF 바로가기](./manual.pdf)
+
+---
+
+## 사용설명
 
 #### 로그인 및 회원가입 화면
 | <img src="https://github.com/user-attachments/assets/aad1faac-619c-42e2-bc58-81671f9a27ce" width="250" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/c13209ff-6420-4b82-81dc-9226caf47bf5" width="250" style="border-radius:10px;"> |
@@ -83,13 +89,6 @@
 
 ---
 
-### 실행방법
-1. 프로젝트 클론 후, 필요한 라이브러리 설치:  
-   ```bash
-   npm install
-
----
-
 ## 실행 방법
 
 ```bash
@@ -98,12 +97,5 @@ npm start
 ```
 
 위 명령어를 순서대로 실행하면 로컬 환경에서 Walk-All을 체험해보실 수 있습니다.
-
----
-
-## 매뉴얼 PDF
-
-자세한 사용 방법 및 기능 설명은 아래 **매뉴얼 PDF**에서 확인하실 수 있습니다.  
-[매뉴얼 PDF 바로가기](./manual.pdf)
 
 ---
