@@ -67,7 +67,7 @@
 
 ---
 
-#### 문의 내역 및 경로 히스토리
+#### 히스토리 화면
 | <img src="https://github.com/user-attachments/assets/bb5a2d49-0256-4a38-8eb8-80446fea7373" width="250" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/5d20dba6-ecf4-48b7-9aeb-90a222531004" width="250" style="border-radius:10px;"> |
 |:---:|:---:|
 | **경로 히스토리 화면** | **문의 내역 화면** |
