@@ -98,8 +98,8 @@ npm install
 ```
 ### 2. .env 파일 생성
 ```bash
-EXPO_PUBLIC_API_BASE_URL="https://accurately-healthy-duckling.ngrok-free.app"
-EXPO_PUBLIC_GOOGLE_MAPS_API_KEY="YOUR_API_KEY"
+EXPO_PUBLIC_API_BASE_URL="YOUR_BACKEND_SERVER_URL" # 백엔드 서버 주소
+EXPO_PUBLIC_GOOGLE_MAPS_API_KEY="YOUR_API_KEY" # 구글 맵 API 키
 ```
 
 ### 3. 프로젝트 실행
