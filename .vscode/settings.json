@@ -1,0 +1,14 @@
+{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/build/**": true,
+    "**/.git/**": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/build": true
+  },
+  "editor.tabSize": 2, // 탭 크기를 2로 설정
+  "editor.insertSpaces": true // 탭 대신 공백 사용 (선택 사항)
+}
