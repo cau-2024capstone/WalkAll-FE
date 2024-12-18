@@ -90,12 +90,21 @@
 ---
 
 ## 실행 방법
+아래 명령어를 순서대로 진행하면 로컬 환경에서 Walk-All을 체험해보실 수 있습니다!
 
+### 1. 모듈 설치
 ```bash
 npm install
-npm start
+```
+### 2. .env 파일 생성
+```bash
+EXPO_PUBLIC_API_BASE_URL="https://accurately-healthy-duckling.ngrok-free.app"
+EXPO_PUBLIC_GOOGLE_MAPS_API_KEY="YOUR_API_KEY"
 ```
 
-위 명령어를 순서대로 실행하면 로컬 환경에서 Walk-All을 체험해보실 수 있습니다.
+### 3. 프로젝트 실행
+```bash
+npm start
+```
 
 ---
