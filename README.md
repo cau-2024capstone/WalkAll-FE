@@ -1,32 +1,26 @@
-# capstone-FE
+# Walk-All
 
-## 실행방법
-```bash
-$ git pull
-$ npm install
-$ npm start
-```
+**Walk-All**는 사용자가 직접 지도를 완성해나가는 **커뮤니티형 산책 어플리케이션**입니다.  
+원하는 출발지, 경유지, 도착지를 선택하고, 골목길·편한길 등 다양한 산책 유형과 목표(칼로리, 시간)에 따라 **맞춤형 산책 코스**를 제공해드립니다.  
+또한 관리자의 확인을 거쳐 사용자가 불가능하다고 판단한 길을 지도에서 삭제할 수 있어, **더 정확하고 신뢰성 있는 지도**를 구축할 수 있습니다.  
+공공 API에서 제공하지 않는 특별한 경로까지, **Walk-All**과 함께 색다른 산책 경험을 즐겨보세요! 🌱  
 
-## 설치 방법
+---
 
-```bash
-$ npm install -g expo-cli #버전 문제 발생 시 npm install expo 실행
-$ npm install
-$ expo start
-```
-
-## 추가 설치한 모듈
+## 실행 방법
 
 ```bash
-$ npx expo install expo-location
-$ npx expo install react-native-webview
-$ npx expo add @react-navigation/bottom-tabs
-$ npx expo install expo-font
-$ npx expo install react-native-screens react-native-safe-area-context
-$ npm install @react-navigation/stack
-$ npm install react-native-maps
-$ npm install react-native-vector-icons
-$ npm install axios
-$ npm install @react-native-async-storage/async-storage
-
+npm install
+npm start
 ```
+
+위 명령어를 순서대로 실행하면 로컬 환경에서 Walk-All을 체험해보실 수 있습니다.
+
+---
+
+## 매뉴얼 PDF
+
+자세한 사용 방법 및 기능 설명은 아래 **매뉴얼 PDF**에서 확인하실 수 있습니다.  
+[매뉴얼 PDF 바로가기](./manual.pdf)
+
+---
