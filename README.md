@@ -1,6 +1,9 @@
 # Walk-All
 
 
+<img src="https://github.com/user-attachments/assets/2f8b2b9b-4cc9-4a63-8ae7-65ac30a3bb46" width="150" style="border-radius:10px;"> 
+
+
 ### 서비스 소개
 
 **Walk-All**은 사용자와 함께 지도를 만들어나가는 산책어플입니다.
