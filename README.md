@@ -34,7 +34,7 @@
 ## 사용설명
 
 #### 로그인 및 회원가입 화면
-| <img src="https://github.com/user-attachments/assets/aad1faac-619c-42e2-bc58-81671f9a27ce" width="250" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/c13209ff-6420-4b82-81dc-9226caf47bf5" width="250" style="border-radius:10px;"> |
+| <img src="https://github.com/user-attachments/assets/aad1faac-619c-42e2-bc58-81671f9a27ce" width="280" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/c13209ff-6420-4b82-81dc-9226caf47bf5" width="280" style="border-radius:10px;"> |
 |:---:|:---:|
 | **로그인 화면** | **회원가입 화면** |
 
@@ -45,7 +45,7 @@
 ***
 
 #### 경유지 설정 및 목표 설정
-| <img src="https://github.com/user-attachments/assets/ed3239f0-2e80-443b-9d14-7ff38021098b" width="250" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/46d43ef4-e227-4f6e-aaa9-7fe1fd78e189" width="250" style="border-radius:10px;"> |
+| <img src="https://github.com/user-attachments/assets/ed3239f0-2e80-443b-9d14-7ff38021098b" width="280" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/46d43ef4-e227-4f6e-aaa9-7fe1fd78e189" width="280" style="border-radius:10px;"> |
 |:---:|:---:|
 | **경유지 설정 화면** | **목표 설정 화면** |
 
@@ -56,7 +56,7 @@
 ***
 
 #### 추천 경로 확인  
-| <img src="https://github.com/user-attachments/assets/6e2f0963-7d1e-48e0-bc41-3d8d44e2fd97" width="250" style="border-radius:10px;"> |
+| <img src="https://github.com/user-attachments/assets/6e2f0963-7d1e-48e0-bc41-3d8d44e2fd97" width="280" style="border-radius:10px;"> |
 |:---:|
 | **추천 경로 화면** |
 
@@ -67,7 +67,7 @@
 ***
 
 #### 네비게이션 및 경로 문제 문의
-| <img src="https://github.com/user-attachments/assets/285e0c4c-54e4-4915-8b0a-3e9413fbc1a7" width="250" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/443348b3-d854-4916-a3e7-d855b3aaf4ad" width="250" style="border-radius:10px;"> |
+| <img src="https://github.com/user-attachments/assets/285e0c4c-54e4-4915-8b0a-3e9413fbc1a7" width="280" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/443348b3-d854-4916-a3e7-d855b3aaf4ad" width="280" style="border-radius:10px;"> |
 |:---:|:---:|
 | **네비게이션 화면** | **경로 문제 문의 화면** |
 
@@ -77,7 +77,7 @@
 ***
 
 #### 히스토리 화면
-| <img src="https://github.com/user-attachments/assets/bb5a2d49-0256-4a38-8eb8-80446fea7373" width="250" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/5d20dba6-ecf4-48b7-9aeb-90a222531004" width="250" style="border-radius:10px;"> |
+| <img src="https://github.com/user-attachments/assets/bb5a2d49-0256-4a38-8eb8-80446fea7373" width="280" style="border-radius:10px;"> | <img src="https://github.com/user-attachments/assets/5d20dba6-ecf4-48b7-9aeb-90a222531004" width="280" style="border-radius:10px;"> |
 |:---:|:---:|
 | **경로 히스토리 화면** | **문의 내역 화면** |
 
