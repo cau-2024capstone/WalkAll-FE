@@ -1,40 +1,49 @@
 {
   "expo": {
-    "newArchEnabled": true,
-    "name": "capstone-FE",
-    "slug": "capstone-FE",
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ],
+    "name": "capstone-FE-revamp",
+    "slug": "capstone-FE-revamp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/main/assets/images/icon.png",
+    "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "splash": {
-      "image": "./src/main/assets/images/splash.png",
+      "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": ["assets/fonts/*", " assets/images/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "permissions": [
+        "INTERNET",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "FOREGROUND_SERVICE"
+      ],
       "adaptiveIcon": {
-        "foregroundImage": "./src/main/assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tesabel48.capstoneFErevamp"
     },
     "web": {
-      "favicon": "./src/main/assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-font",
-        {
-          "fonts": [
-            "./src/main/assets/fonts/NotoSansKR-Regular.ttf",
-            "./src/main/assets/fonts/NotoSansKR-Medium.ttf",
-            "./src/main/assets/fonts/NotoSansKR-Bold.ttf"
-          ]
-        }
-      ]
-    ]
+    "extra": {
+      "eas": {
+        "projectId": "5a1bd748-4038-40fc-ba17-a83b832517c4"
+      }
+    }
   }
 }
