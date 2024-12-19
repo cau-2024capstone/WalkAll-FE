@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Walk-All BackOffice</title>
+    <style>
+      /* 지도 크기 설정 */
+      #map {
+        height: 500px;
+        width: 100%;
+      }
+      /* 현위치 텍스트 스타일 */
+      #current-location-label {
+        position: absolute;
+        background: white;
+        padding: 5px;
+        border-radius: 3px;
+        font-weight: bold;
+        z-index: 100;
+      }
+      /* 체크포인트 표 스타일 */
+      #checkpoint-list {
+        margin-top: 10px;
+        background: white;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      /* 버튼 스타일 */
+      #controls {
+        margin-bottom: 10px;
+      }
+      #controls button {
+        margin-right: 5px;
+      }
+      /* 입력 폼 스타일 */
+      #edge-parameters,
+      #node-parameters {
+        margin-top: 10px;
+        background: #f9f9f9;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      #edge-parameters input[type="checkbox"] {
+        margin-right: 5px;
+      }
+      /* 정보 표시 스타일 */
+      #info-display {
+        margin-top: 10px;
+        background: #ffffff;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+    </style>
+    <script src="nodes.js"></script>
+    <script src="edges.js"></script>
+    <!-- libraries 파라미터에 geometry 추가 -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=[YOUR_GOOGLE_MAP_API_KEY]&callback=initMap&libraries=geometry,marker"
+      async
+      defer
+    ></script>
+
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <h3>Google Map Test Page</h3>
+    <div id="controls">
+      <button id="load-data-btn">데이터 불러오기</button>
+      <label for="start-id-input">시작 ID:</label>
+      <input type="text" id="start-id-input" placeholder="예: 1" />
+      <button id="copy-nodes-json-btn">노드 JSON 복사하기</button>
+      <button id="copy-edges-json-btn">엣지 JSON 복사하기</button>
+      <button id="copy-nodes-cypher-btn">노드 Cypher 복사하기</button>
+      <button id="copy-edges-cypher-btn">엣지 Cypher 복사하기</button>
+      <button id="mapping-mode-btn">맵핑 생성 모드</button>
+      <button id="edge-mode-btn">엣지 생성 모드</button>
+      <button id="info-mode-btn">정보 보기 모드</button>
+    </div>
+    <!-- 노드 생성 시 필요한 입력 요소 -->
+    <div id="node-parameters" style="display: none">
+      <p>Point Type:</p>
+      <label><input type="radio" name="point-type" value="park" /> Park</label>
+      <label
+        ><input type="radio" name="point-type" value="hospital" />
+        Hospital</label
+      >
+      <label
+        ><input type="radio" name="point-type" value="building" />
+        Building</label
+      >
+      <label
+        ><input type="radio" name="point-type" value="apartment" />
+        Apartment</label
+      >
+      <label
+        ><input type="radio" name="point-type" value="school" /> School</label
+      >
+      <label
+        ><input type="radio" name="point-type" value="null" checked />
+        Null</label
+      >
+      <br /><br />
+      <label for="point-details-input">Point Details:</label>
+      <input
+        type="text"
+        id="point-details-input"
+        placeholder="Point Details 입력"
+      />
+    </div>
+    <!-- 엣지 생성 시 필요한 입력 요소 -->
+    <div id="edge-parameters" style="display: none">
+      <p>Road Type (At least one required):</p>
+      <label><input type="checkbox" id="street-checkbox" /> Street</label>
+      <label><input type="checkbox" id="alley-checkbox" /> Alley</label>
+      <label><input type="checkbox" id="steep-checkbox" /> Steep</label>
+    </div>
+    <div id="map"></div>
+    <!-- 정보 표시 영역 -->
+    <div id="info-display"></div>
+    <div id="checkpoint-list"></div>
+  </body>
+</html>
