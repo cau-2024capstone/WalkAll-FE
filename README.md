@@ -89,7 +89,7 @@
 
 ---
 
-## 실행 방법
+## Walk-All 실행 방법
 아래 명령어를 순서대로 진행하면 로컬 환경에서 Walk-All을 체험해보실 수 있습니다!
 
 ### 1. 모듈 설치
@@ -108,3 +108,19 @@ npm start
 ```
 
 ---
+## 4. map BackOffice
+
+| <img src="https://github.com/user-attachments/assets/e0ea5ced-29c3-4a1a-8769-9537a095f16e" width="600" style="border-radius:10px;"> |
+|:---:|
+| **백오피스 화면** |
+### 백오피스 실행방법
+#### 1. API 키 수정
+```bash
+//backOffice/index.html :  [YOUR_GOOGLE_API_KEY] 본인 API 키로 수정
+```
+
+#### 2. html 실행
+```bash
+//backOffice/index.html : 실행
+```
+
