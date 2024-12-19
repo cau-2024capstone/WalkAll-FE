@@ -113,6 +113,13 @@ npm start
 | <img src="https://github.com/user-attachments/assets/e0ea5ced-29c3-4a1a-8769-9537a095f16e" width="600" style="border-radius:10px;"> |
 |:---:|
 | **백오피스 화면** |
+
+
+
+- 기존 관리자가 작성한 노드와 엣지는 파란색으로 표시 <br>
+- 새로 작성한 노드와 엣지는 빨간색으로 표시 <br>
+- 노드와 엣지 생성 시 pointType, roadType 등은 상단의 버튼을 통해 변경 가능
+
 ### 백오피스 실행방법
 #### 1. API 키 수정
 ```bash
