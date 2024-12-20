@@ -27,7 +27,7 @@
 ## 매뉴얼 PDF
 
 자세한 사용 방법 및 기능 설명은 아래 **매뉴얼 PDF**에서 확인하실 수 있습니다.  
-[매뉴얼 PDF 바로가기](./manual.pdf)
+[매뉴얼 PDF 바로가기](https://github.com/user-attachments/files/18211516/3._.pdf)
 
 ---
 
